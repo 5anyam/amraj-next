@@ -1,4 +1,3 @@
-
 'use client';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from "next/link";
@@ -17,13 +16,14 @@ export default function Header() {
   const location = usePathname();
   const isMobile = useIsMobile();
   const [search, setSearch] = React.useState("");
-  const navigate = useRouter();
+  const router = useRouter();
   const { theme, toggleTheme } = useTheme();
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
     if (search.trim()) {
-      navigate(`/search?q=${encodeURIComponent(search.trim())}`);
+      // ✅ Yaha navigate ke jagah router.push istemaal kiya
+      router.push(`/search?q=${encodeURIComponent(search.trim())}`);
       setSearch("");
     }
   }
@@ -33,16 +33,17 @@ export default function Header() {
       <div className="max-w-7xl mx-auto flex items-center justify-between py-3 px-6">
         <div className="flex items-center space-x-3">
           <Link href="/" className="flex items-center gap-2">
-            <span className="font-playfair font-bold text-2xl text-blue-700 dark:text-blue-200 tracking-tight transition-colors">PlixBlue</span>
+            <span className="font-playfair font-bold text-2xl text-blue-700 dark:text-blue-200 tracking-tight transition-colors">
+              PlixBlue
+            </span>
           </Link>
-          {/* desktop nav */}
           {!isMobile && (
             <nav className="ml-8 flex gap-6">
               {navItems.map((item) => (
                 <Link
                   key={item.name}
                   href={item.to}
-                  className={`font-medium transition-colors ${location.pathname === item.to
+                  className={`font-medium transition-colors ${location === item.to
                     ? "text-blue-600 dark:text-blue-200"
                     : "text-gray-700 hover:text-blue-600 dark:text-blue-200/80 dark:hover:text-blue-400"
                   }`}
@@ -53,7 +54,6 @@ export default function Header() {
             </nav>
           )}
         </div>
-        {/* search box */}
         {!isMobile && (
           <form className="flex items-center mr-4" onSubmit={handleSearch}>
             <input
@@ -72,14 +72,17 @@ export default function Header() {
           </form>
         )}
         <div className="flex items-center gap-2">
-          {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
             className="p-2 rounded-full transition bg-blue-50 dark:bg-[#232144] hover:bg-blue-100 dark:hover:bg-blue-900 focus:outline-none border border-gray-200 dark:border-blue-900"
             aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
             title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
           >
-            {theme === "dark" ? <Sun className="text-yellow-400" size={20} /> : <Moon className="text-blue-700" size={20} />}
+            {theme === "dark" ? (
+              <Sun className="text-yellow-400" size={20} />
+            ) : (
+              <Moon className="text-blue-700" size={20} />
+            )}
           </button>
           <CartIcon />
         </div>
