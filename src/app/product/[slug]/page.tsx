@@ -1,4 +1,5 @@
 'use client';
+import React, { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { fetchProducts } from '../../../../lib/woocommerceApi';
@@ -8,8 +9,24 @@ import { toast } from '../../../../hooks/use-toast';
 import ImageGallery from '../../../../components/ImageGallery';
 import OfferTab, { SelectedOffer } from '../../../../components/OfferTab';
 import { findProductBySlug } from '../../../../lib/slug';
-import React, { useState } from 'react';
 import { Tab } from '@headlessui/react';
+
+// ⚡ Product Type Definitions
+export interface ImageData {
+  src: string;
+}
+export interface Attribute {
+  option: string;
+}
+export interface Product {
+  id: number;
+  name: string;
+  price: string;
+  description?: string;
+  short_description?: string;
+  images?: ImageData[];
+  attributes?: Attribute[];
+}
 
 function ClubBanner() {
   return (
@@ -33,10 +50,12 @@ function ClubBanner() {
 
 export default function ProductPage() {
   const { slug } = useParams();
-  const { data: products, isLoading, error } = useQuery({
+  const { data: products, isLoading, error } = useQuery<Product[]>({
     queryKey: ["all-products"],
-    queryFn: () => fetchProducts(),
-    select: (prodList: any[]) => prodList,
+    queryFn: async () => {
+      const result = await fetchProducts();
+      return result as Product[];
+    },
     enabled: Boolean(slug),
   });
   const { addToCart } = useCart();
@@ -56,14 +75,12 @@ export default function ProductPage() {
     <div className="min-h-screen bg-[#F9FBFA] font-sans">
       <div className="sticky top-0 z-20"><Header /></div>
       <div className="max-w-7xl mx-auto py-10 px-4 flex flex-col md:flex-row gap-10">
-        {/* Left Side: Images */}
         <div className="flex-1 flex flex-col items-center">
           <div className="w-full max-w-md">
             <ImageGallery images={data.images || []} />
           </div>
         </div>
 
-        {/* Right Side: Main Details */}
         <div className="flex-1 max-w-xl">
           {data.attributes?.length > 0 && (
             <div className="flex items-center mb-4 gap-2">
@@ -72,14 +89,14 @@ export default function ProductPage() {
             </div>
           )}
           <h1 className="text-3xl md:text-4xl font-extrabold text-[#168b3f] mb-3">{data.name}</h1>
-          
+
           {data.short_description && (
             <div
               className="prose max-w-none text-gray-700 text-base"
               dangerouslySetInnerHTML={{ __html: data.short_description }}
             />
           )}
-          
+
           <OfferTab price={price} onOfferChange={setOffer} />
 
           <div className="mb-4 flex gap-3 items-end mt-3">
@@ -90,8 +107,10 @@ export default function ProductPage() {
             </span>
           </div>
 
-          <div className="font-medium text-green-900 mt-3">For Fastest delivery, order within <span className="font-bold">4 hrs 58 mins</span></div>
-          
+          <div className="font-medium text-green-900 mt-3">
+            For Fastest delivery, order within <span className="font-bold">4 hrs 58 mins</span>
+          </div>
+
           <button
             className="bg-[#168b3f] hover:bg-[#137633] w-full text-white font-bold mt-3 px-8 py-4 rounded-xl text-lg shadow transition"
             onClick={() => {
@@ -107,7 +126,7 @@ export default function ProductPage() {
           >
             ADD TO CART — ₹{discountedPrice.toFixed(2)}
           </button>
-          
+
           <ClubBanner />
 
           <div className="flex flex-wrap justify-around items-center mt-4 text-[#168b3f] text-base font-medium">
@@ -119,7 +138,6 @@ export default function ProductPage() {
         </div>
       </div>
 
-      {/* DESCRIPTION & INFO SECTIONS */}
       <div className="max-w-5xl mx-auto mt-12 p-4">
         <Tab.Group>
           <Tab.List className="flex justify-start space-x-4 border-b border-gray-300">
@@ -138,12 +156,11 @@ export default function ProductPage() {
               Additional Info
             </Tab>
           </Tab.List>
-          
           <Tab.Panels>
             <Tab.Panel>
               <div
                 className="prose max-w-none text-gray-700 mt-6"
-                dangerouslySetInnerHTML={{ __html: data.description }}
+                dangerouslySetInnerHTML={{ __html: data.description || "" }}
               />
             </Tab.Panel>
             <Tab.Panel>

@@ -16,7 +16,7 @@ export function getProductSlugFromParam(slug: string | undefined) {
 }
 
 // Helper to find a product from a list using the slug
-export function findProductBySlug(products: any[], slug: string) {
+export function findProductBySlug(products: [], slug: string) {
   return products.find(
     (p) =>
       productToSlug(p) === slug

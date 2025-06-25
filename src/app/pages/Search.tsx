@@ -1,19 +1,24 @@
+'use client';
+import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { useQuery } from '@tanstack/react-query';
+import { fetchProducts } from '../../../lib/woocommerceApi';
+import Header from '../../../components/Header';
+import Footer from '../../../components/Footer';
+import ProductCard from '../../../components/ProductCard';
+import React from 'react';
+import { Product } from '../../../lib/types';
 
-import { useSearchParams, Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { fetchProducts } from "../../../lib/woocommerceApi";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import ProductCard from "@/components/ProductCard";
-import React from "react";
-
-export default function Search() {
-  const [searchParams] = useSearchParams();
-  const query = searchParams.get("q") || "";
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["search-products", query],
-    queryFn: () => fetchProducts(1, 12, query || undefined),
-    enabled: !!query,
+export default function SearchPage() {
+  const searchParams = useSearchParams();
+  const query = searchParams.get('q') || '';
+  const { data, isLoading, error } = useQuery<Product[]>({
+    queryKey: ['search-products', query],
+    queryFn: async () => {
+      if (!query) return [];
+      return fetchProducts(1, 12, query);
+    },
+    enabled: Boolean(query),
   });
 
   return (
@@ -31,7 +36,7 @@ export default function Search() {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
               {data && data.length > 0 ? (
-                data.map((product: any) => (
+                data.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))
               ) : (
@@ -41,7 +46,7 @@ export default function Search() {
               )}
             </div>
             <div className="text-center mt-8">
-              <Link to="/shop" className="inline-block text-blue-700 hover:underline text-lg">
+              <Link href="/shop" className="inline-block text-blue-700 hover:underline text-lg">
                 Browse our full shop &rarr;
               </Link>
             </div>

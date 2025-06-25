@@ -10,11 +10,23 @@ import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import Link from "next/link";
 
+export interface Product {
+  id: number;
+  name: string;
+  price: string;
+  description?: string;
+  short_description?: string;
+  images?: { src: string }[];
+  attributes?: { option: string }[];
+}
 
 export default function Homepage() {
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<Product[]>({
     queryKey: ["featured-products"],
-    queryFn: () => fetchProducts(),
+    queryFn: async () => {
+      const result = await fetchProducts();
+      return result as Product[];
+    },
   });
 
   return (
@@ -35,13 +47,16 @@ export default function Homepage() {
           <div className="text-center text-red-600 dark:text-red-400">Failed to load products.</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 relative z-10">
-            {data?.slice(0, 4).map((prod: any) => (
+            {data?.slice(0, 4).map((prod) => (
               <ProductCard key={prod.id} product={prod} />
             ))}
           </div>
         )}
         <div className="mt-10 text-center">
-          <Link href="/shop" className="bg-blue-700 hover:bg-blue-900 text-white font-semibold px-8 py-3 rounded-lg text-lg shadow hover:scale-105 transition-transform">
+          <Link
+            href="/shop"
+            className="bg-blue-700 hover:bg-blue-900 text-white font-semibold px-8 py-3 rounded-lg text-lg shadow hover:scale-105 transition-transform"
+          >
             View All Products
           </Link>
         </div>

@@ -5,12 +5,22 @@ import { fetchProducts } from "../../../lib/woocommerceApi";
 export const dynamic = "force-dynamic"; 
 // Agar har baar fresh data chahiye ho. Nahi chahiye to hata do.
 
+export interface Product {
+  id: number;
+  name: string;
+  price: string;
+  description?: string;
+  short_description?: string;
+  images?: { src: string }[];
+  attributes?: { option: string }[];
+}
+
 export default async function ShopPage() {
-  let products: any[] = [];
+  let products: Product[] = [];
   try {
-    products = await fetchProducts();
+    const result = await fetchProducts();
+    products = result as Product[];
   } catch {
-    // In case of error
     products = [];
   }
 
