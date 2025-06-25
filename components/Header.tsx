@@ -34,7 +34,7 @@ export default function Header() {
         <div className="flex items-center space-x-3">
           <Link href="/" className="flex items-center gap-2">
             <span className="font-playfair font-bold text-2xl text-blue-700 dark:text-blue-200 tracking-tight transition-colors">
-              PlixBlue
+              Amraj
             </span>
           </Link>
           {!isMobile && (
