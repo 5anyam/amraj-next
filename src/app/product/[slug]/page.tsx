@@ -1,17 +1,31 @@
-"use client";
+'use client';
+import React, { useState } from 'react';
+import { useParams } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
+import { fetchProducts } from '../../../../lib/woocommerceApi';
+import Header from '../../../../components/Header';
+import { useCart } from '../../../../lib/cart';
+import { toast } from '../../../../hooks/use-toast';
+import ImageGallery from '../../../../components/ImageGallery';
+import OfferTab, { SelectedOffer } from '../../../../components/OfferTab';
+import { findProductBySlug } from '../../../../lib/slug';
+import { Tab } from '@headlessui/react';
 
-import React, { useState } from "react";
-import { useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { fetchProducts } from "../../../../lib/woocommerceApi";
-import Header from "../../../../components/Header";
-import { useCart } from "../../../../lib/cart";
-import { toast } from "../../../../hooks/use-toast";
-import ImageGallery from "../../../../components/ImageGallery";
-import OfferTab, { SelectedOffer } from "../../../../components/OfferTab";
-import { findProductBySlug } from "../../../../lib/slug";
-import { Product } from "../../../../lib/types";
-import { Tab } from "@headlessui/react";
+export interface ImageData {
+  src: string;
+}
+export interface Attribute {
+  option: string;
+}
+export interface Product {
+  id: number;
+  name: string;
+  price: string;
+  description?: string;
+  short_description?: string;
+  images?: ImageData[];
+  attributes?: Attribute[];
+}
 
 function ClubBanner() {
   return (
@@ -23,10 +37,7 @@ function ClubBanner() {
           <div className="text-sm mt-1 text-gray-500">₹299/year inclusive of all taxes</div>
         </div>
       </div>
-      <a
-        href="#"
-        className="bg-[#168b3f] hover:bg-[#137633] text-white font-bold px-6 py-2 rounded-lg text-base shadow transition"
-      >
+      <a href="#" className="bg-[#168b3f] hover:bg-[#137633] text-white font-bold px-6 py-2 rounded-lg text-base shadow transition">
         JOIN NOW
       </a>
     </div>
@@ -36,7 +47,7 @@ function ClubBanner() {
 export default function ProductPage() {
   const { slug } = useParams();
   const { data: products, isLoading, error } = useQuery<Product[]>({
-    queryKey: ["all-products"],
+    queryKey: ['all-products'],
     queryFn: async () => {
       const result = await fetchProducts();
       return result as Product[];
@@ -46,8 +57,8 @@ export default function ProductPage() {
 
   const { addToCart } = useCart();
   const [offer, setOffer] = useState<SelectedOffer>({
-    label: "1 Month",
-    duration: "1 Month",
+    label: '1 Month',
+    duration: '1 Month',
     qty: 1,
     discountPercent: 10,
   });
@@ -58,13 +69,15 @@ export default function ProductPage() {
   const data = findProductBySlug(products, slug as string);
   if (!data) return <div className="text-center pt-24 text-red-600">Product not found</div>;
 
-  const price = parseFloat(data.price || "0");
+  const price = parseFloat(data.price || '0');
   const discountedPrice = price * offer.qty * (1 - offer.discountPercent / 100);
   const originalPrice = price * offer.qty;
 
   return (
     <div className="min-h-screen bg-[#F9FBFA] font-sans">
-      <div className="sticky top-0 z-20"><Header /></div>
+      <div className="sticky top-0 z-20">
+        <Header />
+      </div>
       <div className="max-w-7xl mx-auto py-10 px-4 flex flex-col md:flex-row gap-10">
         <div className="flex-1 flex flex-col items-center">
           <div className="w-full max-w-md">
@@ -73,12 +86,13 @@ export default function ProductPage() {
         </div>
 
         <div className="flex-1 max-w-xl">
-          {data.attributes?.length > 0 && (
+          {Array.isArray(data.attributes) && data.attributes.length > 0 && (
             <div className="flex items-center mb-4 gap-2">
               <span className="font-semibold text-gray-600">Flavour:</span>
-              <span className="font-bold text-green-700">{data.attributes[0]?.option || "Default"}</span>
+              <span className="font-bold text-green-700">{data.attributes?.[0]?.option || 'Default'}</span>
             </div>
           )}
+
           <h1 className="text-3xl md:text-4xl font-extrabold text-[#168b3f] mb-3">{data.name}</h1>
 
           {data.short_description && (
@@ -108,12 +122,12 @@ export default function ProductPage() {
               for (let i = 0; i < offer.qty; i++) {
                 addToCart({
                   ...data,
-                  name: data.name + (offer.qty > 1 ? ` (${i + 1} of ${offer.qty})` : ""),
+                  name: data.name + (offer.qty > 1 ? ` (${i + 1} of ${offer.qty})` : ''),
                   price: (price * (1 - offer.discountPercent / 100)).toString(),
                 });
               }
               toast({
-                title: "Added to cart",
+                title: 'Added to cart',
                 description: `${offer.qty} x ${data.name} added with ${offer.discountPercent}% off.`,
               });
             }}
@@ -137,14 +151,14 @@ export default function ProductPage() {
           <Tab.List className="flex justify-start space-x-4 border-b border-gray-300">
             <Tab
               className={({ selected }) =>
-                `py-3 text-lg font-semibold ${selected ? "text-[#168b3f] border-b-2 border-[#168b3f]" : "text-gray-500"}`
+                `py-3 text-lg font-semibold ${selected ? 'text-[#168b3f] border-b-2 border-[#168b3f]' : 'text-gray-500'}`
               }
             >
               Description
             </Tab>
             <Tab
               className={({ selected }) =>
-                `py-3 text-lg font-semibold ${selected ? "text-[#168b3f] border-b-2 border-[#168b3f]" : "text-gray-500"}`
+                `py-3 text-lg font-semibold ${selected ? 'text-[#168b3f] border-b-2 border-[#168b3f]' : 'text-gray-500'}`
               }
             >
               Additional Info
@@ -154,7 +168,7 @@ export default function ProductPage() {
             <Tab.Panel>
               <div
                 className="prose max-w-none text-gray-700 mt-6"
-                dangerouslySetInnerHTML={{ __html: data.description || "" }}
+                dangerouslySetInnerHTML={{ __html: data.description || '' }}
               />
             </Tab.Panel>
             <Tab.Panel>
