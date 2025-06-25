@@ -1,13 +1,16 @@
-
+'use client';
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { useLocation, useNavigationType } from "react-router-dom";
+import { usePathname } from "next/navigation"; // Next.js navigation hook
 
 type RouteChangeContextType = {
   loading: boolean;
   setLoading: (val: boolean) => void;
 };
 
-const RouteChangeContext = createContext<RouteChangeContextType>({ loading: false, setLoading: () => {} });
+const RouteChangeContext = createContext<RouteChangeContextType>({
+  loading: false,
+  setLoading: () => {},
+});
 
 export function useRouteChange() {
   return useContext(RouteChangeContext);
@@ -15,15 +18,16 @@ export function useRouteChange() {
 
 export function RouteChangeProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(false);
-  const location = useLocation();
-  const navigationType = useNavigationType();
+  const pathname = usePathname();
 
   useEffect(() => {
-    // When the location changes, show loader briefly
-    setLoading(true);
-    const timeout = setTimeout(() => setLoading(false), 600); // You can tweak this for smoothness
-    return () => clearTimeout(timeout);
-  }, [location, navigationType]);
+    // Trigger loader on route changes
+    if (pathname) {
+      setLoading(true);
+      const timeout = setTimeout(() => setLoading(false), 600);
+      return () => clearTimeout(timeout);
+    }
+  }, [pathname]);
 
   return (
     <RouteChangeContext.Provider value={{ loading, setLoading }}>
