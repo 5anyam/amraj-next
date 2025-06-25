@@ -9,16 +9,20 @@ export function productToSlug(product: { name: string }) {
     .replace(/^-+|-+$/g, "");
 }
 
+// lib/slug.ts
+import { Product } from "./types";
+
+export function findProductBySlug(products: Product[], slug: string): Product | undefined {
+  return products.find((p) =>
+    p.name.toLowerCase().replace(/\s+/g, "-") === slug.toLowerCase()
+  );
+}
+
+
 // Returns the slug directly from the url param
 export function getProductSlugFromParam(slug: string | undefined) {
   if (!slug) return null;
   return slug;
 }
 
-// Helper to find a product from a list using the slug
-export function findProductBySlug(products: [], slug: string) {
-  return products.find(
-    (p) =>
-      productToSlug(p) === slug
-  );
-}
+

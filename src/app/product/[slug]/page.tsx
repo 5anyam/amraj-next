@@ -1,32 +1,17 @@
-'use client';
-import React, { useState } from 'react';
-import { useParams } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
-import { fetchProducts } from '../../../../lib/woocommerceApi';
-import Header from '../../../../components/Header';
-import { useCart } from '../../../../lib/cart';
-import { toast } from '../../../../hooks/use-toast';
-import ImageGallery from '../../../../components/ImageGallery';
-import OfferTab, { SelectedOffer } from '../../../../components/OfferTab';
-import { findProductBySlug } from '../../../../lib/slug';
-import { Tab } from '@headlessui/react';
+"use client";
 
-// ⚡ Product Type Definitions
-export interface ImageData {
-  src: string;
-}
-export interface Attribute {
-  option: string;
-}
-export interface Product {
-  id: number;
-  name: string;
-  price: string;
-  description?: string;
-  short_description?: string;
-  images?: ImageData[];
-  attributes?: Attribute[];
-}
+import React, { useState } from "react";
+import { useParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { fetchProducts } from "../../../../lib/woocommerceApi";
+import Header from "../../../../components/Header";
+import { useCart } from "../../../../lib/cart";
+import { toast } from "../../../../hooks/use-toast";
+import ImageGallery from "../../../../components/ImageGallery";
+import OfferTab, { SelectedOffer } from "../../../../components/OfferTab";
+import { findProductBySlug } from "../../../../lib/slug";
+import { Product } from "../../../../lib/types";
+import { Tab } from "@headlessui/react";
 
 function ClubBanner() {
   return (
@@ -58,8 +43,14 @@ export default function ProductPage() {
     },
     enabled: Boolean(slug),
   });
+
   const { addToCart } = useCart();
-  const [offer, setOffer] = useState<SelectedOffer>({ label: "1 Month", duration: "1 Month", qty: 1, discountPercent: 10 });
+  const [offer, setOffer] = useState<SelectedOffer>({
+    label: "1 Month",
+    duration: "1 Month",
+    qty: 1,
+    discountPercent: 10,
+  });
 
   if (isLoading) return <div className="text-center pt-24">Loading...</div>;
   if (error || !products) return <div className="text-center pt-24 text-red-600">Product not found</div>;
@@ -121,7 +112,10 @@ export default function ProductPage() {
                   price: (price * (1 - offer.discountPercent / 100)).toString(),
                 });
               }
-              toast({ title: "Added to cart", description: `${offer.qty} x ${data.name} added with ${offer.discountPercent}% off.` });
+              toast({
+                title: "Added to cart",
+                description: `${offer.qty} x ${data.name} added with ${offer.discountPercent}% off.`,
+              });
             }}
           >
             ADD TO CART — ₹{discountedPrice.toFixed(2)}
@@ -143,14 +137,14 @@ export default function ProductPage() {
           <Tab.List className="flex justify-start space-x-4 border-b border-gray-300">
             <Tab
               className={({ selected }) =>
-                `py-3 text-lg font-semibold ${selected ? 'text-[#168b3f] border-b-2 border-[#168b3f]' : 'text-gray-500'}`
+                `py-3 text-lg font-semibold ${selected ? "text-[#168b3f] border-b-2 border-[#168b3f]" : "text-gray-500"}`
               }
             >
               Description
             </Tab>
             <Tab
               className={({ selected }) =>
-                `py-3 text-lg font-semibold ${selected ? 'text-[#168b3f] border-b-2 border-[#168b3f]' : 'text-gray-500'}`
+                `py-3 text-lg font-semibold ${selected ? "text-[#168b3f] border-b-2 border-[#168b3f]" : "text-gray-500"}`
               }
             >
               Additional Info
