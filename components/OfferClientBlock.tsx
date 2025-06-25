@@ -1,10 +1,22 @@
 'use client';
+
 import { useState } from "react";
 import { useCart } from "../lib/cart";
 import { toast } from "../hooks/use-toast";
 import OfferTab, { type SelectedOffer } from "../components/OfferTab";
 
-export default function OfferClientBlock({ product }: { product: any }) {
+interface Product {
+  id: number | string;
+  name: string;
+  price: number | string;
+  images?: { src: string }[];
+}
+
+interface OfferClientBlockProps {
+  product: Product;
+}
+
+export default function OfferClientBlock({ product }: OfferClientBlockProps) {
   const { addToCart } = useCart();
   const [offer, setOffer] = useState<SelectedOffer>({
     label: "1 Month",
@@ -12,7 +24,9 @@ export default function OfferClientBlock({ product }: { product: any }) {
     qty: 1,
     discountPercent: 10,
   });
-  const price = parseFloat(product.price || "0");
+
+  // Ensure price is always a number
+  const price = parseFloat(product.price?.toString() || "0");
   const discountedPrice = price * offer.qty * (1 - offer.discountPercent / 100);
   const originalPrice = price * offer.qty;
 
@@ -28,10 +42,10 @@ export default function OfferClientBlock({ product }: { product: any }) {
         onClick={() => {
           for (let i = 0; i < offer.qty; i++) {
             addToCart({
-              ...product,
-              name: product.name + (offer.qty > 1 ? ` (${i + 1} of ${offer.qty})` : ""),
+              id: product.id,
+              name: `${product.name}${offer.qty > 1 ? ` (${i + 1} of ${offer.qty})` : ""}`,
               price: (price * (1 - offer.discountPercent / 100)).toString(),
-              images: product.images ?? [], // ✅ Fallback added
+              images: product.images ?? []
             });
           }
           toast({
