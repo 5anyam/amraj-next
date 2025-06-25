@@ -89,8 +89,13 @@ export default function Checkout() {
     let wooOrder: WooOrder;
 
     try {
-      wooOrder = await createOrder({
-        lineItems: items.map((i) => ({ product_id: i.id, quantity: i.quantity, name: i.name, price: i.price })),
+      wooOrder = (await createOrder({
+        lineItems: items.map((i) => ({
+          product_id: i.id,
+          quantity: i.quantity,
+          name: i.name,
+          price: i.price,
+        })),
         shipping_address: {
           name: form.name,
           address_1: form.address,
@@ -103,17 +108,25 @@ export default function Checkout() {
         },
         status: "pending",
         notes: form.notes,
-      });
+      })) as WooOrder;
     } catch (err) {
       const error = err as Error;
-      toast({ title: "Order Error", description: error.message || "Could not place order in WooCommerce", variant: "destructive" });
+      toast({
+        title: "Order Error",
+        description: error.message || "Could not place order in WooCommerce",
+        variant: "destructive",
+      });
       setLoading(false);
       setStep("form");
       return;
     }
 
     if (!window.Razorpay) {
-      toast({ title: "Razorpay SDK Error", description: "Razorpay SDK not loaded.", variant: "destructive" });
+      toast({
+        title: "Razorpay SDK Error",
+        description: "Razorpay SDK not loaded.",
+        variant: "destructive",
+      });
       setLoading(false);
       setStep("form");
       return;
@@ -129,22 +142,35 @@ export default function Checkout() {
         try {
           await updateOrderStatus(wooOrder.id, "completed");
 
-          await fetch(`${process.env.NEXT_PUBLIC_WC_API_URL}/orders/${wooOrder.id}?consumer_key=${process.env.NEXT_PUBLIC_WC_CONSUMER_KEY}&consumer_secret=${process.env.NEXT_PUBLIC_WC_CONSUMER_SECRET}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              meta_data: [
-                ...(wooOrder.meta_data || []),
-                { key: "razorpay_payment_id", value: response.razorpay_payment_id },
-              ],
-            }),
-          });
-          
+          await fetch(
+            `${process.env.NEXT_PUBLIC_WC_API_URL}/orders/${wooOrder.id}?consumer_key=${process.env.NEXT_PUBLIC_WC_CONSUMER_KEY}&consumer_secret=${process.env.NEXT_PUBLIC_WC_CONSUMER_SECRET}`,
+            {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                meta_data: [
+                  ...(wooOrder.meta_data || []),
+                  {
+                    key: "razorpay_payment_id",
+                    value: response.razorpay_payment_id,
+                  },
+                ],
+              }),
+            }
+          );
+
           clear();
-          toast({ title: "Order placed!", description: "Thank you for shopping with us." });
+          toast({
+            title: "Order placed!",
+            description: "Thank you for shopping with us.",
+          });
           router.push(`/order-confirmation?orderId=${response.razorpay_payment_id}&wcOrderId=${wooOrder.id}`);
         } catch (error) {
-          toast({ title: "Order Update Error", description: (error as Error).message || "Could not update order status.", variant: "destructive" });
+          toast({
+            title: "Order Update Error",
+            description: (error as Error).message || "Could not update order status.",
+            variant: "destructive",
+          });
         } finally {
           setLoading(false);
           setStep("form");
@@ -154,7 +180,11 @@ export default function Checkout() {
         ondismiss: async () => {
           if (wooOrder?.id) {
             await updateOrderStatus(wooOrder.id, "cancelled").catch(() => {});
-            toast({ title: "Payment cancelled", description: "Order was cancelled. You can try again.", variant: "destructive" });
+            toast({
+              title: "Payment cancelled",
+              description: "Order was cancelled. You can try again.",
+              variant: "destructive",
+            });
             setLoading(false);
             setStep("form");
           }
@@ -169,6 +199,7 @@ export default function Checkout() {
         color: "#2563eb",
       },
     };
+
     const rzp = new window.Razorpay(options);
     rzp.open();
     setLoading(false);
@@ -251,10 +282,14 @@ export default function Checkout() {
           </button>
 
           {step === "processing" && (
-            <div className="text-center text-blue-700 text-sm mt-2">Creating order and launching payment gateway…</div>
+            <div className="text-center text-blue-700 text-sm mt-2">
+              Creating order and launching payment gateway…
+            </div>
           )}
         </form>
-        <div className="mt-6 text-center text-gray-500 text-xs">Your personal details are safe & secured.</div>
+        <div className="mt-6 text-center text-gray-500 text-xs">
+          Your personal details are safe & secured.
+        </div>
       </div>
     </div>
   );
