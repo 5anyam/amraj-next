@@ -1,4 +1,5 @@
-'use client';
+"use client";
+
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Header from "../../../components/Header";
@@ -18,12 +19,36 @@ interface FormData {
 
 interface WooOrder {
   id: number;
-  meta_data?: Array<{ key: string; value: any }>;
+  meta_data?: Array<{ key: string; value: [] }>;
+}
+
+interface RazorpayHandlerResponse {
+  razorpay_payment_id: string;
+}
+
+interface RazorpayOptions {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  handler: (response: RazorpayHandlerResponse) => void | Promise<void>;
+  modal?: {
+    ondismiss?: () => void | Promise<void>;
+  };
+  prefill?: {
+    name: string;
+    email: string;
+    contact: string;
+  };
+  theme?: {
+    color: string;
+  };
 }
 
 declare global {
   interface Window {
-    Razorpay?: any;
+    Razorpay?: new (options: RazorpayOptions) => { open: () => void };
   }
 }
 
@@ -56,8 +81,8 @@ export default function Checkout() {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
   }
 
-  async function handleCheckout(e: FormEvent) {
-    e.preventDefault();
+  async function handleCheckout(event: FormEvent) {
+    event.preventDefault();
     setLoading(true);
     setStep("processing");
 
@@ -66,11 +91,19 @@ export default function Checkout() {
     try {
       wooOrder = await createOrder({
         lineItems: items.map((i) => ({ product_id: i.id, quantity: i.quantity, name: i.name, price: i.price })),
-        shipping_address: { name: form.name, address_1: form.address, email: form.email, phone: form.phone },
-        customer: { name: form.name, email: form.email },
+        shipping_address: {
+          name: form.name,
+          address_1: form.address,
+          email: form.email,
+          phone: form.phone,
+        },
+        customer: {
+          name: form.name,
+          email: form.email,
+        },
         status: "pending",
         notes: form.notes,
-      }) as WooOrder;
+      });
     } catch (err) {
       const error = err as Error;
       toast({ title: "Order Error", description: error.message || "Could not place order in WooCommerce", variant: "destructive" });
@@ -86,17 +119,16 @@ export default function Checkout() {
       return;
     }
 
-    const options = {
+    const options: RazorpayOptions = {
       key: RAZORPAY_KEY_ID,
       amount: Math.round(total * 100),
       currency: "INR",
       name: "PlixBlue",
       description: `Order Payment (Order #${wooOrder.id})`,
-      handler: async (response: { razorpay_payment_id: string }) => {
+      handler: async (response) => {
         try {
           await updateOrderStatus(wooOrder.id, "completed");
 
-          // Updating WooCommerce order with Razorpay Payment ID
           await fetch(`${process.env.NEXT_PUBLIC_WC_API_URL}/orders/${wooOrder.id}?consumer_key=${process.env.NEXT_PUBLIC_WC_CONSUMER_KEY}&consumer_secret=${process.env.NEXT_PUBLIC_WC_CONSUMER_SECRET}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -111,9 +143,8 @@ export default function Checkout() {
           clear();
           toast({ title: "Order placed!", description: "Thank you for shopping with us." });
           router.push(`/order-confirmation?orderId=${response.razorpay_payment_id}&wcOrderId=${wooOrder.id}`);
-        } catch (err) {
-          const error = err as Error;
-          toast({ title: "Order Update Error", description: error.message || "Could not update order status.", variant: "destructive" });
+        } catch (error) {
+          toast({ title: "Order Update Error", description: (error as Error).message || "Could not update order status.", variant: "destructive" });
         } finally {
           setLoading(false);
           setStep("form");
@@ -134,7 +165,9 @@ export default function Checkout() {
         email: form.email,
         contact: form.phone,
       },
-      theme: { color: "#2563eb" },
+      theme: {
+        color: "#2563eb",
+      },
     };
     const rzp = new window.Razorpay(options);
     rzp.open();
@@ -203,12 +236,12 @@ export default function Checkout() {
               onChange={onChange}
             />
           </div>
-          
+
           <div className="flex items-center justify-between font-bold text-lg">
             <span>Total</span>
             <span>₹{total.toFixed(2)}</span>
           </div>
-          
+
           <button
             type="submit"
             className={`w-full bg-blue-700 hover:bg-blue-900 text-white py-3 rounded-lg font-semibold text-lg ${loading || step === "processing" ? "opacity-60 pointer-events-none" : ""}`}
@@ -218,9 +251,7 @@ export default function Checkout() {
           </button>
 
           {step === "processing" && (
-            <div className="text-center text-blue-700 text-sm mt-2">
-              Creating order and launching payment gateway…
-            </div>
+            <div className="text-center text-blue-700 text-sm mt-2">Creating order and launching payment gateway…</div>
           )}
         </form>
         <div className="mt-6 text-center text-gray-500 text-xs">Your personal details are safe & secured.</div>
