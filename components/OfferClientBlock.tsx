@@ -24,8 +24,6 @@ export default function OfferClientBlock({ product }: OfferClientBlockProps) {
     qty: 1,
     discountPercent: 10,
   });
-
-  // Ensure price is always a number
   const price = parseFloat(product.price?.toString() || "0");
   const discountedPrice = price * offer.qty * (1 - offer.discountPercent / 100);
   const originalPrice = price * offer.qty;
@@ -42,7 +40,7 @@ export default function OfferClientBlock({ product }: OfferClientBlockProps) {
         onClick={() => {
           for (let i = 0; i < offer.qty; i++) {
             addToCart({
-              id: product.id,
+              id: Number(product.id), // ✅ Fixed
               name: `${product.name}${offer.qty > 1 ? ` (${i + 1} of ${offer.qty})` : ""}`,
               price: (price * (1 - offer.discountPercent / 100)).toString(),
               images: product.images ?? []
