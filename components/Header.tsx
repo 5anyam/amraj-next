@@ -31,11 +31,9 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-white dark:bg-[#18172b] border-b border-blue-100 dark:border-blue-950 shadow-sm backdrop-blur supports-backdrop-blur:bg-white/80 dark:supports-backdrop-blur:bg-[#191833]/70 transition-colors">
       <div className="max-w-7xl mx-auto flex items-center justify-between py-3 px-6">
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center justify-center">
           <Link href="/" className="flex items-center gap-2">
-            <span className="font-playfair font-bold text-2xl text-blue-700 dark:text-blue-200 tracking-tight transition-colors">
-              Amraj
-            </span>
+            <img className='h-20 w-28' src="amraj-logo.jpg" alt='amraj logo' height={100}/><span className="pl-0">AMRAJ</span>
           </Link>
           {!isMobile && (
             <nav className="ml-8 flex gap-6">
@@ -44,8 +42,8 @@ export default function Header() {
                   key={item.name}
                   href={item.to}
                   className={`font-medium transition-colors ${location === item.to
-                    ? "text-blue-600 dark:text-blue-200"
-                    : "text-gray-700 hover:text-blue-600 dark:text-blue-200/80 dark:hover:text-blue-400"
+                    ? "text-green-600 dark:text-blue-200"
+                    : "text-gray-700 hover:text-green-600 dark:text-blue-200/80 dark:hover:green-blue-400"
                   }`}
                 >
                   {item.name}
@@ -58,14 +56,14 @@ export default function Header() {
           <form className="flex items-center mr-4" onSubmit={handleSearch}>
             <input
               type="text"
-              className="px-3 py-2 rounded-l-md border border-blue-200 dark:border-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-[#232144] dark:text-white text-base w-52 transition-colors"
+              className="px-3 py-2 rounded-l-md border border-blue-200 dark:border-blue-900 focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-[#232144] dark:text-white text-base w-52 transition-colors"
               placeholder="Search products…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
             <button
               type="submit"
-              className="bg-blue-600 hover:bg-blue-800 text-white px-4 py-2 rounded-r-md font-semibold transition-colors"
+              className="bg-green-600 hover:bg-green-800 text-white px-4 py-2 rounded-r-md font-semibold transition-colors"
             >
               Search
             </button>

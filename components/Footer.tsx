@@ -3,13 +3,13 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-br from-blue-700 via-blue-900 to-blue-900 dark:from-[#232144] dark:via-[#18172b] dark:to-[#18172b] text-white pt-10 pb-6 mt-16 transition-colors">
+    <footer className="bg-gradient-to-br from-green-700 via-green-900 to-green-900 dark:from-[#232144] dark:via-[#18172b] dark:to-[#18172b] text-white pt-10 pb-6 mt-16 transition-colors">
       <div className="max-w-6xl mx-auto px-4 md:flex md:justify-between md:items-start">
         <div className="mb-6 md:mb-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className="font-playfair font-bold text-3xl tracking-wide text-white">PlixBlue</span>
+            <img className="h-24" src="/amraj-dark-logo.png" alt="amraj dark logo"></img><span className="font-playfair font-bold text-3xl tracking-wide text-white">AMRAJ</span>
           </div>
-          <p className="max-w-xs text-blue-100 dark:text-blue-300 text-sm">
+          <p className="max-w-xs text-blue-100 dark:text-green-300 text-sm">
             Feel better, live better. Premium wellness essentials, crafted by science and care.
           </p>
         </div>

@@ -13,65 +13,70 @@ import { CarouselApi } from '../components/ui/carousel';
 
 const IMAGES = [
   {
-    src: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=facearea&w=512&q=80',
+    src: 'https://cms.amraj.in/wp-content/uploads/2025/06/Amraj-Bg-Photo_20250623_113828_0000-scaled.jpg',
     alt: 'Model smiling with serum',
   },
   {
-    src: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=facearea&w=512&q=80',
+    src: 'https://cms.amraj.in/wp-content/uploads/2025/06/Amraj-Bg-Photo_20250623_113828_0000-scaled.jpg',
     alt: 'Healthy skin with bottle',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=facearea&w=512&q=80',
-    alt: 'Beautiful glow',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=facearea&w=512&q=80',
-    alt: 'Avocado serum',
-  },
+  }
 ];
 
 export default function HeroCarousel() {
   const [current, setCurrent] = React.useState(0);
 
+  // Syncs carousel with the clicked dot
   const handleSlideChange = React.useCallback((api: CarouselApi) => {
     if (api && typeof api.selectedScrollSnap === 'function') {
       setCurrent(api.selectedScrollSnap());
     }
   }, []);
 
+  // Change to specific slide on dot click
+  const handleDotClick = (index: number) => {
+    setCurrent(index);
+  };
+
   return (
-    <div className="w-full max-w-xs md:max-w-sm flex flex-col items-center gap-4 relative">
+    <div className="w-full h-full relative">
       <Carousel
         opts={{ loop: true }}
         setApi={handleSlideChange}
-        className="w-full"
+        className="w-full h-full"
       >
         <CarouselContent>
           {IMAGES.map((img, i) => (
             <CarouselItem key={i}>
-              <div className="rounded-2xl bg-white/70 shadow-lg flex items-center justify-center p-4 transition-all h-64 md:h-80">
+              <div className="relative w-full h-full">
                 <Image
                   src={img.src}
                   alt={img.alt}
-                  className="object-cover rounded-xl h-full w-full"
-                  width={512}
-                  height={512}
+                  className="object-cover w-full h-full rounded-xl shadow-lg"
+                  width={1920}
+                  height={1080}
                   priority={i === 0}
                 />
               </div>
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="left-3 top-1/2 -translate-y-1/2 z-40" />
-        <CarouselNext className="right-3 top-1/2 -translate-y-1/2 z-40" />
+
+        {/* Carousel Controls */}
+        <CarouselPrevious className="absolute left-3 top-1/2 -translate-y-1/2 z-40 text-white bg-gray-500/50 rounded-full p-2" />
+        <CarouselNext className="absolute right-3 top-1/2 -translate-y-1/2 z-40 text-white bg-gray-500/50 rounded-full p-2" />
       </Carousel>
-      <div className="flex justify-center gap-2 mt-1 absolute bottom-1 left-1/2 -translate-x-1/2 z-30">
+
+      {/* Carousel Indicator (Clickable) */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30 flex gap-2">
         {IMAGES.map((_, i) => (
           <span
             key={i}
-            className={`block w-2 h-2 rounded-full transition-all duration-300 ${
-              i === current ? 'bg-[#23ae60] scale-125' : 'bg-green-200 opacity-70'
+            className={`block w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${
+              i === current
+                ? 'bg-green-600 scale-125'
+                : 'bg-gray-300 opacity-70'
             }`}
+            onClick={() => handleDotClick(i)} // Sync dot click with carousel
           />
         ))}
       </div>
