@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { fetchProducts } from '../../../../lib/woocommerceApi';
-import Header from '../../../../components/Header';
 import { useCart } from '../../../../lib/cart';
 import { toast } from '../../../../hooks/use-toast';
 import ImageGallery from '../../../../components/ImageGallery';
@@ -55,7 +54,6 @@ export default function ProductPage() {
   return (
     <div className="min-h-screen bg-[#F9FBFA] font-sans">
       <div className="sticky top-0 z-20">
-        <Header />
       </div>
       <div className="max-w-7xl mx-auto py-10 px-4 flex flex-col md:flex-row gap-10">
         <div className="flex-1 flex flex-col items-center">

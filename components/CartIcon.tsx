@@ -9,9 +9,9 @@ export default function CartIcon() {
 
   return (
     <Link href="/cart" className="relative group">
-      <ShoppingCart className="w-7 h-7 text-blue-600 group-hover:scale-110 transition-transform" />
+      <ShoppingCart className="w-7 h-7 text-black group-hover:scale-110 transition-transform" />
       {count > 0 && (
-        <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs font-semibold rounded-full px-1.5 py-px shadow-lg border border-white">
+        <span className="absolute -top-1 -right-1 bg-teal-600 text-white text-xs font-semibold rounded-full px-1.5 py-px shadow-lg border border-white">
           {count}
         </span>
       )}

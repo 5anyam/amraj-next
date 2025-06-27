@@ -1,7 +1,10 @@
 import './styles/globals.css';
 import ReactQueryProvider from '../../components/ReactQueryProvider';
-import {ThemeProvider} from "../../components/ThemeProvider";
+//import {ThemeProvider} from "../../components/ThemeProvider";
 import { CartProvider } from '../../lib/cart';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
+import MobileNav from '../../components/MobileNav';
 
 export const metadata = {
   title: 'Amraj App',
@@ -11,14 +14,15 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-    <body>
-    <ThemeProvider>
+    <body className="overflow-x-hidden overflow-y-scroll">
       <ReactQueryProvider>
         <CartProvider>
+          <Header/>
         {children}
+        <Footer/>
+        <MobileNav/>
         </CartProvider>
       </ReactQueryProvider>
-      </ThemeProvider>
     </body>
   </html>
   );

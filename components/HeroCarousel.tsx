@@ -73,7 +73,7 @@ export default function HeroCarousel() {
             key={i}
             className={`block w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${
               i === current
-                ? 'bg-green-600 scale-125'
+                ? 'bg-teal-500 scale-125'
                 : 'bg-gray-300 opacity-70'
             }`}
             onClick={() => handleDotClick(i)} // Sync dot click with carousel
