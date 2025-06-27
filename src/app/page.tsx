@@ -6,7 +6,6 @@ import TestimonialsSection from "../../components/TestimonialsSection";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProducts } from "../../lib/woocommerceApi";
 import ProductCard from "../../components/ProductCard";
-import Link from "next/link";
 import HeroCarousel from "../../components/HeroCarousel";
 
 
