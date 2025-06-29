@@ -4,7 +4,6 @@ import ReactQueryProvider from '../../components/ReactQueryProvider';
 import { CartProvider } from '../../lib/cart';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import MobileNav from '../../components/MobileNav';
 
 export const metadata = {
   title: 'Amraj App',
@@ -20,7 +19,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Header/>
         {children}
         <Footer/>
-        <MobileNav/>
         </CartProvider>
       </ReactQueryProvider>
     </body>

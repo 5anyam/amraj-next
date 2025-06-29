@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@import 'slick-carousel/slick/slick.css';
+@import 'slick-carousel/slick/slick-theme.css';
+
+
 
 :root {
   --background: #ffffff;
@@ -23,4 +27,53 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: 'Inter', sans-serif;
+}
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 35s linear infinite;
+}
+
+@keyframes blob1 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  50% {
+    transform: translate(20px, -30px) scale(1.1);
+  }
+}
+
+@keyframes blob2 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  50% {
+    transform: translate(-25px, 20px) scale(1.05);
+  }
+}
+
+@keyframes blob3 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  50% {
+    transform: translate(15px, 10px) scale(1.1);
+  }
+}
+
+.animate-blob1 {
+  animation: blob1 10s ease-in-out infinite;
+}
+.animate-blob2 {
+  animation: blob2 12s ease-in-out infinite;
+}
+.animate-blob3 {
+  animation: blob3 14s ease-in-out infinite;
 }

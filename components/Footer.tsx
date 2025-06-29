@@ -54,16 +54,6 @@ export default function Footer() {
         
           </div>
 
-          {/* Contact Section */}
-          <div>
-            <h4 className="text-xl font-semibold mb-4">Contact</h4>
-            <ul>
-              <li>support@amraj.in</li>
-              <li className="mt-2">+91-00000-00000</li>
-              <li className="mt-2">Prashant Vihar, India</li>
-            </ul>
-          </div>
-
           {/* Useful Links Section */}
           <div>
             <h4 className="text-xl font-semibold mb-4">Useful Links</h4>
@@ -85,17 +75,28 @@ export default function Footer() {
               </li>
             </ul>
           </div>
+{/* Contact Section */}
+          <div>
+            <h4 className="text-xl font-semibold mb-4">Contact</h4>
+            <ul>
+              <li>support@amraj.in</li>
+              <li className="mt-2">+91-00000-00000</li>
+              <li className="mt-2">Prashant Vihar, India</li>
+            </ul>
+          </div>
         </div>
       </div>
 
       {/* Footer Bottom */}
-      <div className="bg-white flex justify-between items-center border-t mt-8 p-4 text-green-600 text-center text-sm">
-       <div>© {new Date().getFullYear()} Amraj Wellness. All rights reserved. Developed By{" "}
-        <span className="text-green-700 font-bold">
-          <Link href="https://www.proshala.com">Proshala Tech</Link>
-        </span></div>
-        <img className="h-10" src="/badges.png" alt="badges" />
-      </div>
-    </footer>
+  <div className="bg-white flex flex-col sm:flex-row justify-between items-center border-t mt-8 p-4 text-green-600 text-center text-sm gap-4 sm:gap-0">
+    <div>
+      © {new Date().getFullYear()} Amraj Wellness. All rights reserved. Developed By{" "}
+      <span className="text-green-700 font-bold">
+        <Link href="https://www.proshala.com">Proshala Tech</Link>
+      </span>
+    </div>
+    <img className="h-10" src="/badges.png" alt="badges" />
+  </div>
+</footer>
   );
 }

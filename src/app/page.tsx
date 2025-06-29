@@ -1,12 +1,12 @@
 "use client";
-
-
 import BenefitSection from "../../components/BenefitSection";
-import TestimonialsSection from "../../components/TestimonialsSection";
+import Testimonials from "../../components/TestimonialsSection";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProducts } from "../../lib/woocommerceApi";
 import ProductCard from "../../components/ProductCard";
 import HeroCarousel from "../../components/HeroCarousel";
+import MarqueeBanner from "../../components/MarqueeBanner";
+import AnimatedBackground from "../../components/AnimatedBackground";
 
 
 export interface Product {
@@ -29,9 +29,11 @@ export default function Homepage() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-orange-50 to-white dark:from-[#232144] dark:to-[#18172b] pb-24 overflow-x-hidden transition-colors">
+    <div className="min-h-screen bg-white pb-24 overflow-x-hidden transition-colors">
       <HeroCarousel />
+      <MarqueeBanner/>
       <section className="relative max-w-6xl mx-auto py-14 px-4">
+        <AnimatedBackground/>
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-orange-100/10 via-teal-300/5 to-white dark:from-orange-800/10 dark:via-blue-900/5 dark:to-[#18172b] pointer-events-none" />
         <h2 className="text-xl md:text-4xl font-playfair font-bold text-orange-500 mb-6 text-center animate-fade-in">
           Discover Our <span className="text-teal-500 italic">New Products</span>
@@ -61,7 +63,7 @@ export default function Homepage() {
       </section>
       <BenefitSection />
       <div className="my-12" />
-      <TestimonialsSection />
+      <Testimonials />
     </div>
   );
 }

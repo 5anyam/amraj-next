@@ -10,6 +10,8 @@ import { useTypewriter } from 'react-simple-typewriter';
 const navItems = [
   { name: "Home", to: "/" },
   { name: "Shop", to: "/shop" },
+  { name: "About Us", to: "/about" },
+  { name: "Contact", to: "/contact" },
 ];
 
 export default function Header() {
@@ -42,7 +44,7 @@ export default function Header() {
         {/* Left: Logo and Nav */}
         <div className="flex items-center justify-center">
           <Link href="/" className="flex items-center gap-2">
-            <img className='h-16' src="/amraj-logo.jpg" alt='amraj logo' height={100}/>
+            <img className='h-12 md-16' src="/amraj-logo.jpg" alt='amraj logo' height={100}/>
             <span className="pl-0 text-black">AMRAJ</span>
           </Link>
           {!isMobile && (
@@ -77,7 +79,7 @@ export default function Header() {
               />
               <button
                 type="submit"
-                className="bg-gray-100 text-black px-4 py-2 rounded-r-md font-semibold transition-colors"
+                className="border-l border-gray-100 text-black px-4 py-2 rounded-r-md font-semibold transition-colors"
               >
                 <FiSearch />
               </button>

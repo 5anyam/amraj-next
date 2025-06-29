@@ -1,38 +1,66 @@
+'use client';
+
+import Slider from 'react-slick';
+import Image from 'next/image';
 
 const testimonials = [
   {
-    name: "Parul S.",
-    feedback: "The Blue range totally improved my energy — delivery was so fast, checkout simple, and products are really high quality.",
+    name: 'Parul S.',
+    quote:
+      'The Blue range totally improved my energy — delivery was so fast, checkout simple, and products are really high quality.',
+    image: '/users/parul.avif',
   },
   {
-    name: "Ankit T.",
-    feedback: "I needed vegan supplements I could trust and the website experience was perfectly smooth.",
+    name: 'Ankit T.',
+    quote:
+      'I needed vegan supplements I could trust and the website experience was perfectly smooth.',
+    image: '/users/ankit.jpeg',
   },
   {
-    name: "Savita P.",
-    feedback: "Loved the easy navigation and beautiful design. Will shop again!",
+    name: 'Savita P.',
+    quote: 'Loved the easy navigation and beautiful design. Will shop again!',
+    image: '/users/savita.webp',
   },
 ];
 
-export default function TestimonialsSection() {
+const TestimonialsCarousel = () => {
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    autoplay: true,
+    autoplaySpeed: 4000,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: false,
+  };
+
   return (
-    <section className="py-12 bg-white">
-      <div className="max-w-2xl mx-auto text-center">
-        <h2 className="text-2xl text-blue-800 font-bold mb-6">What Our Customers Say</h2>
-        <div className="grid gap-8 md:grid-cols-3">
-          {testimonials.map((t, idx) => (
-            <div
-              key={t.name}
-              className="shadow-lg rounded-xl px-6 py-6 bg-blue-50 flex flex-col items-center animate-fade-in"
-              style={{ animationDelay: `${idx * 0.1}s` }}
-            >
-              <div className="text-blue-600 text-2xl mb-2">“</div>
-              <div className="text-md text-blue-900 mb-3 italic">{t.feedback}</div>
-              <div className="font-semibold text-blue-700">{t.name}</div>
+    <section className="bg-white py-16 px-4">
+      <div className="max-w-3xl mx-auto text-center">
+        <h2 className="text-3xl font-bold text-gray-800 mb-8">What Our Customers Say</h2>
+        <Slider {...settings}>
+          {testimonials.map((t, index) => (
+            <div key={index}>
+              <div className="bg-white/60 backdrop-blur-md border border-gray-200 rounded-2xl shadow-md p-6 mx-4">
+                <div className="flex flex-col items-center">
+                  <Image
+                    src={t.image}
+                    alt={t.name}
+                    width={64}
+                    height={64}
+                    className="rounded-full mb-4 object-cover h-10 w-10"
+                  />
+                  <p className="text-gray-700 italic text-lg mb-4">“{t.quote}”</p>
+                  <div className="text-teal-500 font-semibold">{t.name}</div>
+                </div>
+              </div>
             </div>
           ))}
-        </div>
+        </Slider>
       </div>
     </section>
   );
-}
+};
+
+export default TestimonialsCarousel;

@@ -38,7 +38,7 @@ export default function HeroCarousel() {
   };
 
   return (
-    <div className="w-full h-full relative">
+    <div className="w-full h-32 md:h-full relative">
       <Carousel
         opts={{ loop: true }}
         setApi={handleSlideChange}
