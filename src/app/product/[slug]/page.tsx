@@ -70,11 +70,11 @@ export default function ProductPage() {
             </div>
           ) : null}
 
-          <h1 className="text-3xl md:text-4xl font-extrabold text-[#168b3f] mb-3">{product.name}</h1>
+          <h1 className="text-xl md:text-2xl font-semibold text-[#168b3f] mb-3">{product.name}</h1>
 
           {product.short_description && (
             <div
-              className="prose max-w-none text-gray-700 text-base"
+              className="prose max-w-none pb-6 text-gray-700 text-base"
               dangerouslySetInnerHTML={{ __html: product.short_description }}
             />
           )}

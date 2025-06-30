@@ -63,26 +63,9 @@ export default function ProductCard({ product }: { product: Product }) {
             {product.name}
           </h3>
 
-          {/* Prices */}
-          <div className="mt-1 flex items-center gap-2">
-            <span className="text-xl font-bold text-teal-500">
-              ₹{salePrice}
-            </span>
-            {isOnSale && (
-              <span className="text-sm text-orange-400 line-through">
-                ₹{originalPrice}
-              </span>
-            )}
-          </div>
-
-          {/* Description */}
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-300 line-clamp-2">
-            {product.short_description?.replace(/<[^>]+>/g, "")}
-          </p>
-
           {/* Ratings */}
           {Number.isFinite(rating) && rating > 0 && (
-            <div className="mt-2 flex items-center gap-0.5">
+            <div className="flex items-center gap-0.5">
               {Array.from({ length: 5 }).map((_, i) => (
                 <svg
                   key={i}
@@ -106,6 +89,23 @@ export default function ProductCard({ product }: { product: Product }) {
               )}
             </div>
           )}
+
+          {/* Prices */}
+          <div className="mt-1 flex items-center gap-2">
+            <span className="text-xl font-bold text-teal-500">
+              ₹{salePrice}
+            </span>
+            {isOnSale && (
+              <span className="text-sm text-orange-400 line-through">
+                ₹{originalPrice}
+              </span>
+            )}
+          </div>
+
+          {/* Description */}
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-300 line-clamp-2">
+            {product.short_description?.replace(/<[^>]+>/g, "")}
+          </p>
         </div>
       </Link>
     </div>
