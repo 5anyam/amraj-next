@@ -59,7 +59,7 @@ export default function ProductCard({ product }: { product: Product }) {
           )}
 
           {/* Product Name */}
-          <h3 className="text-base md:text-lg font-semibold text-gray-800 dark:text-blue-100 line-clamp-1">
+          <h3 className="text-base md:text-lg text-gray-800 dark:text-blue-100 line-clamp-1">
             {product.name}
           </h3>
 

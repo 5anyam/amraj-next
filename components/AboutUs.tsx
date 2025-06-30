@@ -12,7 +12,7 @@ export default function AboutUsSection() {
           initial={{ opacity: 0, y: 30 }} 
           whileInView={{ opacity: 1, y: 0 }} 
           transition={{ duration: 0.6 }}
-          className="text-4xl font-bold text-teal-600 mb-6"
+          className="text-4xl text-teal-600 mb-6"
         >
           Rooted in Tradition, Backed by Science
         </motion.h2>
@@ -62,7 +62,7 @@ export default function AboutUsSection() {
           initial={{ opacity: 0, y: 30 }} 
           whileInView={{ opacity: 1, y: 0 }} 
           transition={{ duration: 0.6 }}
-          className="text-3xl font-bold text-orange-500 mb-6"
+          className="text-3xl text-teal-500 mb-6"
         >
           Why Trust Amraj Wellness?
         </motion.h3>
