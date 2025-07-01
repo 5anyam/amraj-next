@@ -12,7 +12,7 @@ export default function TermsAndConditions() {
 
         <section className="space-y-6 text-base leading-7 text-gray-800">
           <p>
-            This website is an online service owned and managed by <strong>Amraj Wellness LLC</strong> ("we", "us", or "AMRAJ"). By accessing or using our website (<strong>www.amraj.in</strong>), you agree to be legally bound by the terms and conditions described in this User Agreement. These terms apply indefinitely and may be revised at any time without prior notice.
+            This website is an online service owned and managed by <strong>Amraj Wellness LLC</strong> (we, us, or AMRAJ). By accessing or using our website (<strong>www.amraj.in</strong>), you agree to be legally bound by the terms and conditions described in this User Agreement. These terms apply indefinitely and may be revised at any time without prior notice.
           </p>
 
           <p>
