@@ -162,10 +162,7 @@ export default function Checkout() {
         })),
         shipping_address: {
           name: form.name,
-          address_1: form.address,
-          city: form.city,
-          state: form.state,
-          postcode: form.pincode,
+          address_1: `${form.address}, ${form.city}, ${form.state} - ${form.pincode}`,
           email: form.email,
           phone: form.phone,
         },
@@ -174,17 +171,7 @@ export default function Checkout() {
           email: form.email,
         },
         status: "pending",
-        notes: form.notes,
-        meta_data: [
-          {
-            key: "whatsapp_number",
-            value: form.whatsapp,
-          },
-          {
-            key: "delivery_charges",
-            value: deliveryCharges.toString(),
-          },
-        ],
+        notes: `${form.notes ? form.notes + '\n\n' : ''}WhatsApp: ${form.whatsapp}\nDelivery Charges: ₹${deliveryCharges}`,
       })) as WooOrder;
     } catch (err) {
       const error = err as Error;
