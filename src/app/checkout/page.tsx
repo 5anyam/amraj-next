@@ -2,6 +2,7 @@
 
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import Header from "../../../components/Header";
 import { useCart } from "../../../lib/cart";
 import { createOrder, updateOrderStatus } from "../../../lib/woocommerceApi";
 import { toast } from "../../../hooks/use-toast";
@@ -212,7 +213,7 @@ export default function Checkout() {
       key: RAZORPAY_KEY_ID,
       amount: Math.round(finalTotal * 100),
       currency: "INR",
-      name: "Amraj Wellness LLP",
+      name: "PlixBlue",
       description: `Order Payment (Order #${wooOrder.id})`,
       handler: async (response) => {
         try {
@@ -241,7 +242,7 @@ export default function Checkout() {
             description: "Thank you for shopping with us. You'll receive updates on WhatsApp.",
           });
           router.push(`/order-confirmation?orderId=${response.razorpay_payment_id}&wcOrderId=${wooOrder.id}`);
-        } catch (error) {
+        } catch {
           toast({
             title: "Payment Successful but Order Update Failed",
             description: "Your payment was processed. We'll contact you shortly.",
@@ -284,6 +285,7 @@ export default function Checkout() {
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-teal-50 to-orange-50">
+        <Header />
         <div className="max-w-lg mx-auto text-center py-24 px-4">
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <div className="text-6xl mb-4">🛒</div>
@@ -303,6 +305,7 @@ export default function Checkout() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 to-orange-50 pb-10">
+      <Header />
       <div className="max-w-2xl mx-auto py-10 px-4">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-teal-600 to-orange-600 bg-clip-text text-transparent mb-2">
@@ -318,17 +321,17 @@ export default function Checkout() {
             {items.map((item) => (
               <div key={item.id} className="flex justify-between items-center py-2 border-b border-gray-100">
                 <div>
-                  <span className="font-medium text-black">{item.name}</span>
+                  <span className="font-medium">{item.name}</span>
                   <span className="text-gray-500 ml-2">x{item.quantity}</span>
                 </div>
-                <span className="font-semibold text-teal-500">₹{(parseFloat(item.price) * item.quantity).toFixed(2)}</span>
+                <span className="font-semibold">₹{(parseFloat(item.price) * item.quantity).toFixed(2)}</span>
               </div>
             ))}
-            <div className="flex justify-between text-black items-center py-2">
+            <div className="flex justify-between items-center py-2">
               <span>Subtotal:</span>
-              <span className="font-semibold text-teal-500">₹{total.toFixed(2)}</span>
+              <span className="font-semibold">₹{total.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between text-black items-center py-2">
+            <div className="flex justify-between items-center py-2">
               <div>
                 <span>Delivery Charges:</span>
                 {total >= 500 && <span className="text-green-600 text-sm ml-1">(Free above ₹500)</span>}
@@ -338,7 +341,7 @@ export default function Checkout() {
               </span>
             </div>
             <div className="flex justify-between items-center py-3 border-t-2 border-teal-100">
-              <span className="text-lg text-black font-bold">Total:</span>
+              <span className="text-lg font-bold">Total:</span>
               <span className="text-xl font-bold text-teal-600">₹{finalTotal.toFixed(2)}</span>
             </div>
           </div>
@@ -354,7 +357,7 @@ export default function Checkout() {
               <input
                 name="name"
                 required
-                className={`w-full p-3 rounded-lg text-black border-2 transition-colors focus:outline-none ${
+                className={`w-full p-3 rounded-lg border-2 transition-colors focus:outline-none ${
                   errors.name 
                     ? 'border-red-300 focus:border-red-500' 
                     : 'border-gray-200 focus:border-teal-500'
@@ -372,7 +375,7 @@ export default function Checkout() {
                 name="email"
                 type="email"
                 required
-                className={`w-full p-3 rounded-lg text-black border-2 transition-colors focus:outline-none ${
+                className={`w-full p-3 rounded-lg border-2 transition-colors focus:outline-none ${
                   errors.email 
                     ? 'border-red-300 focus:border-red-500' 
                     : 'border-gray-200 focus:border-teal-500'
@@ -391,7 +394,7 @@ export default function Checkout() {
                 type="tel"
                 pattern="[0-9]{10}"
                 required
-                className={`w-full p-3 rounded-lg text-black border-2 transition-colors focus:outline-none ${
+                className={`w-full p-3 rounded-lg border-2 transition-colors focus:outline-none ${
                   errors.phone 
                     ? 'border-red-300 focus:border-red-500' 
                     : 'border-gray-200 focus:border-teal-500'
@@ -419,7 +422,7 @@ export default function Checkout() {
                 type="tel"
                 pattern="[0-9]{10}"
                 required
-                className={`w-full p-3 rounded-lg border-2 text-black transition-colors focus:outline-none ${
+                className={`w-full p-3 rounded-lg border-2 transition-colors focus:outline-none ${
                   errors.whatsapp 
                     ? 'border-red-300 focus:border-red-500' 
                     : 'border-gray-200 focus:border-teal-500'
@@ -438,7 +441,7 @@ export default function Checkout() {
               name="address"
               rows={3}
               required
-              className={`w-full p-3 rounded-lg text-black border-2 transition-colors focus:outline-none ${
+              className={`w-full p-3 rounded-lg border-2 transition-colors focus:outline-none ${
                 errors.address 
                   ? 'border-red-300 focus:border-red-500' 
                   : 'border-gray-200 focus:border-teal-500'
@@ -458,7 +461,7 @@ export default function Checkout() {
                 type="text"
                 pattern="[0-9]{6}"
                 required
-                className={`w-full p-3 rounded-lg text-black border-2 transition-colors focus:outline-none ${
+                className={`w-full p-3 rounded-lg border-2 transition-colors focus:outline-none ${
                   errors.pincode 
                     ? 'border-red-300 focus:border-red-500' 
                     : 'border-gray-200 focus:border-teal-500'
@@ -475,7 +478,7 @@ export default function Checkout() {
               <input
                 name="city"
                 required
-                className={`w-full p-3 rounded-lg text-black border-2 transition-colors focus:outline-none ${
+                className={`w-full p-3 rounded-lg border-2 transition-colors focus:outline-none ${
                   errors.city 
                     ? 'border-red-300 focus:border-red-500' 
                     : 'border-gray-200 focus:border-teal-500'
@@ -492,7 +495,7 @@ export default function Checkout() {
               <select
                 name="state"
                 required
-                className={`w-full p-3 rounded-lg text-black border-2 transition-colors focus:outline-none ${
+                className={`w-full p-3 rounded-lg border-2 transition-colors focus:outline-none ${
                   errors.state 
                     ? 'border-red-300 focus:border-red-500' 
                     : 'border-gray-200 focus:border-teal-500'
@@ -541,7 +544,7 @@ export default function Checkout() {
             <textarea
               name="notes"
               rows={2}
-              className="w-full p-3 rounded-lg border-2 text-black border-gray-200 focus:border-teal-500 focus:outline-none transition-colors"
+              className="w-full p-3 rounded-lg border-2 border-gray-200 focus:border-teal-500 focus:outline-none transition-colors"
               placeholder="Any special instructions for delivery"
               value={form.notes}
               onChange={onChange}
