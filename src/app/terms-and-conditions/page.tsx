@@ -14,7 +14,6 @@ export default function TermsAndConditions() {
           <p>
             This website is an online service owned and managed by <strong>Amraj Wellness LLC</strong> (we, us, or AMRAJ). By accessing or using our website (<strong>www.amraj.in</strong>), you agree to be legally bound by the terms and conditions described in this User Agreement. These terms apply indefinitely and may be revised at any time without prior notice.
           </p>
-
           <p>
             By using this site, you confirm that you are of legal age and that you understand and agree to comply with these Terms. If you do not agree to any of the terms, we kindly ask that you discontinue use of the site.
           </p>
