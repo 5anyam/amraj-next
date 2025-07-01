@@ -5,6 +5,7 @@ import CartIcon from "./CartIcon";
 import { useIsMobile } from "../hooks/use-mobile";
 import React, { useState } from "react";
 import { FiSearch } from "react-icons/fi";
+import { HiOutlineMenuAlt3, HiOutlineX } from "react-icons/hi";
 import { useTypewriter } from 'react-simple-typewriter';
 
 const navItems = [
@@ -19,6 +20,7 @@ export default function Header() {
   const isMobile = useIsMobile();
   const [search, setSearch] = useState("");
   const [showMobileSearch, setShowMobileSearch] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
 
   const [text] = useTypewriter({
@@ -34,19 +36,21 @@ export default function Header() {
     if (search.trim()) {
       router.push(`/search?q=${encodeURIComponent(search.trim())}`);
       setSearch("");
-      setShowMobileSearch(false); // Hide input on mobile after submit
+      setShowMobileSearch(false);
     }
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-blue-100 shadow-sm backdrop-blur supports-backdrop-blur:bg-white/80 q transition-colors">
-      <div className="max-w-7xl mx-auto flex items-center justify-between py-3 px-6">
+    <header className="sticky top-0 z-50 bg-white border-b border-blue-100 shadow-sm backdrop-blur supports-backdrop-blur:bg-white/80 transition-colors">
+      <div className="max-w-7xl mx-auto flex items-center justify-between py-3 px-6 relative">
         {/* Left: Logo and Nav */}
-        <div className="flex items-center justify-center">
+        <div className="flex items-center">
           <Link href="/" className="flex items-center gap-2">
-            <img className='h-12 md-16' src="/amraj-logo.jpg" alt='amraj logo' height={100}/>
-            <span className="pl-0 text-black">AMRAJ</span>
+            <img className='h-12 md:h-16' src="/amraj-logo.jpg" alt='amraj logo' />
+            <span className="text-black font-bold">AMRAJ</span>
           </Link>
+
+          {/* Desktop Nav */}
           {!isMobile && (
             <nav className="ml-8 flex gap-6">
               {navItems.map((item) => (
@@ -65,7 +69,7 @@ export default function Header() {
           )}
         </div>
 
-        {/* Right: Cart + Search */}
+        {/* Right: Search + Cart + Hamburger */}
         <div className="flex items-center gap-2">
           {/* Desktop Search */}
           {!isMobile && (
@@ -117,7 +121,38 @@ export default function Header() {
           )}
 
           <CartIcon />
+
+          {/* Mobile Hamburger */}
+          {isMobile && (
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="ml-2 text-3xl text-black"
+            >
+              {mobileMenuOpen ? <HiOutlineX /> : <HiOutlineMenuAlt3 />}
+            </button>
+          )}
         </div>
+
+        {/* Mobile Menu Dropdown */}
+        {isMobile && mobileMenuOpen && (
+          <div className="absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-200 z-40">
+            <nav className="flex flex-col p-4 space-y-2">
+              {navItems.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.to}
+                  className={`font-medium text-lg px-2 py-2 rounded transition-colors ${location === item.to
+                    ? "text-green-600"
+                    : "text-gray-800 hover:text-green-600"
+                  }`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        )}
       </div>
     </header>
   );
