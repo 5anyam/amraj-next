@@ -46,7 +46,7 @@ export default function AboutUsSection() {
     }
   ];
 
-  const FeatureCard = ({ item, index, isHovered, onHover, onLeave }) => (
+  const FeatureCard = ({ item, isHovered, onHover, onLeave }) => (
     <div 
       className={`group relative bg-white/80 backdrop-blur-sm rounded-3xl p-6 lg:p-8 transition-all duration-500 cursor-pointer
         ${isHovered ? 'scale-105 shadow-2xl' : 'hover:scale-102 shadow-lg hover:shadow-xl'}

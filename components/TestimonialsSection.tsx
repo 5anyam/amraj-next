@@ -113,7 +113,7 @@ const TestimonialsCarousel = () => {
                     <StarRating rating={testimonial.rating} />
 
                     <blockquote className="text-gray-700 text-xl md:text-2xl leading-relaxed mb-6 font-medium italic max-w-2xl">
-                      "{testimonial.quote}"
+                      {testimonial.quote}
                     </blockquote>
 
                     <div className="flex items-center">
