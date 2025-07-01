@@ -69,7 +69,7 @@ export default function Header() {
           )}
         </div>
 
-        {/* Right: Search + Cart + Hamburger */}
+        {/* Right Side */}
         <div className="flex items-center gap-2">
           {/* Desktop Search */}
           {!isMobile && (
@@ -125,35 +125,56 @@ export default function Header() {
           {/* Mobile Hamburger */}
           {isMobile && (
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              onClick={() => setMobileMenuOpen(true)}
               className="ml-2 text-3xl text-black"
             >
-              {mobileMenuOpen ? <HiOutlineX /> : <HiOutlineMenuAlt3 />}
+              <HiOutlineMenuAlt3 />
             </button>
           )}
         </div>
 
-        {/* Mobile Menu Dropdown */}
+        {/* Mobile Slide-in Drawer */}
         {isMobile && mobileMenuOpen && (
-          <div className="absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-200 z-40">
-            <nav className="flex flex-col p-4 space-y-2">
-              {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.to}
-                  className={`font-medium text-lg px-2 py-2 rounded transition-colors ${location === item.to
-                    ? "text-green-600"
-                    : "text-gray-800 hover:text-green-600"
-                  }`}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {item.name}
-                </Link>
-              ))}
-            </nav>
-          </div>
-        )}
+  <>
+    {/* Overlay wrapper with very high z-index */}
+    <div className="fixed inset-0 z-[9999]">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/40"
+        onClick={() => setMobileMenuOpen(false)}
+      />
+
+      {/* Drawer */}
+      <div className="absolute top-0 right-0 h-full w-9 bg-white shadow-xl z-[9999] transform transition-transform duration-300 ease-in-out translate-x-0">
+        <div className="flex items-center justify-between px-4 py-4 border-b">
+          <span className="text-lg font-bold text-green-700">Menu</span>
+          <button
+            onClick={() => setMobileMenuOpen(false)}
+            className="text-2xl text-black"
+          >
+            <HiOutlineX />
+          </button>
+        </div>
+        <nav className="flex flex-col p-4 bg-white space-y-4">
+          {navItems.map((item) => (
+            <Link
+              key={item.name}
+              href={item.to}
+              className={`font-medium text-lg px-2 bg-white py-2 rounded transition-colors ${location === item.to
+                ? "text-green-600"
+                : "text-gray-800 hover:text-green-600"
+              }`}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {item.name}
+            </Link>
+          ))}
+        </nav>
       </div>
+    </div>
+  </>
+)}
+     </div>
     </header>
   );
 }
