@@ -41,7 +41,7 @@ const TestimonialsCarousel = () => {
     dotsClass: 'slick-dots custom-dots',
   };
 
-  const StarRating = ({ rating }) => {
+  const StarRating = ({ rating }: { rating: number }) => {
     return (
       <div className="flex justify-center mb-4">
         {[...Array(5)].map((_, i) => (
