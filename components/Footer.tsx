@@ -62,10 +62,10 @@ export default function Footer() {
                 <Link href="/privacy-policy" className="text-white hover:underline block mb-3 transition duration-200">Privacy Policy</Link>
               </li>
               <li>
-                <Link href="/disclaimer" className="text-white hover:underline block mb-3 transition duration-200">Disclaimer</Link>
+                <Link href="/terms-and-conditions" className="text-white hover:underline block mb-3 transition duration-200">Terms and Conditions</Link>
               </li>
               <li>
-                <Link href="/return-policy" className="text-white hover:underline block mb-3 transition duration-200">Return Policies</Link>
+                <Link href="/returns-and-refunds-policy" className="text-white hover:underline block mb-3 transition duration-200">Return and Refund Policies</Link>
               </li>
               <li>
                 <Link href="/shipping" className="text-white hover:underline block mb-3 transition duration-200">Shipping</Link>
