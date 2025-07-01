@@ -35,16 +35,46 @@ export default function Homepage() {
       <section className="relative max-w-6xl mx-auto py-14 px-4">
         <AnimatedBackground/>
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-orange-100/10 via-teal-300/5 to-white pointer-events-none" />
+      
+      {/* Bouncing Background Elements */}
+      <div 
+        className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-orange-400 to-pink-400 rounded-full blur-3xl opacity-20 animate-bounce" 
+        style={{ animationDuration: '4s', animationDelay: '0s' }} 
+      />
+      <div 
+        className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-teal-400 to-blue-400 rounded-full blur-3xl opacity-15 animate-bounce" 
+        style={{ animationDuration: '6s', animationDelay: '1s' }} 
+      />
+      <div 
+        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full blur-3xl opacity-10 animate-bounce" 
+        style={{ animationDuration: '5s', animationDelay: '2s' }} 
+      />
+      <div 
+        className="absolute top-40 right-1/4 w-48 h-48 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-full blur-3xl opacity-12 animate-bounce" 
+        style={{ animationDuration: '7s', animationDelay: '3s' }} 
+      />
+      <div 
+        className="absolute bottom-40 left-1/4 w-56 h-56 bg-gradient-to-r from-rose-400 to-orange-400 rounded-full blur-3xl opacity-18 animate-bounce" 
+        style={{ animationDuration: '8s', animationDelay: '0.5s' }} 
+      />
+      
+      {/* Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-xl md:text-4xl font-playfair text-orange-500 mb-6 text-center animate-fade-in">
           Discover Our <span className="text-teal-500 italic">New Products</span>
         </h2>
         <p className="text-center text-black text-lg mb-10 max-w-xl mx-auto animate-fade-in">
           Shop our most-loved wellness essentials trusted by thousands.
         </p>
+        
         {isLoading ? (
-          <div className="text-center text-orange-500 animate-pulse">Loading products...</div>
+          <div className="text-center text-orange-500 animate-pulse">
+            Loading products...
+          </div>
         ) : error ? (
-          <div className="text-center text-red-600">Failed to load products.</div>
+          <div className="text-center text-red-600">
+            Failed to load products.
+          </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 relative z-10">
             {data?.slice(0, 4).map((prod) => (
@@ -52,6 +82,7 @@ export default function Homepage() {
             ))}
           </div>
         )}
+      </div>
       </section>
       <AboutUsSection/>
       <Testimonials />
