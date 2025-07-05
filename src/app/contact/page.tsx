@@ -12,7 +12,7 @@ export default function ContactPage() {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -20,7 +20,7 @@ export default function ContactPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     // Handle form submission logic here
     setIsSubmitted(true);
