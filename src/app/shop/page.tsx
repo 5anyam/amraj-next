@@ -1,6 +1,6 @@
 
 import { fetchProducts } from "../../../lib/woocommerceApi";
-import ShopPageClient from "./ShopPageClient";
+import ShopPageClient from "./shopPageClient";
 
 export const dynamic = "force-dynamic";
 
