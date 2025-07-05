@@ -1,4 +1,3 @@
-"use client"
 import React, { useState } from 'react';
 import { Leaf, Shield, Users, Award, ChevronRight, X } from 'lucide-react';
 
@@ -45,7 +44,7 @@ function ConsultationModal() {
               />
               <textarea
                 placeholder="Tell us about your health goals..."
-                rows="4"
+                rows={4}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
               ></textarea>
               <button
