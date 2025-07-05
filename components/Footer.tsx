@@ -3,7 +3,7 @@ import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn, FaYoutube } from "re
 
 export default function Footer() {
   return (
-    <footer className="bg-green-600 text-white pt-12 pb-8 transition-colors">
+    <footer className="bg-teal-500 text-white pt-12 pb-8 transition-colors">
       <div className="max-w-7xl mx-auto px-4">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
@@ -89,10 +89,10 @@ export default function Footer() {
       </div>
 
       {/* Footer Bottom */}
-      <div className="bg-white flex flex-col sm:flex-row justify-between items-center border-t mt-8 p-4 text-green-600 text-center text-sm gap-4 sm:gap-0">
+      <div className="bg-white flex flex-col sm:flex-row justify-between items-center border-t mt-8 p-4 text-gray-700 text-center text-sm gap-4 sm:gap-0">
         <div>
           © {new Date().getFullYear()} Amraj Wellness LLP. All rights reserved. Developed By{" "}
-          <span className="text-green-700 font-bold">
+          <span className="text-black font-bold">
             <Link href="https://www.proshala.com">Proshala Tech</Link>
           </span>
         </div>

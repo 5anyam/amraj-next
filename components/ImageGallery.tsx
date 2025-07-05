@@ -77,7 +77,7 @@ export default function ImageGallery({ images }: { images: Image[] }) {
 
   return (
     <>
-      <div className="w-full max-w-5xl mx-auto p-4" ref={galleryRef}>
+      <div className="w-full max-w-5xl mx-auto p-0 mb-4 lg:p-4" ref={galleryRef}>
         {/* Main Image Container */}
         <div className="relative group">
           <div
