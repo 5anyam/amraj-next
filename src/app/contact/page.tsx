@@ -172,7 +172,7 @@ export default function ContactPage() {
                 name="message"
                 value={formData.message}
                 onChange={handleInputChange}
-                rows="5"
+                rows={5}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 placeholder="Tell us about your wellness goals or any questions you have..."
               ></textarea>
