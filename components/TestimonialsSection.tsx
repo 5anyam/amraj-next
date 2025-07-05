@@ -119,7 +119,7 @@ const TestimonialsCarousel = () => {
                 <div className={`relative ${testimonial.bgColor} rounded-3xl shadow-lg hover:shadow-xl transition-all duration-500 p-8 mx-2 group min-h-96`}>
                   
                   {/* Quote mark */}
-                  <div className="text-white/30 text-6xl font-bold mb-4 leading-none">"</div>
+                  <div className="text-white/30 text-6xl font-bold mb-4 leading-none">&quot;</div>
                   
                   {/* Profile Image */}
                   <div className="flex justify-center mb-6">
