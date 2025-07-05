@@ -1,7 +1,8 @@
+"use client"
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import { WordPressAuth, WordPressUser } from '../utils/wordpress-auth';
+import { WordPressAuth, WordPressUser } from '../../../lib/wordpress-auth';
 
 interface CustomerOrder {
   id: number;
