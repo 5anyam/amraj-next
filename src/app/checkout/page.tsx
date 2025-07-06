@@ -6,7 +6,7 @@ import { useCart } from "../../../lib/cart";
 import { createOrder, updateOrderStatus } from "../../../lib/woocommerceApi";
 import { toast } from "../../../hooks/use-toast";
 
-const RAZORPAY_KEY_ID = "rzp_live_BuTLIdi7g6nzab";
+const RAZORPAY_KEY_ID = "rzp_live_tGuZwArSWs7HdE";
 
 interface FormData {
   name: string;
