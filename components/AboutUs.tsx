@@ -116,13 +116,13 @@ export default function AboutUsSection() {
           </h2>
           <p className="text-xl text-gray-700 max-w-4xl mx-auto mb-12 leading-relaxed">
             At <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500">Amraj</span>, 
-            we create an innovative fusion of modern nutraceuticals and ancient herbal wisdom. 
+            we create an innovative fusion of <span className='font-bold'> modern nutraceuticals and ancient herbal wisdom. </span>
             Our mission is to help you lead a naturally healthier life using ingredients you can trust and results you can feel.
           </p>
           <div className="flex flex-wrap justify-center gap-4 mb-16">
             {['🌿 100% Natural', '🔬 Clinically Tested', '✨ GMP Certified'].map((label, idx) => (
               <div key={idx} className="bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30">
-                <span className="text-sm font-semibold text-gray-700">{label}</span>
+                <span className="text-xl font-semibold text-gray-700">{label}</span>
               </div>
             ))}
           </div>

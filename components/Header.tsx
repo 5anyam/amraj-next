@@ -47,7 +47,7 @@ export default function Header() {
         <div className="flex items-center">
           <Link href="/" className="flex items-center gap-2">
             <img className='h-12 md:h-16' src="/amraj-logo.jpg" alt='amraj logo' />
-            <img className='h-6 md:h-8' src="/amraj-font.jpg" alt='amraj text' />
+            <h1 className="font-f text-base tracking-wide">AMRAJ</h1>
           </Link>
 
           {/* Desktop Nav */}

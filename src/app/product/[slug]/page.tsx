@@ -137,9 +137,9 @@ export default function ProductPage() {
             {/* Short description */}
             {product.short_description && (
               <div
-                className="prose max-w-none pb-4 text-gray-700 text-sm leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: product.short_description }}
-              />
+              className="prose prose-sm max-w-none text-gray-700 leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: product.short_description }}
+            />
             )}
 
           <div className="bg-white block lg:hidden rounded-3xl shadow-xl border border-gray-100 hover:shadow-2xl transition-shadow duration-300">          

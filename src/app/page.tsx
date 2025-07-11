@@ -61,7 +61,7 @@ export default function Homepage() {
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-xl md:text-3xl font-playfair text-orange-500 mb-3 text-center animate-fade-in">
-          Discover Our New Products
+          Best Sellers
         </h2>
         <p className="text-center text-black text-lg mb-10 max-w-xl mx-auto animate-fade-in">
           Shop our most-loved wellness essentials trusted by thousands.

@@ -86,39 +86,51 @@ export default function ProductCard({ product }: { product: Product }) {
           )}
 
           {/* Product Name */}
-          <h3 className="text-sm sm:text-lg font-bold text-black line-clamp-2 leading-tight group-hover:text-teal-700 transition-colors duration-200 flex-shrink-0">
-            {product.name}
-          </h3>
+<h3 className="text-sm sm:text-lg font-bold text-black line-clamp-2 leading-tight group-hover:text-teal-700 transition-colors duration-200 flex-shrink-0">
+  {product.name}
+</h3>
 
-          {/* Rating */}
-          {Number.isFinite(rating) && rating > 0 && (
-            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-              <div className="flex items-center gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <svg
-                    key={i}
-                    className={`w-3 h-3 sm:w-4 sm:h-4 ${
-                      i < Math.round(rating)
-                        ? "text-orange-400"
-                        : "text-gray-200"
-                    }`}
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.518 4.674h4.92c.969 0 1.371 1.24.588 1.81l-3.977 2.89 1.518 4.674c.3.921-.755 1.688-1.54 1.118L10 15.347l-3.977 2.89c-.784.57-1.838-.197-1.539-1.118l1.518-4.674-3.977-2.89c-.784-.57-.38-1.81.588-1.81h4.92l1.518-4.674z" />
-                  </svg>
-                ))}
-              </div>
-              <span className="text-xs sm:text-sm font-medium text-orange-500">
-                {rating.toFixed(1)}
-              </span>
-              {product.rating_count && (
-                <span className="text-xs text-gray-400 hidden sm:inline">
-                  ({product.rating_count})
-                </span>
-              )}
-            </div>
-          )}
+{/* Doctor Recommended */}
+<div className="inline-flex items-center gap-1 text-xs font-medium text-indigo-700 bg-indigo-50 px-2 py-1 rounded-full border border-indigo-100 self-start">
+  <svg className="w-3 h-3 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+    <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 11h-2v-1H8a1 1 0 010-2h1V9H8a1 1 0 010-2h1V6h2v1h1a1 1 0 010 2h-1v1h1a1 1 0 010 2h-1v1z" />
+  </svg>
+  Doctor Recommended
+</div>
+
+{/* Rating */}
+{Number.isFinite(rating) && rating > 0 && (
+  <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+    <div className="flex items-center gap-0.5">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <svg
+          key={i}
+          className={`w-3 h-3 sm:w-4 sm:h-4 ${
+            i < Math.round(rating) ? "text-orange-400" : "text-gray-200"
+          }`}
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.518 4.674h4.92c.969 0 1.371 1.24.588 1.81l-3.977 2.89 1.518 4.674c.3.921-.755 1.688-1.54 1.118L10 15.347l-3.977 2.89c-.784.57-1.838-.197-1.539-1.118l1.518-4.674-3.977-2.89c-.784-.57-.38-1.81.588-1.81h4.92l1.518-4.674z" />
+        </svg>
+      ))}
+    </div>
+    <span className="text-xs sm:text-sm font-medium text-orange-500">
+      {rating.toFixed(1)}
+    </span>
+    {product.rating_count && (
+      <span className="text-xs text-gray-400 hidden sm:inline">
+        ({product.rating_count})
+      </span>
+    )}
+  </div>
+)}
+
+{/* Bought Count */}
+<div className="text-xs text-gray-500">
+  10,000+ bought
+</div>
+
 
           {/* Price Section */}
           <div className="flex items-center justify-between flex-shrink-0">
@@ -141,8 +153,10 @@ export default function ProductCard({ product }: { product: Product }) {
 
           {/* Description */}
           <p className="text-xs sm:text-sm text-black line-clamp-2 leading-relaxed opacity-80 flex-1">
-            {product.short_description?.replace(/<[^>]+>/g, "")}
-          </p>
+              {product.short_description
+                ?.replace(/<[^>]+>/g, "")
+                .slice(0, 85)}{/* Limit to 120 characters */}
+            </p>
 
           {/* Add to Cart Button - Always visible on mobile, hover on desktop */}
           <div className="pt-2 opacity-100 transition-all duration-200 transform translate-y-0 flex-shrink-0">
