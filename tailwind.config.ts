@@ -6,6 +6,9 @@ module.exports = {
     ],
     theme: {
       extend: {
+        backgroundImage: {
+          'product': "url('/product-bg.jpg')", // 👈 replace with your actual image path
+        },
         fontFamily: {
           f: ['Fredoka', 'sans-serif'], // <== now you can use 'font-f'
         },

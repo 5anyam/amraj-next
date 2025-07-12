@@ -133,6 +133,22 @@ export default function ProductPage() {
             <h1 className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-teal-600 to-teal-800 bg-clip-text text-transparent mb-4 leading-tight">
               {product.name}
             </h1>
+            <div className="flex justify-start gap-1 sm:gap-2 mb-2 px-2 overflow-x-auto scrollbar-hide">
+  {[
+    { label: '🌿 100% Natural', color: 'bg-teal-500/80' },
+    { label: '🔬 Clinically Tested', color: 'bg-orange-500/80' },
+    { label: '✨ GMP Certified', color: 'bg-yellow-500/80' }
+  ].map((item, idx) => (
+    <div 
+      key={idx} 
+      className={`${item.color} px-2 py-1.5 sm:px-2 sm:py-1 rounded-full shadow-md transform hover:scale-105 transition-all duration-300 flex-shrink-0 backdrop-blur-sm`}
+    >
+      <span className="text-xs sm:text-sm font-medium text-white whitespace-nowrap">
+        {item.label}
+      </span>
+    </div>
+  ))}
+</div>
 
             {/* Short description */}
             {product.short_description && (
@@ -243,7 +259,7 @@ export default function ProductPage() {
       </div>
 
       {/* Extra "Add to Cart" button - Only on Mobile */}
-      <div className="lg:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-3">
+      <div className="lg:hidden fixed bottom-0 z-10 left-0 w-full bg-white border-t border-gray-200 p-3">
         <button
           className="w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold px-6 py-3 rounded-2xl text-sm shadow-xl hover:shadow-2xl"
           onClick={() => {

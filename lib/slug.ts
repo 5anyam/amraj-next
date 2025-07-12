@@ -1,28 +1,31 @@
+// lib/slug.ts
 
 /**
- * Utility functions for creating and handling product slugs in SEO URLs.
+ * Utility functions for handling product slugs directly from WordPress backend.
  */
-export function productToSlug(product: { name: string }) {
-  return product.name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
 
-// lib/slug.ts
 import { Product } from "./types";
 
+/**
+ * Returns the slug from the product directly (from WordPress).
+ * This is mostly redundant if you're already using product.slug everywhere.
+ */
+export function productToSlug(product: Product): string {
+  return product.slug;
+}
+
+/**
+ * Finds a product by its slug (WordPress slug) from the list of products.
+ * Slug comparison is case-insensitive.
+ */
 export function findProductBySlug(products: Product[], slug: string): Product | undefined {
-  return products.find((p) =>
-    p.name.toLowerCase().replace(/\s+/g, "-") === slug.toLowerCase()
-  );
+  return products.find((product) => product.slug.toLowerCase() === slug.toLowerCase());
 }
 
-
-// Returns the slug directly from the url param
-export function getProductSlugFromParam(slug: string | undefined) {
-  if (!slug) return null;
-  return slug;
+/**
+ * Gets the product slug from the URL param.
+ * Returns null if slug is undefined.
+ */
+export function getProductSlugFromParam(slug: string | undefined): string | null {
+  return slug ?? null;
 }
-
-
