@@ -15,7 +15,7 @@ interface Product {
 }
 
 export default function ProductCard({ product }: { product: Product }) {
-  const productUrl = `/product/${productToSlug(product)}`;
+  const productUrl = `/product/${productToSlug}`;
   const rating = Number(product.average_rating);
   const salePrice = Number(product.price);
   const originalPrice = Number(product.regular_price);
