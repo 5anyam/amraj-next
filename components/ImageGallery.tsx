@@ -81,32 +81,86 @@ export default function ImageGallery({ images }: { images: Image[] }) {
         {/* Main Image Container */}
         <div className="relative group">
           <div
-            className="relative rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200/50"
+            className="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-200/50 h-[500px]"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
+            {/* Fixed Beautiful Background - WordPress Style */}
+            <div className="absolute inset-0 bg-gradient-to-br from-teal-50 via-cyan-50 to-blue-50">
+              {/* WordPress-style Background Image */}
+              <div className="absolute inset-0 opacity-20">
+                <div 
+                  className="w-full h-full bg-cover bg-center bg-no-repeat"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2314b8a6' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3Ccircle cx='10' cy='10' r='1'/%3E%3Ccircle cx='50' cy='50' r='1'/%3E%3Ccircle cx='10' cy='50' r='1'/%3E%3Ccircle cx='50' cy='10' r='1'/%3E%3Cpath d='M30 15 L45 30 L30 45 L15 30 Z' fill='%2314b8a6' fill-opacity='0.05'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+                  }}
+                ></div>
+              </div>
+
+              {/* Animated Background Elements */}
+              <div className="absolute inset-0">
+                {/* Floating Teal Circles */}
+                <div className="absolute top-20 left-20 w-32 h-32 bg-gradient-to-br from-teal-100/40 to-cyan-100/40 rounded-full blur-xl animate-pulse"></div>
+                <div className="absolute top-40 right-32 w-24 h-24 bg-gradient-to-br from-cyan-100/40 to-blue-100/40 rounded-full blur-xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+                <div className="absolute bottom-32 left-32 w-20 h-20 bg-gradient-to-br from-emerald-100/40 to-teal-100/40 rounded-full blur-xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+                <div className="absolute bottom-20 right-20 w-28 h-28 bg-gradient-to-br from-teal-100/40 to-cyan-100/40 rounded-full blur-xl animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+                
+                {/* Geometric Shapes */}
+                <div className="absolute top-32 right-16 w-16 h-16 bg-teal-200/20 rotate-45 rounded-lg animate-pulse" style={{ animationDelay: '1.5s' }}></div>
+                <div className="absolute bottom-40 left-16 w-12 h-12 bg-cyan-200/20 rotate-12 rounded-lg animate-pulse" style={{ animationDelay: '2.5s' }}></div>
+                
+                {/* Teal Mesh Background */}
+                <div className="absolute inset-0 opacity-10">
+                  <div className="w-full h-full bg-[linear-gradient(rgba(20,184,166,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(20,184,166,0.1)_1px,transparent_1px)] bg-[size:30px_30px]"></div>
+                </div>
+                
+                {/* Radial Gradient Overlays */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(20,184,166,0.08),transparent_70%)]"></div>
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_60%,rgba(6,182,212,0.08),transparent_70%)]"></div>
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_80%,rgba(16,185,129,0.06),transparent_70%)]"></div>
+              </div>
+            </div>
+
             {/* Loading State */}
             {isLoading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-gray-100 animate-pulse">
-                <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+              <div className="absolute inset-0 flex items-center justify-center z-20">
+                <div className="relative">
+                  <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
+                  <div className="absolute inset-0 w-12 h-12 border-4 border-transparent border-r-purple-400 rounded-full animate-spin animate-reverse"></div>
+                </div>
               </div>
             )}
             
-            {/* Main Image */}
-            <div className="relative overflow-hidden">
-              <img
-                src={displayImages[active].src}
-                alt={displayImages[active].alt || `Product image ${active + 1}`}
-                className={`w-full h-[500px] object-cover transition-all duration-700 ${
-                  isZoomed ? 'scale-150 cursor-zoom-out' : 'cursor-zoom-in hover:scale-105'
-                } ${isLoading ? 'opacity-0' : 'opacity-100'}`}
-                onClick={() => setIsZoomed(!isZoomed)}
-                onLoad={() => setIsLoading(false)}
-              />
-              
-              {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            {/* Sliding Images Container */}
+            <div className="relative w-full h-full flex items-center justify-center">
+              {displayImages.map((img, i) => (
+                <div
+                  key={i}
+                  className={`absolute inset-0 flex items-center justify-center transition-all duration-700 ease-in-out ${
+                    i === active 
+                      ? 'opacity-100 translate-x-0 scale-100 z-10' 
+                      : i < active 
+                        ? 'opacity-0 -translate-x-full scale-95 z-0' 
+                        : 'opacity-0 translate-x-full scale-95 z-0'
+                  }`}
+                >
+                  <img
+                    src={img.src}
+                    alt={img.alt || `Product image ${i + 1}`}
+                    className={`max-w-full max-h-full object-contain transition-all duration-700 ${
+                      isZoomed && i === active ? 'scale-150 cursor-zoom-out' : 'cursor-zoom-in hover:scale-105'
+                    }`}
+                    onClick={() => i === active && setIsZoomed(!isZoomed)}
+                    onLoad={() => i === active && setIsLoading(false)}
+                    style={{
+                      filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.15)) drop-shadow(0 10px 20px rgba(0,0,0,0.1))',
+                      maxHeight: '400px',
+                      maxWidth: '90%'
+                    }}
+                  />
+                </div>
+              ))}
             </div>
 
             {/* Navigation Arrows */}
@@ -114,14 +168,14 @@ export default function ImageGallery({ images }: { images: Image[] }) {
               <>
                 <button
                   onClick={handlePrevious}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 border border-gray-200/50 z-30"
                   aria-label="Previous image"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
                 <button
                   onClick={handleNext}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 border border-gray-200/50 z-30"
                   aria-label="Next image"
                 >
                   <ChevronRight className="w-5 h-5" />
@@ -130,17 +184,17 @@ export default function ImageGallery({ images }: { images: Image[] }) {
             )}
 
             {/* Action Buttons */}
-            <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
               <button
                 onClick={() => setIsZoomed(!isZoomed)}
-                className="bg-white/90 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg backdrop-blur-sm hover:scale-110 transition-all duration-200"
+                className="bg-white/90 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg backdrop-blur-sm hover:scale-110 transition-all duration-200 border border-gray-200/50"
                 aria-label={isZoomed ? "Zoom out" : "Zoom in"}
               >
                 <ZoomIn className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setIsFullscreen(true)}
-                className="bg-white/90 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg backdrop-blur-sm hover:scale-110 transition-all duration-200"
+                className="bg-white/90 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg backdrop-blur-sm hover:scale-110 transition-all duration-200 border border-gray-200/50"
                 aria-label="View fullscreen"
               >
                 <Maximize2 className="w-4 h-4" />
@@ -149,7 +203,7 @@ export default function ImageGallery({ images }: { images: Image[] }) {
 
             {/* Image Counter */}
             {displayImages.length > 1 && (
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm border border-white/20 z-30">
                 {active + 1} / {displayImages.length}
               </div>
             )}
@@ -166,21 +220,21 @@ export default function ImageGallery({ images }: { images: Image[] }) {
                   onClick={() => setActive(i)}
                   className={`flex-shrink-0 relative group/thumb transition-all duration-300 ${
                     i === active 
-                      ? "ring-3 ring-blue-500 ring-offset-2 scale-105" 
+                      ? "ring-3 ring-blue-500 ring-offset-2 scale-105 shadow-lg" 
                       : "ring-2 ring-transparent hover:ring-gray-300 opacity-70 hover:opacity-100 hover:scale-105"
                   }`}
                   aria-label={`View image ${i + 1}`}
                 >
-                  <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100">
+                  <div className="w-20 h-20 rounded-xl overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200/50">
                     <img
                       src={img.src}
                       alt={img.alt || `Thumbnail ${i + 1}`}
-                      className="object-cover w-full h-full transition-transform duration-300 group-hover/thumb:scale-110"
+                      className="object-contain w-full h-full transition-transform duration-300 group-hover/thumb:scale-110 drop-shadow-md"
                       loading="lazy"
                     />
                   </div>
                   {i === active && (
-                    <div className="absolute inset-0 bg-blue-500/20 rounded-xl"></div>
+                    <div className="absolute inset-0 bg-blue-500/20 rounded-xl border-2 border-blue-500/50"></div>
                   )}
                 </button>
               ))}
@@ -195,8 +249,8 @@ export default function ImageGallery({ images }: { images: Image[] }) {
               <button
                 key={i}
                 onClick={() => setActive(i)}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  i === active ? "bg-blue-500 w-8" : "bg-gray-300 hover:bg-gray-400"
+                className={`w-2 h-2 rounded-full transition-all duration-300 shadow-sm ${
+                  i === active ? "bg-blue-500 w-8 shadow-blue-500/50" : "bg-gray-300 hover:bg-gray-400"
                 }`}
                 aria-label={`Go to image ${i + 1}`}
               />
@@ -211,31 +265,33 @@ export default function ImageGallery({ images }: { images: Image[] }) {
           <div className="relative max-w-7xl max-h-full">
             <button
               onClick={() => setIsFullscreen(false)}
-              className="absolute -top-12 right-0 text-white hover:text-gray-300 p-2 z-10"
+              className="absolute -top-12 right-0 text-white hover:text-gray-300 p-2 z-10 rounded-full hover:bg-white/10 transition-all duration-200"
               aria-label="Close fullscreen"
             >
               <X className="w-8 h-8" />
             </button>
             
-            <img
-              src={displayImages[active].src}
-              alt={displayImages[active].alt || `Product image ${active + 1}`}
-              className="max-w-full max-h-[90vh] object-contain rounded-lg"
-            />
+            <div className="relative">
+              <img
+                src={displayImages[active].src}
+                alt={displayImages[active].alt || `Product image ${active + 1}`}
+                className="max-w-full max-h-[90vh] object-contain rounded-lg drop-shadow-2xl"
+              />
+            </div>
             
             {/* Fullscreen Navigation */}
             {displayImages.length > 1 && (
               <>
                 <button
                   onClick={handlePrevious}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 p-3 rounded-full bg-black/50 hover:bg-black/70 transition-all duration-200"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 p-3 rounded-full bg-black/50 hover:bg-black/70 transition-all duration-200 border border-white/20"
                   aria-label="Previous image"
                 >
                   <ChevronLeft className="w-6 h-6" />
                 </button>
                 <button
                   onClick={handleNext}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 p-3 rounded-full bg-black/50 hover:bg-black/70 transition-all duration-200"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 p-3 rounded-full bg-black/50 hover:bg-black/70 transition-all duration-200 border border-white/20"
                   aria-label="Next image"
                 >
                   <ChevronRight className="w-6 h-6" />
@@ -244,7 +300,7 @@ export default function ImageGallery({ images }: { images: Image[] }) {
             )}
             
             {/* Fullscreen Counter */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white bg-black/50 px-4 py-2 rounded-full">
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white bg-black/50 px-4 py-2 rounded-full border border-white/20">
               {active + 1} / {displayImages.length}
             </div>
           </div>
