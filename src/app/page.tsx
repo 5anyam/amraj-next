@@ -12,6 +12,7 @@ import AboutUsSection from "../../components/AboutUs";
 export interface Product {
   id: number;
   name: string;
+  slug: string;
   price: string;
   description?: string;
   short_description?: string;

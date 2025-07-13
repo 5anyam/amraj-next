@@ -8,6 +8,9 @@ interface ShopPageClientProps {
   products: Product[];
 }
 
+// Extend the Product type to include slug for ProductCard
+type ProductWithSlug = Product & { slug: string };
+
 export default function ShopPageClient({ products }: ShopPageClientProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -257,7 +260,12 @@ export default function ShopPageClient({ products }: ShopPageClientProps) {
                     className="bg-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 overflow-hidden border border-gray-100"
                   >
                     <div className="p-4">
-                      <ProductCard product={product} />
+                      <ProductCard 
+                        product={{
+                          ...product,
+                          slug: product.slug || `product-${product.id}`
+                        } as ProductWithSlug} 
+                      />
                     </div>
                     <div className="px-4 pb-4">
                       <div className="flex items-center justify-between">
