@@ -3,6 +3,7 @@ import { productToSlug } from "../lib/slug";
 
 interface Product {
   id: number | string;
+  slug: string;
   name: string;
   price: string | number; // Sale price
   regular_price?: string | number; // Original price

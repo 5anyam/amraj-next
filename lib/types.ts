@@ -10,7 +10,7 @@ export interface ImageData {
   export interface Product {
     id: number | string;
   name: string;
-  slug?: string;
+  slug: string;
   price: string | number; // Sale price
   regular_price?: string | number; // Original price
   images?: { src: string }[];
