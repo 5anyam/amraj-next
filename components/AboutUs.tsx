@@ -16,13 +16,14 @@ type FeatureCardProps = {
   isHovered: boolean;
   onHover: () => void;
   onLeave: () => void;
+  className?: string;
 };
 
-const FeatureCard = ({ item, isHovered, onHover, onLeave }: FeatureCardProps) => (
+const FeatureCard = ({ item, isHovered, onHover, onLeave, className = "" }: FeatureCardProps) => (
   <div 
     className={`group relative bg-white/80 backdrop-blur-sm rounded-3xl p-6 lg:p-8 transition-all duration-500 cursor-pointer
       ${isHovered ? 'scale-105 shadow-2xl' : 'hover:scale-102 shadow-lg hover:shadow-xl'}
-      border border-white/20`}
+      border border-white/20 ${className}`}
     onMouseEnter={onHover}
     onMouseLeave={onLeave}
     style={{
@@ -128,7 +129,7 @@ export default function AboutUsSection() {
           </div>
         </div>
 
-        {/* Features */}
+        {/* Features - Mobile optimized grid */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-24">
           {features.map((item, index) => (
             <FeatureCard 
@@ -137,6 +138,7 @@ export default function AboutUsSection() {
               isHovered={hoveredCard === `feature-${index}`}
               onHover={() => setHoveredCard(`feature-${index}`)}
               onLeave={() => setHoveredCard(null)}
+              className={index === 2 ? "col-span-2 lg:col-span-1 max-w-md mx-auto lg:max-w-none" : ""}
             />
           ))}
         </div>
@@ -157,6 +159,7 @@ export default function AboutUsSection() {
           </p>
         </div>
 
+        {/* Trust Factors - Mobile optimized grid */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {trustFactors.map((item, index) => (
             <FeatureCard 
@@ -165,6 +168,7 @@ export default function AboutUsSection() {
               isHovered={hoveredCard === `trust-${index}`}
               onHover={() => setHoveredCard(`trust-${index}`)}
               onLeave={() => setHoveredCard(null)}
+              className={index === 2 ? "col-span-2 lg:col-span-1 max-w-md mx-auto lg:max-w-none" : ""}
             />
           ))}
         </div>
