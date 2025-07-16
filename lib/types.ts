@@ -21,3 +21,23 @@ export interface ImageData {
   badge?: "New" | "Sale";
   }
   
+  // Add this to your types file
+export interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  parent: number;
+  description: string;
+  display: string;
+  image: {
+    id: number;
+    src: string;
+    alt: string;
+  } | null;
+  menu_order: number;
+  count: number;
+  _links: {
+    self: Array<{ href: string }>;
+    collection: Array<{ href: string }>;
+  };
+}

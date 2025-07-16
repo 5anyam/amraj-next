@@ -92,7 +92,7 @@ export default function CartPage() {
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             {/* Price */}
                             <div className="text-lg font-bold text-gray-900">
-                              ₹{item.price}
+                            ₹{(parseFloat(item.price) * item.quantity).toFixed(2)}
                               <span className="text-sm font-normal text-gray-600 ml-1">each</span>
                             </div>
 
@@ -145,32 +145,33 @@ export default function CartPage() {
 
             {/* Order Summary */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sticky top-8">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">Order Summary</h2>
-                
-                <div className="space-y-4 mb-6">
-                  <div className="flex justify-between text-gray-600">
-                    <span>Subtotal ({totalItems} item{totalItems !== 1 ? 's' : ''})</span>
-                    <span>₹{total.toFixed(2)}</span>
-                  </div>
-                  
-                  <div className="flex justify-between text-gray-600">
-                    <span>Shipping</span>
-                    <span className="text-green-600 font-medium">Free</span>
-                  </div>
-                  
-                  <div className="flex justify-between text-gray-600">
-                    <span>Tax</span>
-                    <span>₹{(total * 0.18).toFixed(2)}</span>
-                  </div>
-                  
-                  <div className="border-t border-gray-200 pt-4">
-                    <div className="flex justify-between text-lg font-bold text-gray-900">
-                      <span>Total</span>
-                      <span className="text-teal-500">₹{(total * 1.18).toFixed(2)}</span>
-                    </div>
-                  </div>
-                </div>
+  <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sticky top-8">
+    <h2 className="text-xl font-semibold text-gray-900 mb-6">Order Summary</h2>
+
+    <div className="space-y-4 mb-6">
+      <div className="flex justify-between text-gray-600">
+        <span>Subtotal ({totalItems} item{totalItems !== 1 ? 's' : ''})</span>
+        <span>₹{total.toFixed(2)}</span> {/* Total already includes tax */}
+      </div>
+
+      <div className="flex justify-between text-gray-600">
+        <span>Shipping</span>
+        <span className="text-green-600 font-medium">Free</span>
+      </div>
+
+      <div className="flex justify-between text-gray-600">
+        <span>Included GST (18%)</span>
+        <span>₹{(total - total / 1.18).toFixed(2)}</span> {/* Tax part extracted from total */}
+      </div>
+
+      <div className="border-t border-gray-200 pt-4">
+        <div className="flex justify-between text-lg font-bold text-gray-900">
+          <span>Total</span>
+          <span className="text-teal-500">₹{total.toFixed(2)}</span> {/* Final total remains same */}
+        </div>
+      </div>
+    </div>
+
 
                 <div className="space-y-3">
                   <Link
@@ -197,11 +198,11 @@ export default function CartPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
-                      <span>Free shipping on orders over ₹500</span>
+                      <span>Free shipping on all orders</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
-                      <span>30-day return policy</span>
+                      <span>No return policy</span>
                     </div>
                   </div>
                 </div>

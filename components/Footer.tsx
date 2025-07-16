@@ -3,7 +3,7 @@ import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn, FaYoutube } from "re
 
 export default function Footer() {
   return (
-    <footer className="bg-teal-500 text-white pt-12 pb-8 transition-colors">
+    <footer className="bg-gray-800 text-white pt-12 pb-8 transition-colors">
       <div className="max-w-7xl mx-auto px-4">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">

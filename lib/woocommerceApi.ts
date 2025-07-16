@@ -12,6 +12,27 @@ export interface Product {
   attributes?: { option: string }[];
 }
 
+// Add this to your types file
+export interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  parent: number;
+  description: string;
+  display: string;
+  image: {
+    id: number;
+    src: string;
+    alt: string;
+  } | null;
+  menu_order: number;
+  count: number;
+  _links: {
+    self: Array<{ href: string }>;
+    collection: Array<{ href: string }>;
+  };
+}
+
 export interface LineItem {
   product_id: number;
   quantity: number;
@@ -123,6 +144,39 @@ export async function updateOrderStatus(
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.message || "Failed to update order status");
+  }
+  return res.json();
+}
+
+// ✅ FETCH ALL PRODUCT CATEGORIES
+export async function fetchProductCategories(perPage = 12, hideEmpty = true): Promise<Category[]> {
+  let url = `${API_BASE}/products/categories?consumer_key=${CONSUMER_KEY}&consumer_secret=${CONSUMER_SECRET}&per_page=${perPage}`;
+  if (hideEmpty) {
+    url += `&hide_empty=true`;
+  }
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error("Failed to fetch categories");
+  }
+  return res.json();
+}
+
+// ✅ FETCH SINGLE CATEGORY
+export async function fetchSingleCategory(categoryId: number): Promise<Category> {
+  const url = `${API_BASE}/products/categories/${categoryId}?consumer_key=${CONSUMER_KEY}&consumer_secret=${CONSUMER_SECRET}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error("Failed to fetch category");
+  }
+  return res.json();
+}
+
+// ✅ FETCH PRODUCTS BY CATEGORY
+export async function fetchProductsByCategory(categoryId: number, page = 1, perPage = 12): Promise<Product[]> {
+  const url = `${API_BASE}/products?consumer_key=${CONSUMER_KEY}&consumer_secret=${CONSUMER_SECRET}&category=${categoryId}&per_page=${perPage}&page=${page}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error("Failed to fetch products by category");
   }
   return res.json();
 }
