@@ -110,10 +110,10 @@ export default function ProductPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto py-6 px-4 lg:px-6 flex flex-col lg:flex-row gap-6">
+      <div className="max-w-7xl mx-auto mt-5 md:py-6 md:px-4 flex flex-col lg:flex-row">
         {/* Image Section with enhanced styling */}
         <div className="lg:w-1/2 hidden lg:block">
-          <div className="bg-white rounded-3xl shadow-xl lg:p-2 border border-gray-100 hover:shadow-2xl transition-shadow duration-300">          
+          <div className="bg-white rounded-3xl mx-3 shadow-xl lg:p-2 border border-gray-100 hover:shadow-2xl transition-shadow duration-300">          
               <ImageGallery images={product.images || []} />
           </div>
         </div>
@@ -158,7 +158,7 @@ export default function ProductPage() {
             />
             )}
 
-          <div className="bg-white block lg:hidden rounded-3xl shadow-xl border border-gray-100 hover:shadow-2xl transition-shadow duration-300">          
+          <div className="bg-white block lg:hidden mt-3 rounded-3xl shadow-xl border border-gray-100 hover:shadow-2xl transition-shadow duration-300">          
                         <ImageGallery images={product.images || []} />
                     </div>
 

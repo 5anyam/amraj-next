@@ -12,7 +12,7 @@ export default function ImageGallery({ images }: { images: Image[] }) {
   const [isLoading, setIsLoading] = useState(true);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
-  const galleryRef = useRef<HTMLDivElement>(null);
+  
 
   // Default images for demo
   const defaultImages = [
@@ -77,11 +77,10 @@ export default function ImageGallery({ images }: { images: Image[] }) {
 
   return (
     <>
-      <div className="w-full max-w-5xl mx-auto p-0 mb-4 lg:p-4" ref={galleryRef}>
         {/* Main Image Container */}
         <div className="relative group">
           <div
-            className="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-200/50 h-[500px]"
+            className="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-200/50 h-[700px]"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
@@ -125,15 +124,15 @@ export default function ImageGallery({ images }: { images: Image[] }) {
                   <img
                     src={img.src}
                     alt={img.alt || `Product image ${i + 1}`}
-                    className={`max-w-full max-h-full object-contain transition-all duration-700 ${
+                    className={`h-[600px] object-contain transition-all duration-700 ${
                       isZoomed && i === active ? 'scale-150 cursor-zoom-out' : 'cursor-zoom-in hover:scale-105'
                     }`}
                     onClick={() => i === active && setIsZoomed(!isZoomed)}
                     onLoad={() => i === active && setIsLoading(false)}
                     style={{
                       filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.15)) drop-shadow(0 10px 20px rgba(0,0,0,0.1))',
-                      maxHeight: '400px',
-                      maxWidth: '90%'
+                      maxHeight: '800px',
+                      maxWidth: '98%'
                     }}
                   />
                 </div>
@@ -235,25 +234,34 @@ export default function ImageGallery({ images }: { images: Image[] }) {
             ))}
           </div>
         )}
-      </div>
 
       {/* Fullscreen Modal */}
       {isFullscreen && (
-        <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-white h-full w-full z-50 flex items-center justify-center p-4">
           <div className="relative max-w-7xl max-h-full">
+            {/* Desktop Close Button */}
             <button
               onClick={() => setIsFullscreen(false)}
-              className="absolute -top-12 right-0 text-white hover:text-gray-300 p-2 z-10 rounded-full hover:bg-white/10 transition-all duration-200"
+              className="absolute -top-12 right-0 text-white hover:text-gray-300 p-2 z-10 rounded-full hover:bg-white/10 transition-all duration-200 hidden md:block"
               aria-label="Close fullscreen"
             >
               <X className="w-8 h-8" />
+            </button>
+            
+            {/* Mobile Close Button */}
+            <button
+              onClick={() => setIsFullscreen(false)}
+              className="absolute top-4 right-4 text-white hover:text-gray-300 p-2 z-10 rounded-full bg-black/50 hover:bg-black/70 transition-all duration-200 border border-white/20 md:hidden"
+              aria-label="Close fullscreen"
+            >
+              <X className="w-6 h-6" />
             </button>
             
             <div className="relative">
               <img
                 src={displayImages[active].src}
                 alt={displayImages[active].alt || `Product image ${active + 1}`}
-                className="max-w-full max-h-[90vh] object-contain rounded-lg drop-shadow-2xl"
+                className="max-w-full max-h-[90vh] md:max-h-[90vh] max-h-[85vh] object-contain rounded-lg drop-shadow-2xl"
               />
             </div>
             
