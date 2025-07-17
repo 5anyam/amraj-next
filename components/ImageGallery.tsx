@@ -97,8 +97,6 @@ export default function ImageGallery({ images }: { images: Image[] }) {
                   }}
                 ></div>
               </div>
-
-            
             </div>
 
             {/* Loading State */}
@@ -142,19 +140,19 @@ export default function ImageGallery({ images }: { images: Image[] }) {
               ))}
             </div>
 
-            {/* Navigation Arrows */}
+            {/* Navigation Arrows - Desktop only */}
             {displayImages.length > 1 && (
               <>
                 <button
                   onClick={handlePrevious}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 border border-gray-200/50 z-30"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 border border-gray-200/50 z-30 hidden md:block"
                   aria-label="Previous image"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
                 <button
                   onClick={handleNext}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 border border-gray-200/50 z-30"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 border border-gray-200/50 z-30 hidden md:block"
                   aria-label="Next image"
                 >
                   <ChevronRight className="w-5 h-5" />
@@ -162,18 +160,19 @@ export default function ImageGallery({ images }: { images: Image[] }) {
               </>
             )}
 
-            {/* Action Buttons */}
-            <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
+            {/* Action Buttons - Mobile Friendly */}
+            <div className="absolute top-4 right-4 flex gap-2 z-30">
+              {/* Mobile: Always visible, Desktop: Show on hover */}
               <button
                 onClick={() => setIsZoomed(!isZoomed)}
-                className="bg-white/90 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg backdrop-blur-sm hover:scale-110 transition-all duration-200 border border-gray-200/50"
+                className="bg-white/90 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg backdrop-blur-sm hover:scale-110 transition-all duration-200 border border-gray-200/50 opacity-100 md:opacity-0 md:group-hover:opacity-100"
                 aria-label={isZoomed ? "Zoom out" : "Zoom in"}
               >
                 <ZoomIn className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setIsFullscreen(true)}
-                className="bg-white/90 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg backdrop-blur-sm hover:scale-110 transition-all duration-200 border border-gray-200/50"
+                className="bg-white/90 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg backdrop-blur-sm hover:scale-110 transition-all duration-200 border border-gray-200/50 opacity-100 md:opacity-0 md:group-hover:opacity-100"
                 aria-label="View fullscreen"
               >
                 <Maximize2 className="w-4 h-4" />
@@ -240,7 +239,7 @@ export default function ImageGallery({ images }: { images: Image[] }) {
 
       {/* Fullscreen Modal */}
       {isFullscreen && (
-        <div className="fixed inset-0 bg-black/95 z-10 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4">
           <div className="relative max-w-7xl max-h-full">
             <button
               onClick={() => setIsFullscreen(false)}
