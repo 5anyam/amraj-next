@@ -52,7 +52,7 @@ export default function ContactPage() {
           <p className="text-gray-600 text-center mb-4">Send us an email and we&apos;ll respond within 24 hours</p>
           <div className="text-center">
             <a href="mailto:support@amraj.in" className="text-emerald-600 hover:text-emerald-700 font-semibold text-lg">
-              support@amraj.in
+              care@amraj.in
             </a>
           </div>
         </div>
@@ -297,7 +297,7 @@ export default function ContactPage() {
             Call Now
           </a>
           <a
-            href="mailto:support@amraj.in"
+            href="mailto:care@amraj.in"
             className="bg-yellow-500 hover:bg-yellow-600 text-white px-8 py-3 rounded-full font-semibold text-lg transition-colors duration-300 shadow-lg"
           >
             Email Us

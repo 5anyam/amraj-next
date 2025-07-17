@@ -12,6 +12,15 @@ module.exports = {
         fontFamily: {
           f: ['Fredoka', 'sans-serif'], // <== now you can use 'font-f'
         },
+        keyframes: {
+          slide: {
+            '0%': { transform: 'translateX(0)' },
+            '100%': { transform: 'translateX(-50%)' }, // adjust as needed
+          },
+        },
+        animation: {
+          slide: 'slide 20s linear infinite',
+        },
       },
     },
     plugins: ['@tailwindcss/typography'],

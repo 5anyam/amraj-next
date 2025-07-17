@@ -80,7 +80,7 @@ export default function Footer() {
           <div className="md:col-span-1">
             <h4 className="text-xl font-semibold mb-4">Contact</h4>
             <ul className="space-y-3 text-sm">
-              <li>support@amraj.in</li>
+              <li>care@amraj.in</li>
               <li>+91 92116 19009</li>
               <li>D5/204, Chintpurni House, Central Market, Prashant Vihar, New Delhi-110085</li>
             </ul>

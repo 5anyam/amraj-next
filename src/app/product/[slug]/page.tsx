@@ -49,6 +49,9 @@ export default function ProductPage() {
     discountPercent: 10,
   });
 
+  // Add state for button animation
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+
   // ✅ Loading and Error Handling
   if (isLoading) {
     return (
@@ -97,6 +100,32 @@ export default function ProductPage() {
   const discountedPrice = price * offer.qty * (1 - offer.discountPercent / 100);
   const originalPrice = price * offer.qty;
 
+  // Enhanced add to cart function with animation
+  const handleAddToCart = async () => {
+    setIsAddingToCart(true);
+    
+    // Add items to cart
+    for (let i = 0; i < offer.qty; i++) {
+      addToCart({
+        ...product,
+        name: product.name + (offer.qty > 1 ? ` (${i + 1} of ${offer.qty})` : ''),
+        price: (price * (1 - offer.discountPercent / 100)).toString(),
+        images: product.images || [],
+      });
+    }
+
+    // Show success toast
+    toast({
+      title: 'Added to cart',
+      description: `${offer.qty} x ${product.name} added with ${offer.discountPercent}% off.`,
+    });
+
+    // Reset animation after delay
+    setTimeout(() => {
+      setIsAddingToCart(false);
+    }, 1000);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-orange-50">
       {/* Header with breadcrumb-style design */}
@@ -130,24 +159,33 @@ export default function ProductPage() {
             ) : null}
 
             {/* Product title with gradient text */}
-            <h1 className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-teal-600 to-teal-800 bg-clip-text text-transparent mb-4 leading-tight">
-              {product.name}
-            </h1>
-            <div className="flex justify-start gap-1 sm:gap-2 mb-2 px-2 overflow-x-auto scrollbar-hide">
-  {[
-    { label: '🌿 100% Natural', color: 'bg-teal-500/80' },
-    { label: '🔬 Clinically Tested', color: 'bg-orange-500/80' },
-    { label: '✨ GMP Certified', color: 'bg-yellow-500/80' }
-  ].map((item, idx) => (
-    <div 
-      key={idx} 
-      className={`${item.color} px-2 py-1.5 sm:px-2 sm:py-1 rounded-full shadow-md transform hover:scale-105 transition-all duration-300 flex-shrink-0 backdrop-blur-sm`}
-    >
-      <span className="text-xs sm:text-sm font-medium text-white whitespace-nowrap">
-        {item.label}
-      </span>
-    </div>
-  ))}
+<h1 className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-teal-600 to-teal-800 bg-clip-text text-transparent mb-4 leading-tight">
+  {product.name}
+</h1>
+
+<div className="relative overflow-hidden w-full">
+  <div className="animate-slide flex gap-2 w-max">
+    {[
+      { label: '🌿 100% Natural', color: 'bg-yellow-500/80' },
+      { label: '🔬 Clinically Tested', color: 'bg-orange-500/80' },
+      { label: '✨ GMP Certified', color: 'bg-teal-500/80' },
+      { label: '🍃 Plant Based', color: 'bg-blue-500/80' },
+      // Repeat for seamless loop
+      { label: '🌿 100% Natural', color: 'bg-yellow-500/80' },
+      { label: '🔬 Clinically Tested', color: 'bg-orange-500/80' },
+      { label: '✨ GMP Certified', color: 'bg-teal-500/80' },
+      { label: '🍃 Plant Based', color: 'bg-blue-500/80' },
+    ].map((item, idx) => (
+      <div
+        key={idx}
+        className={`${item.color} px-2 py-1.5 sm:px-2 sm:py-1 rounded-full shadow-md transform hover:scale-105 transition-all duration-300 flex-shrink-0 backdrop-blur-sm`}
+      >
+        <span className="text-xs sm:text-sm font-medium text-white whitespace-nowrap">
+          {item.label}
+        </span>
+      </div>
+    ))}
+  </div>
 </div>
 
             {/* Short description */}
@@ -188,29 +226,30 @@ export default function ProductPage() {
               </div>
             </div>
 
-            {/* Enhanced CTA button */}
+            {/* Enhanced CTA button with animation */}
             <button
-              className="w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold px-6 py-3 lg:py-4 rounded-2xl text-sm lg:text-base shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 mb-6 relative overflow-hidden group"
-              onClick={() => {
-                for (let i = 0; i < offer.qty; i++) {
-                  addToCart({
-                    ...product,
-                    name: product.name + (offer.qty > 1 ? ` (${i + 1} of ${offer.qty})` : ''),
-                    price: (price * (1 - offer.discountPercent / 100)).toString(),
-                    images: product.images || [],
-                  });
-                }
-                toast({
-                  title: 'Added to cart',
-                  description: `${offer.qty} x ${product.name} added with ${offer.discountPercent}% off.`,
-                });
-              }}
+              className={`w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold px-6 py-3 lg:py-4 rounded-2xl text-sm lg:text-base shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 mb-6 relative overflow-hidden group ${
+                isAddingToCart ? 'scale-95 shadow-inner' : ''
+              }`}
+              onClick={handleAddToCart}
+              disabled={isAddingToCart}
             >
-              <span className="relative z-10 flex items-center justify-center">
-                <span className="mr-2">🛒</span>
-                ADD TO CART — ₹{discountedPrice.toFixed(2)}
+              <span className={`relative z-10 flex items-center justify-center transition-all duration-300 ${
+                isAddingToCart ? 'scale-90' : ''
+              }`}>
+                <span className={`mr-2 transition-all duration-300 ${
+                  isAddingToCart ? 'animate-bounce' : ''
+                }`}>
+                  {isAddingToCart ? '✓' : '🛒'}
+                </span>
+                {isAddingToCart ? 'ADDED TO CART!' : `ADD TO CART — ₹${discountedPrice.toFixed(2)}`}
               </span>
               <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              
+              {/* Success animation overlay */}
+              {isAddingToCart && (
+                <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-green-600 animate-pulse"></div>
+              )}
             </button>
 
             {/* Enhanced membership banner */}
@@ -225,7 +264,7 @@ export default function ProductPage() {
                   </div>
                   <div>
                     <div className="font-bold text-teal-700 text-sm mb-1">
-                      Become a Amraj Wellness Member
+                      Become a Amraj Member
                     </div>
                     <div className="text-teal-600 font-medium mb-1 text-xs">
                       Get instant 10% discount on all orders
@@ -244,7 +283,7 @@ export default function ProductPage() {
               {[
                 ['🚚', 'Fast Delivery', 'Express shipping'],
                 ['🛡️', '100% Authentic', 'Guaranteed quality'],
-                ['↩️', 'No Returns', 'Final sale'],
+                ['🧬', 'Non GMO', 'Gluten Free'],
                 ['💸', 'COD Available', 'Pay on delivery'],
               ].map(([icon, label, subtitle], idx) => (
                 <div key={idx} className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-3 text-center hover:from-teal-50 hover:to-teal-100 transition-all duration-300 group border border-gray-200 hover:border-teal-200">
@@ -261,26 +300,27 @@ export default function ProductPage() {
       {/* Extra "Add to Cart" button - Only on Mobile */}
       <div className="lg:hidden fixed bottom-0 z-10 left-0 w-full bg-white border-t border-gray-200 p-3">
         <button
-          className="w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold px-6 py-3 rounded-2xl text-sm shadow-xl hover:shadow-2xl"
-          onClick={() => {
-            for (let i = 0; i < offer.qty; i++) {
-              addToCart({
-                ...product,
-                name: product.name + (offer.qty > 1 ? ` (${i + 1} of ${offer.qty})` : ''),
-                price: (price * (1 - offer.discountPercent / 100)).toString(),
-                images: product.images || [],
-              });
-            }
-            toast({
-              title: 'Added to cart',
-              description: `${offer.qty} x ${product.name} added with ${offer.discountPercent}% off.`,
-            });
-          }}
+          className={`w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold px-6 py-3 rounded-2xl text-sm shadow-xl hover:shadow-2xl transition-all duration-300 ${
+            isAddingToCart ? 'scale-95 shadow-inner' : ''
+          }`}
+          onClick={handleAddToCart}
+          disabled={isAddingToCart}
         >
-          <span className="relative z-10 flex items-center justify-center">
-            <span className="mr-2">🛒</span>
-            ADD TO CART — ₹{discountedPrice.toFixed(2)}
+          <span className={`relative z-10 flex items-center justify-center transition-all duration-300 ${
+            isAddingToCart ? 'scale-90' : ''
+          }`}>
+            <span className={`mr-2 transition-all duration-300 ${
+              isAddingToCart ? 'animate-bounce' : ''
+            }`}>
+              {isAddingToCart ? '✓' : '🛒'}
+            </span>
+            {isAddingToCart ? 'ADDED TO CART!' : `ADD TO CART — ₹${discountedPrice.toFixed(2)}`}
           </span>
+          
+          {/* Success animation overlay */}
+          {isAddingToCart && (
+            <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-green-600 animate-pulse rounded-2xl"></div>
+          )}
         </button>
       </div>
 

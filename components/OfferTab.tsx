@@ -73,7 +73,7 @@ export default function OfferTab({
             <div className="text-xs mt-1 text-gray-700">
               <span className="block">Pack Of {offer.qty * 4}</span>
               <span className="block text-gray-400 text-xs">
-                ({offer.qty * 60} Tablets)
+                ({offer.qty * 60} Capsules)
               </span>
             </div>
             
