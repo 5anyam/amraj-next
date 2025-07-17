@@ -9,6 +9,7 @@ import { toast } from '../../../../hooks/use-toast';
 import ImageGallery from '../../../../components/ImageGallery';
 import OfferTab, { SelectedOffer } from '../../../../components/OfferTab';
 import { Tab } from '@headlessui/react';
+import SmoothMarquee from '../../../../components/ProductSlide';
 
 // Product Type Definitions
 export interface ImageData {
@@ -163,30 +164,7 @@ export default function ProductPage() {
   {product.name}
 </h1>
 
-<div className="relative overflow-hidden w-full">
-  <div className="animate-slide flex gap-2 w-max">
-    {[
-      { label: '🌿 100% Natural', color: 'bg-yellow-500/80' },
-      { label: '🔬 Clinically Tested', color: 'bg-orange-500/80' },
-      { label: '✨ GMP Certified', color: 'bg-teal-500/80' },
-      { label: '🍃 Plant Based', color: 'bg-blue-500/80' },
-      // Repeat for seamless loop
-      { label: '🌿 100% Natural', color: 'bg-yellow-500/80' },
-      { label: '🔬 Clinically Tested', color: 'bg-orange-500/80' },
-      { label: '✨ GMP Certified', color: 'bg-teal-500/80' },
-      { label: '🍃 Plant Based', color: 'bg-blue-500/80' },
-    ].map((item, idx) => (
-      <div
-        key={idx}
-        className={`${item.color} px-2 py-1.5 sm:px-2 sm:py-1 rounded-full shadow-md transform hover:scale-105 transition-all duration-300 flex-shrink-0 backdrop-blur-sm`}
-      >
-        <span className="text-xs sm:text-sm font-medium text-white whitespace-nowrap">
-          {item.label}
-        </span>
-      </div>
-    ))}
-  </div>
-</div>
+<SmoothMarquee/>
 
             {/* Short description */}
             {product.short_description && (
