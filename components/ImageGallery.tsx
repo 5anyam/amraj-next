@@ -93,7 +93,7 @@ export default function ImageGallery({ images }: { images: Image[] }) {
                 <div 
                   className="w-full h-full bg-cover bg-center bg-no-repeat"
                   style={{
-                    backgroundImage: `url("https://cms.amraj.in/wp-content/uploads/2025/07/product-scaled.jpg")`
+                    backgroundImage: `url("https://cms.amraj.in/wp-content/uploads/2025/07/liver-bg.png")`
                   }}
                 ></div>
               </div>
