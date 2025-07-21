@@ -87,7 +87,7 @@ export default function Header() {
           <div className="flex items-center">
             <Link href="/" className="flex items-center gap-2 group">
               <img className="h-12 md:h-16 transition-transform group-hover:scale-105" src="/amraj-logo.jpg" alt='amraj logo' />
-              <img className="h-4 w-8 md:h-6 md:w-full" src="/amraj-text.png" alt='amraj text' />
+              <img className="h-6 w-10 md:h-8 md:w-full" src="/amraj-text.png" alt='amraj text' />
             </Link>
 
             {/* Desktop Nav */}
