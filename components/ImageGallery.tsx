@@ -422,7 +422,7 @@ export default function ImageGallery({ images }: { images: Image[] }) {
       {isFullscreen && (
         <div 
           ref={fullscreenRef}
-          className="fixed inset-0 bg-black z-[9999] flex items-center justify-center p-4"
+          className="fixed inset-0 bg-white z-[9999] flex items-center justify-center p-4"
           style={{ width: '100vw', height: '100vh' }}
         >
           <div className="relative w-full h-full flex items-center justify-center">
