@@ -87,7 +87,7 @@ export default function PrivacyPolicyPage() {
           <p>If you have questions or concerns, please contact:</p>
           <div className="pl-4">
             <p><strong>Grievance Officer:</strong> Aman Bhardwaj</p>
-            <p><strong>Email:</strong>support@amraj.in</p>
+            <p><strong>Email:</strong>care@amraj.in</p>
             <p><strong>Address:</strong> Prashant Vihar, Delhi</p>
           </div>
         </section>
