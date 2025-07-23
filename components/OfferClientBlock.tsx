@@ -9,6 +9,7 @@ interface Product {
   id: number | string;
   name: string;
   price: number | string;
+  regular_price: string;
   images?: { src: string }[];
 }
 
@@ -40,11 +41,12 @@ export default function OfferClientBlock({ product }: OfferClientBlockProps) {
         onClick={() => {
           for (let i = 0; i < offer.qty; i++) {
             addToCart({
-              id: Number(product.id), // ✅ Fixed
+              id: Number(product.id),
               name: `${product.name}${offer.qty > 1 ? ` (${i + 1} of ${offer.qty})` : ""}`,
               price: (price * (1 - offer.discountPercent / 100)).toString(),
-              images: product.images ?? []
-            });
+              images: product.images ?? [],
+              regular_price: product.regular_price, // ✅ Add this line
+            });            
           }
           toast({
             title: "Added to cart",

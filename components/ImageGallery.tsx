@@ -19,7 +19,8 @@ interface ExtendedHTMLElement extends HTMLElement {
   msRequestFullscreen?: () => Promise<void>;
 }
 
-export default function ImageGallery({ images }: { images: Image[] }) {
+export default function ImageGallery({ images, backgroundSlug }: { images: Image[]; backgroundSlug: string }) {
+
   const [active, setActive] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -212,6 +213,14 @@ export default function ImageGallery({ images }: { images: Image[] }) {
     }
   };
 
+  const backgroundImages: Record<string, string> = {
+    liver: "https://cms.amraj.in/wp-content/uploads/2025/07/liver-bg.png",
+    prostate: "https://cms.amraj.in/wp-content/uploads/2025/07/prostate-bg.png",
+    weight: "https://cms.amraj.in/wp-content/uploads/2025/07/weight-machine.png",
+  };
+
+  const bgImage = backgroundImages[backgroundSlug];
+
   // Handle fullscreen change events
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -255,16 +264,14 @@ export default function ImageGallery({ images }: { images: Image[] }) {
           }}
         >
           {/* Fixed Beautiful Background */}
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 opacity-20">
-              <div 
-                className="w-full h-full bg-cover bg-center bg-no-repeat"
-                style={{
-                  backgroundImage: `url("https://cms.amraj.in/wp-content/uploads/2025/07/liver-bg.png")`
-                }}
-              ></div>
-            </div>
-          </div>
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 opacity-20">
+          <div
+            className="w-full h-full bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: `url(${bgImage})` }}
+          ></div>
+        </div>
+      </div>
 
           {/* Loading State */}
           {isLoading && (
