@@ -8,11 +8,19 @@ export default function CartPage() {
   const total = items.reduce((sum, i) => sum + parseFloat(i.price) * i.quantity, 0);
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
 
-  // MRP Total (Assumes each item has originalPrice; falls back to price if not present)
+  // MRP Total - Fixed to handle different property names and fallback scenarios
   const mrpTotal = items.reduce((sum, item) => {
-    const originalPrice = parseFloat(item.regular_price );
+    // Try different possible property names for regular/original price
+    const regularPrice = item.regular_price;
+    
+    // If no regular price exists, assume current price is MRP (no discount)
+    const originalPrice = regularPrice ? parseFloat(regularPrice) : parseFloat(item.price);
+    
     return sum + originalPrice * item.quantity;
   }, 0);
+
+  // Calculate discount amount
+  const discountAmount = mrpTotal - total;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
@@ -67,82 +75,95 @@ export default function CartPage() {
                   <h2 className="text-xl font-semibold text-gray-900">Cart Items</h2>
                 </div> 
                 <div className="divide-y divide-gray-200">
-                  {items.map((item) => (
-                    <div
-                      key={item.id}
-                      className="p-6 hover:bg-gray-50 transition-colors"
-                    >
-                      <div className="flex flex-col sm:flex-row gap-4">
-                        {/* Product Image */}
-                        <div className="flex-shrink-0">
-                          <div className="w-32 h-32 bg-gray-100 rounded-xl overflow-hidden border border-gray-200">
-                            <img
-                              src={item.images?.[0]?.src}
-                              alt={item.name}
-                              className="w-full h-full object-contain p-2"
-                            />
-                          </div>
-                        </div>
-
-                        {/* Product Details */}
-                        <div className="flex-1 space-y-3">
-                          <div>
-                            <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">
-                              {item.name}
-                            </h3>
-                            <p className="text-sm text-gray-600 mt-1">SKU: {item.id}</p>
+                  {items.map((item) => {
+                    // Calculate regular price for this item display
+                    const itemRegularPrice = item.regular_price;
+                    const hasDiscount = itemRegularPrice && parseFloat(itemRegularPrice) > parseFloat(item.price);
+                    
+                    return (
+                      <div
+                        key={item.id}
+                        className="p-6 hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="flex flex-col sm:flex-row gap-4">
+                          {/* Product Image */}
+                          <div className="flex-shrink-0">
+                            <div className="w-32 h-32 bg-gray-100 rounded-xl overflow-hidden border border-gray-200">
+                              <img
+                                src={item.images?.[0]?.src}
+                                alt={item.name}
+                                className="w-full h-full object-contain p-2"
+                              />
+                            </div>
                           </div>
 
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            {/* Price */}
-                            <div className="text-lg font-bold text-gray-900">
-                              ₹{(parseFloat(item.price) * item.quantity).toFixed(2)}
-                              <span className="text-sm font-normal text-gray-600 ml-1">each</span>
+                          {/* Product Details */}
+                          <div className="flex-1 space-y-3">
+                            <div>
+                              <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">
+                                {item.name}
+                              </h3>
+                              <p className="text-sm text-gray-600 mt-1">SKU: {item.id}</p>
                             </div>
 
-                            {/* Quantity Controls */}
-                            <div className="flex items-center">
-                              <div className="flex items-center bg-gray-100 rounded-full border border-gray-300">
-                                <button
-                                  onClick={() => decrement(item.id)}
-                                  className="p-2 hover:bg-gray-200 rounded-full transition-colors"
-                                  disabled={item.quantity <= 1}
-                                >
-                                  <Minus className="h-4 w-4 text-gray-600" />
-                                </button>
-                                <span className="w-12 text-center font-semibold text-gray-900">
-                                  {item.quantity}
-                                </span>
-                                <button
-                                  onClick={() => increment(item.id)}
-                                  className="p-2 hover:bg-gray-200 rounded-full transition-colors"
-                                >
-                                  <Plus className="h-4 w-4 text-gray-600" />
-                                </button>
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                              {/* Price */}
+                              <div className="flex flex-col">
+                                <div className="text-lg font-bold text-gray-900">
+                                  ₹{parseFloat(item.price).toFixed(2)}
+                                  <span className="text-sm font-normal text-gray-600 ml-1">each</span>
+                                </div>
+                                {hasDiscount && (
+                                  <div className="text-sm text-gray-500 line-through">
+                                    MRP: ₹{parseFloat(itemRegularPrice).toFixed(2)}
+                                  </div>
+                                )}
                               </div>
 
-                              {/* Remove Button */}
-                              <button
-                                onClick={() => removeFromCart(item.id)}
-                                className="ml-4 p-2 rounded-full text-orange-500 hover:text-orange-600 hover:bg-red-50 transition-colors"
-                                title="Remove item"
-                              >
-                                <Trash2 className="h-5 w-5" />
-                              </button>
-                            </div>
-                          </div>
+                              {/* Quantity Controls */}
+                              <div className="flex items-center">
+                                <div className="flex items-center bg-gray-100 rounded-full border border-gray-300">
+                                  <button
+                                    onClick={() => decrement(item.id)}
+                                    className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+                                    disabled={item.quantity <= 1}
+                                  >
+                                    <Minus className="h-4 w-4 text-gray-600" />
+                                  </button>
+                                  <span className="w-12 text-center font-semibold text-gray-900">
+                                    {item.quantity}
+                                  </span>
+                                  <button
+                                    onClick={() => increment(item.id)}
+                                    className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+                                  >
+                                    <Plus className="h-4 w-4 text-gray-600" />
+                                  </button>
+                                </div>
 
-                          {/* Item Total */}
-                          <div className="text-right">
-                            <span className="text-lg font-bold text-teal-600">
-                              ₹{(parseFloat(item.price) * item.quantity).toFixed(2)}
-                            </span>
-                            <span className="text-sm text-gray-600 ml-1">total</span>
+                                {/* Remove Button */}
+                                <button
+                                  onClick={() => removeFromCart(item.id)}
+                                  className="ml-4 p-2 rounded-full text-orange-500 hover:text-orange-600 hover:bg-red-50 transition-colors"
+                                  title="Remove item"
+                                >
+                                  <Trash2 className="h-5 w-5" />
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Item Total */}
+                            <div className="text-right">
+                              <span className="text-lg font-bold text-teal-600">
+                                ₹{(parseFloat(item.price) * item.quantity).toFixed(2)}
+                              </span>
+                              <span className="text-sm text-gray-600 ml-1">total</span>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
             </div>
@@ -152,16 +173,26 @@ export default function CartPage() {
               <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sticky top-8">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Order Summary</h2>
                 <div className="space-y-4 mb-6">
+                  {/* Show MRP total if there's a discount */}
+                  {discountAmount > 0 && (
+                    <div className="flex justify-between text-gray-600">
+                      <span>Total MRP ({totalItems} item{totalItems !== 1 ? 's' : ''})</span>
+                      <span>₹{mrpTotal.toFixed(2)}</span>
+                    </div>
+                  )}
+
                   <div className="flex justify-between text-gray-600">
                     <span>Subtotal ({totalItems} item{totalItems !== 1 ? 's' : ''})</span>
                     <span>₹{total.toFixed(2)}</span>
                   </div>
 
-                  {/* Discount on MRP */}
-                  <div className="flex justify-between text-gray-600">
-                    <span>Discount on MRP</span>
-                    <span className="text-red-600">-₹{(mrpTotal - total).toFixed(2)}</span>
-                  </div>
+                  {/* Discount on MRP - Only show if there's actually a discount */}
+                  {discountAmount > 0 && (
+                    <div className="flex justify-between text-gray-600">
+                      <span>Discount on MRP</span>
+                      <span className="text-green-600 font-medium">-₹{discountAmount.toFixed(2)}</span>
+                    </div>
+                  )}
 
                   <div className="flex justify-between text-gray-600">
                     <span>Shipping</span>

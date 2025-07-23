@@ -23,6 +23,7 @@ export interface Product {
   name: string;
   slug: string;
   price: string;
+  regular_price: string;
   description?: string;
   short_description?: string;
   images: ImageData[];
