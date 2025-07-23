@@ -6,7 +6,7 @@ interface Product {
   slug: string;
   name: string;
   price: string | number; // Sale price
-  regular_price?: string | number; // Original price
+  regular_price: string; // Original price
   images?: { src: string }[];
   short_description?: string;
   category?: string;
