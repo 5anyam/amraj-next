@@ -8,14 +8,11 @@ interface ShopPageClientProps {
   products: Product[];
 }
 
-
-
 // Extend the Product type to include slug for ProductCard
 type ProductWithSlug = Product & {
   slug: string;
   regular_price: string;
 };
-
 
 export default function ShopPageClient({ products }: ShopPageClientProps) {
   const [searchTerm, setSearchTerm] = useState('');

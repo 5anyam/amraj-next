@@ -8,7 +8,6 @@ interface LoginFormData {
   username: string;
   password: string;
 }
-
 interface WordPressUser {
   id: number;
   username: string;
@@ -18,7 +17,6 @@ interface WordPressUser {
   display_name: string;
   roles: string[];
 }
-
 
 const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState<LoginFormData>({
