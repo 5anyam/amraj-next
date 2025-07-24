@@ -1,12 +1,11 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from "react";
-import { usePathname } from 'next/navigation'; // Next.js 13+ ke liye
+import { usePathname } from 'next/navigation';
 import { ChevronLeft, ChevronRight, ZoomIn, X, Maximize2 } from "lucide-react";
 
 type Image = { src: string; alt?: string };
 
-// Extend Document interface for fullscreen methods
 interface ExtendedDocument extends Document {
   webkitFullscreenElement?: Element;
   msFullscreenElement?: Element;
@@ -14,20 +13,16 @@ interface ExtendedDocument extends Document {
   msExitFullscreen?: () => Promise<void>;
 }
 
-// Extend HTMLElement interface for fullscreen methods
 interface ExtendedHTMLElement extends HTMLElement {
   webkitRequestFullscreen?: () => Promise<void>;
   msRequestFullscreen?: () => Promise<void>;
 }
 
 export default function ImageGallery({ images }: { images: Image[] }) {
-  // Automatically get slug from URL
   const pathname = usePathname();
-  
-  // Extract slug from pathname
+
   const getSlugFromPath = () => {
     const segments = pathname.split('/');
-    // Get the last segment as slug
     const slug = segments[segments.length - 1];
     return slug.toLowerCase();
   };
@@ -43,50 +38,27 @@ export default function ImageGallery({ images }: { images: Image[] }) {
   const [startX, setStartX] = useState(0);
   const [currentX, setCurrentX] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  
+
   const containerRef = useRef<HTMLDivElement>(null);
   const fullscreenRef = useRef<HTMLDivElement>(null);
   const DRAG_THRESHOLD = 80;
   const VELOCITY_THRESHOLD = 0.5;
 
-  // Default images for demo
-  const defaultImages = [
-    { src: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&h=600&fit=crop", alt: "Premium Watch" },
-    { src: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&h=600&fit=crop", alt: "Running Shoes" },
-    { src: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=600&fit=crop", alt: "Headphones" },
-    { src: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800&h=600&fit=crop", alt: "Sunglasses" },
-    { src: "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=800&h=600&fit=crop", alt: "Sneakers" }
-  ];
+  const displayImages = images && images.length > 0 ? images : [];
 
-  const displayImages = images && images.length > 0 ? images : defaultImages;
-
-  // Background images mapping with more products
   const backgroundImages: Record<string, string> = {
     liver: "https://cms.amraj.in/wp-content/uploads/2025/07/liver-bg.png",
     prostate: "https://cms.amraj.in/wp-content/uploads/2025/07/1.png",
     weight: "https://cms.amraj.in/wp-content/uploads/2025/07/2.png",
     diabetes: "https://cms.amraj.in/wp-content/uploads/2025/07/diabetes-bg.png",
-    // Default fallback
     default: "https://cms.amraj.in/wp-content/uploads/2025/07/default-bg.png"
   };
 
-  // Auto-detect background based on current slug
   const getBackgroundImage = () => {
-    console.log('Current Slug:', currentSlug); // Debug ke liye
-    
-    // Direct match check karo
-    if (backgroundImages[currentSlug]) {
-      return backgroundImages[currentSlug];
-    }
-    
-    // Partial match check karo (slug me keyword hai ya nahi)
+    if (backgroundImages[currentSlug]) return backgroundImages[currentSlug];
     for (const [key, image] of Object.entries(backgroundImages)) {
-      if (key !== 'default' && currentSlug.includes(key)) {
-        return image;
-      }
+      if (key !== 'default' && currentSlug.includes(key)) return image;
     }
-    
-    // Agar koi match nahi mila to default return karo
     return backgroundImages.default;
   };
 
@@ -95,7 +67,7 @@ export default function ImageGallery({ images }: { images: Image[] }) {
   useEffect(() => {
     const img = new Image();
     img.onload = () => setIsLoading(false);
-    img.src = displayImages[active].src;
+    img.src = displayImages[active]?.src;
     setIsLoading(true);
   }, [active, displayImages]);
 
@@ -113,10 +85,8 @@ export default function ImageGallery({ images }: { images: Image[] }) {
     setTimeout(() => setIsTransitioning(false), 300);
   };
 
-  // Enhanced touch handling with scroll prevention ONLY during drag
   const handleTouchStart = (e: React.TouchEvent) => {
     if (isZoomed) return;
-    
     const touch = e.touches[0];
     setStartX(touch.clientX);
     setCurrentX(touch.clientX);
@@ -126,53 +96,35 @@ export default function ImageGallery({ images }: { images: Image[] }) {
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging || isZoomed) return;
-    
     const touch = e.touches[0];
     const deltaX = touch.clientX - startX;
     const absDeltaX = Math.abs(deltaX);
-    
-    // Only prevent scroll if horizontal drag is significant
-    if (absDeltaX > 10) {
-      e.preventDefault(); // Prevent page scroll only during significant horizontal drag
-    }
-    
-    // Apply resistance at boundaries
+    if (absDeltaX > 10) e.preventDefault();
     let adjustedDelta = deltaX;
     if ((active === 0 && deltaX > 0) || (active === displayImages.length - 1 && deltaX < 0)) {
       adjustedDelta = deltaX * 0.3;
     }
-    
     setCurrentX(touch.clientX);
     setDragOffset(adjustedDelta);
   };
 
   const handleTouchEnd = () => {
     if (!isDragging || isZoomed) return;
-    
     const deltaX = currentX - startX;
     const velocity = Math.abs(deltaX) / 100;
-    
     const shouldSlide = Math.abs(deltaX) > DRAG_THRESHOLD || velocity > VELOCITY_THRESHOLD;
-    
     if (shouldSlide) {
-      if (deltaX > 0 && active > 0) {
-        handlePrevious();
-      } else if (deltaX < 0 && active < displayImages.length - 1) {
-        handleNext();
-      }
+      if (deltaX > 0 && active > 0) handlePrevious();
+      else if (deltaX < 0 && active < displayImages.length - 1) handleNext();
     }
-    
-    // Reset drag state
     setIsDragging(false);
     setDragOffset(0);
     setStartX(0);
     setCurrentX(0);
   };
 
-  // Mouse events for desktop dragging
   const handleMouseDown = (e: React.MouseEvent) => {
     if (isZoomed) return;
-    
     setStartX(e.clientX);
     setCurrentX(e.clientX);
     setIsDragging(true);
@@ -181,32 +133,23 @@ export default function ImageGallery({ images }: { images: Image[] }) {
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || isZoomed) return;
-    
     const deltaX = e.clientX - startX;
-    
     let adjustedDelta = deltaX;
     if ((active === 0 && deltaX > 0) || (active === displayImages.length - 1 && deltaX < 0)) {
       adjustedDelta = deltaX * 0.3;
     }
-    
     setCurrentX(e.clientX);
     setDragOffset(adjustedDelta);
   };
 
   const handleMouseUp = () => {
     if (!isDragging || isZoomed) return;
-    
     const deltaX = currentX - startX;
     const shouldSlide = Math.abs(deltaX) > DRAG_THRESHOLD;
-    
     if (shouldSlide) {
-      if (deltaX > 0 && active > 0) {
-        handlePrevious();
-      } else if (deltaX < 0 && active < displayImages.length - 1) {
-        handleNext();
-      }
+      if (deltaX > 0 && active > 0) handlePrevious();
+      else if (deltaX < 0 && active < displayImages.length - 1) handleNext();
     }
-    
     setIsDragging(false);
     setDragOffset(0);
     setStartX(0);
@@ -227,38 +170,25 @@ export default function ImageGallery({ images }: { images: Image[] }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Handle fullscreen
   const enterFullscreen = () => {
     setIsFullscreen(true);
-    // Try to enter actual fullscreen mode
     if (fullscreenRef.current) {
       const element = fullscreenRef.current as ExtendedHTMLElement;
-      if (element.requestFullscreen) {
-        element.requestFullscreen().catch(console.log);
-      } else if (element.webkitRequestFullscreen) {
-        element.webkitRequestFullscreen().catch(console.log);
-      } else if (element.msRequestFullscreen) {
-        element.msRequestFullscreen().catch(console.log);
-      }
+      if (element.requestFullscreen) element.requestFullscreen().catch(console.log);
+      else if (element.webkitRequestFullscreen) element.webkitRequestFullscreen().catch(console.log);
+      else if (element.msRequestFullscreen) element.msRequestFullscreen().catch(console.log);
     }
   };
 
   const exitFullscreen = () => {
     setIsFullscreen(false);
     setIsZoomed(false);
-    
-    // Exit actual fullscreen mode
     const doc = document as ExtendedDocument;
-    if (document.fullscreenElement) {
-      document.exitFullscreen().catch(console.log);
-    } else if (doc.webkitFullscreenElement) {
-      doc.webkitExitFullscreen?.().catch(console.log);
-    } else if (doc.msFullscreenElement) {
-      doc.msExitFullscreen?.().catch(console.log);
-    }
+    if (document.fullscreenElement) document.exitFullscreen().catch(console.log);
+    else if (doc.webkitFullscreenElement) doc.webkitExitFullscreen?.().catch(console.log);
+    else if (doc.msFullscreenElement) doc.msExitFullscreen?.().catch(console.log);
   };
 
-  // Handle fullscreen change events
   useEffect(() => {
     const handleFullscreenChange = () => {
       const doc = document as ExtendedDocument;
@@ -283,80 +213,78 @@ export default function ImageGallery({ images }: { images: Image[] }) {
 
   return (
     <>
-      {/* Main Image Container */}
-      <div className="relative group">
-        <div
-          ref={containerRef}
-          className="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-200/50 h-[700px] touch-pan-y"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-          style={{ 
-            cursor: isDragging ? 'grabbing' : 'grab',
-            touchAction: isDragging ? 'none' : 'pan-y' // Allow vertical scroll when not dragging
-          }}
-        >
-          {/* Fixed Beautiful Background - Automatically changes based on URL */}
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 opacity-20">
-              <div
-                className="w-full h-full bg-cover bg-center bg-no-repeat"
-                style={{ backgroundImage: `url(${bgImage})` }}
-              ></div>
-            </div>
-          </div>
+       {/* Main Image Container */}
+  <div className="relative group">
+    <div
+      ref={containerRef}
+      className="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-200/50 h-[400px] md:h-[600px] lg:h-[700px] touch-pan-y"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+      style={{ 
+        cursor: isDragging ? 'grabbing' : 'grab',
+        touchAction: isDragging ? 'none' : 'pan-y' // Allow vertical scroll when not dragging
+      }}
+    >
+      {/* Fixed Beautiful Background - Automatically changes based on URL */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 opacity-20">
+          <div
+            className="w-full h-full bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: `url(${bgImage})` }}
+          ></div>
+        </div>
+      </div>
 
-          {/* Loading State */}
-          {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center z-20">
-              <div className="relative">
-                <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
-                <div className="absolute inset-0 w-12 h-12 border-4 border-transparent border-r-purple-400 rounded-full animate-spin animate-reverse"></div>
-              </div>
-            </div>
-          )}
-          
-          {/* Images Container with Smooth Dragging */}
-          <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
-            {displayImages.map((img, i) => (
-              <div
-                key={i}
-                className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ease-out ${
-                  i === active 
-                    ? 'opacity-100 translate-x-0 scale-100 z-10' 
-                    : i < active 
-                      ? 'opacity-0 -translate-x-full scale-95 z-0' 
-                      : 'opacity-0 translate-x-full scale-95 z-0'
-                }`}
-                style={{
-                  transform: i === active ? `translateX(${dragOffset}px)` : undefined
-                }}
-              >
-                <img
-                  src={img.src}
-                  alt={img.alt || `Product image ${i + 1}`}
-                  className={`h-[600px] w-auto object-contain transition-all duration-500 select-none mx-auto ${
-                    isZoomed && i === active 
-                      ? 'scale-150 cursor-zoom-out' 
-                      : 'cursor-zoom-in hover:scale-105'
-                  }`}
-                  onClick={() => i === active && setIsZoomed(!isZoomed)}
-                  onLoad={() => i === active && setIsLoading(false)}
-                  onDragStart={(e) => e.preventDefault()}
-                  style={{
-                    filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.15)) drop-shadow(0 10px 20px rgba(0,0,0,0.1))',
-                    maxHeight: '600px',
-                    maxWidth: '90%',
-                    userSelect: 'none'
-                  }}
-                />
-              </div>
-            ))}
+      {/* Loading State */}
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center z-20">
+          <div className="relative">
+            <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
+            <div className="absolute inset-0 w-12 h-12 border-4 border-transparent border-r-purple-400 rounded-full animate-spin animate-reverse"></div>
           </div>
+        </div>
+      )}
+
+      {/* Images Container with Smooth Dragging */}
+      <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
+        {displayImages.map((img, i) => (
+          <div
+            key={i}
+            className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ease-out ${
+              i === active 
+                ? 'opacity-100 translate-x-0 scale-100 z-10' 
+                : i < active 
+                  ? 'opacity-0 -translate-x-full scale-95 z-0' 
+                  : 'opacity-0 translate-x-full scale-95 z-0'
+            }`}
+            style={{
+              transform: i === active ? `translateX(${dragOffset}px)` : undefined
+            }}
+          >
+            <img
+              src={img.src}
+              alt={img.alt || `Product image ${i + 1}`}
+              className={`w-[300px] h-[300px] object-cover transition-all duration-500 select-none mx-auto rounded-xl ${
+                isZoomed && i === active 
+                  ? 'scale-150 cursor-zoom-out' 
+                  : 'cursor-zoom-in hover:scale-105'
+              }`}
+              onClick={() => i === active && setIsZoomed(!isZoomed)}
+              onLoad={() => i === active && setIsLoading(false)}
+              onDragStart={(e) => e.preventDefault()}
+              style={{
+                filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.15)) drop-shadow(0 10px 20px rgba(0,0,0,0.1))',
+                userSelect: 'none'
+              }}
+            />
+          </div>
+        ))}
+      </div>
 
           {/* Navigation Arrows - Desktop only */}
           {displayImages.length > 1 && (
@@ -414,36 +342,35 @@ export default function ImageGallery({ images }: { images: Image[] }) {
         </div>
       </div>
 
-      {/* Thumbnails */}
       {displayImages.length > 1 && (
-        <div className="mt-6">
-          <div className="flex overflow-x-auto gap-3 px-2 py-2 scrollbar-hide">
-            {displayImages.map((img, i) => (
-              <button
-                key={i}
-                onClick={() => setActive(i)}
-                className={`flex-shrink-0 relative group/thumb transition-all duration-300 ${
-                  i === active 
-                    ? "ring-3 ring-blue-500 ring-offset-2 scale-105 shadow-lg" 
-                    : "ring-2 ring-transparent hover:ring-gray-300 opacity-70 hover:opacity-100 hover:scale-105"
-                }`}
-                aria-label={`View image ${i + 1}`}
-              >
-                <div className="w-20 h-20 rounded-xl overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200/50">
-                  <img
-                    src={img.src}
-                    alt={img.alt || `Thumbnail ${i + 1}`}
-                    className="object-contain w-full h-full transition-transform duration-300 group-hover/thumb:scale-110 drop-shadow-md"
-                    loading="lazy"
-                  />
-                </div>
-                {i === active && (
-                  <div className="absolute inset-0 bg-blue-500/20 rounded-xl border-2 border-blue-500/50"></div>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
+    <div className="mt-6">
+      <div className="flex overflow-x-auto gap-3 px-2 py-2 scrollbar-hide">
+        {displayImages.map((img, i) => (
+          <button
+            key={i}
+            onClick={() => setActive(i)}
+            className={`flex-shrink-0 relative group/thumb transition-all duration-300 ${
+              i === active 
+                ? "ring-3 ring-blue-500 ring-offset-2 scale-105 shadow-lg" 
+                : "ring-2 ring-transparent hover:ring-gray-300 opacity-70 hover:opacity-100 hover:scale-105"
+            }`}
+            aria-label={`View image ${i + 1}`}
+          >
+            <div className="w-20 h-20 rounded-xl overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200/50">
+              <img
+                src={img.src}
+                alt={img.alt || `Thumbnail ${i + 1}`}
+                className="object-cover w-full h-full transition-transform duration-300 group-hover/thumb:scale-110 drop-shadow-md"
+                loading="lazy"
+              />
+            </div>
+            {i === active && (
+              <div className="absolute inset-0 bg-blue-500/20 rounded-xl border-2 border-blue-500/50"></div>
+            )}
+          </button>
+        ))}
+      </div>
+    </div>
       )}
 
       {/* Dots Indicator for Mobile */}
