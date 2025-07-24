@@ -145,7 +145,7 @@ export default function ProductPage() {
         {/* Image Section with enhanced styling */}
         <div className="lg:w-1/2 hidden lg:block">
           <div className="bg-white rounded-3xl mx-3 shadow-xl lg:p-2 border border-gray-100 hover:shadow-2xl transition-shadow duration-300">          
-              <ImageGallery backgroundSlug={product.slug} images={product.images || []} />
+              <ImageGallery images={product.images || []} />
           </div>
         </div>
 
@@ -176,7 +176,7 @@ export default function ProductPage() {
             )}
 
           <div className="bg-white block lg:hidden mt-3 rounded-3xl shadow-xl border border-gray-100 hover:shadow-2xl transition-shadow duration-300">          
-                        <ImageGallery backgroundSlug={product.slug} images={product.images || []} />
+                        <ImageGallery images={product.images || []} />
                     </div>
 
             {/* Offer tab with enhanced styling */}
