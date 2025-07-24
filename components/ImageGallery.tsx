@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from "react";
+import { usePathname } from 'next/navigation'; // Next.js 13+ ke liye
 import { ChevronLeft, ChevronRight, ZoomIn, X, Maximize2 } from "lucide-react";
 
 type Image = { src: string; alt?: string };
@@ -19,7 +20,19 @@ interface ExtendedHTMLElement extends HTMLElement {
   msRequestFullscreen?: () => Promise<void>;
 }
 
-export default function ImageGallery({ images, backgroundSlug }: { images: Image[]; backgroundSlug: string }) {
+export default function ImageGallery({ images }: { images: Image[] }) {
+  // Automatically get slug from URL
+  const pathname = usePathname();
+  
+  // Extract slug from pathname
+  const getSlugFromPath = () => {
+    const segments = pathname.split('/');
+    // Get the last segment as slug
+    const slug = segments[segments.length - 1];
+    return slug.toLowerCase();
+  };
+
+  const currentSlug = getSlugFromPath();
 
   const [active, setActive] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
@@ -46,6 +59,38 @@ export default function ImageGallery({ images, backgroundSlug }: { images: Image
   ];
 
   const displayImages = images && images.length > 0 ? images : defaultImages;
+
+  // Background images mapping with more products
+  const backgroundImages: Record<string, string> = {
+    liver: "https://cms.amraj.in/wp-content/uploads/2025/07/liver-bg.png",
+    prostate: "https://cms.amraj.in/wp-content/uploads/2025/07/1.png",
+    weight: "https://cms.amraj.in/wp-content/uploads/2025/07/2.png",
+    diabetes: "https://cms.amraj.in/wp-content/uploads/2025/07/diabetes-bg.png",
+    // Default fallback
+    default: "https://cms.amraj.in/wp-content/uploads/2025/07/default-bg.png"
+  };
+
+  // Auto-detect background based on current slug
+  const getBackgroundImage = () => {
+    console.log('Current Slug:', currentSlug); // Debug ke liye
+    
+    // Direct match check karo
+    if (backgroundImages[currentSlug]) {
+      return backgroundImages[currentSlug];
+    }
+    
+    // Partial match check karo (slug me keyword hai ya nahi)
+    for (const [key, image] of Object.entries(backgroundImages)) {
+      if (key !== 'default' && currentSlug.includes(key)) {
+        return image;
+      }
+    }
+    
+    // Agar koi match nahi mila to default return karo
+    return backgroundImages.default;
+  };
+
+  const bgImage = getBackgroundImage();
 
   useEffect(() => {
     const img = new Image();
@@ -213,14 +258,6 @@ export default function ImageGallery({ images, backgroundSlug }: { images: Image
     }
   };
 
-  const backgroundImages: Record<string, string> = {
-    liver: "https://cms.amraj.in/wp-content/uploads/2025/07/liver-bg.png",
-    prostate: "https://cms.amraj.in/wp-content/uploads/2025/07/prostate-bg.png",
-    weight: "https://cms.amraj.in/wp-content/uploads/2025/07/weight-machine.png",
-  };
-
-  const bgImage = backgroundImages[backgroundSlug];
-
   // Handle fullscreen change events
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -263,15 +300,15 @@ export default function ImageGallery({ images, backgroundSlug }: { images: Image
             touchAction: isDragging ? 'none' : 'pan-y' // Allow vertical scroll when not dragging
           }}
         >
-          {/* Fixed Beautiful Background */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 opacity-20">
-          <div
-            className="w-full h-full bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: `url(${bgImage})` }}
-          ></div>
-        </div>
-      </div>
+          {/* Fixed Beautiful Background - Automatically changes based on URL */}
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 opacity-20">
+              <div
+                className="w-full h-full bg-cover bg-center bg-no-repeat"
+                style={{ backgroundImage: `url(${bgImage})` }}
+              ></div>
+            </div>
+          </div>
 
           {/* Loading State */}
           {isLoading && (
