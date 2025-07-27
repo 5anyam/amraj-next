@@ -48,8 +48,8 @@ export default function ImageGallery({ images }: { images: Image[] }) {
 
   const backgroundImages: Record<string, string> = {
     liver: "https://cms.amraj.in/wp-content/uploads/2025/07/liver-bg.png",
-    prostate: "https://cms.amraj.in/wp-content/uploads/2025/07/1.png",
-    weight: "https://cms.amraj.in/wp-content/uploads/2025/07/2.png",
+    prostate: "https://cms.amraj.in/wp-content/uploads/2025/07/prostate-bg.png",
+    weight: "https://cms.amraj.in/wp-content/uploads/2025/07/weight-bg.png",
     diabetes: "https://cms.amraj.in/wp-content/uploads/2025/07/diabetes-bg.png",
     default: "https://cms.amraj.in/wp-content/uploads/2025/07/default-bg.png"
   };
@@ -269,7 +269,7 @@ export default function ImageGallery({ images }: { images: Image[] }) {
                 <img
                   src={img.src}
                   alt={img.alt || `Product image ${i + 1}`}
-                  className={`w-[400px] h-[400px] object-cover transition-all duration-500 select-none mx-auto rounded-xl ${
+                  className={`w-[350px] h-[350px] object-cover transition-all duration-500 select-none mx-auto rounded-xl ${
                     isZoomed && i === active 
                       ? 'scale-200 cursor-zoom-out' 
                       : 'cursor-zoom-in hover:scale-110'

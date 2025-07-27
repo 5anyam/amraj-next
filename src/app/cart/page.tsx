@@ -196,13 +196,9 @@ export default function CartPage() {
 
                   <div className="flex justify-between text-gray-600">
                     <span>Shipping</span>
-                    <span className="text-green-600 font-medium">Free</span>
+                    <span className="text-green-600 border px-2 py-1 rounded-2xl font-medium">Free</span>
                   </div>
 
-                  <div className="flex justify-between text-gray-600">
-                    <span>Included GST (18%)</span>
-                    <span>₹{(total - total / 1.18).toFixed(2)}</span>
-                  </div>
 
                   <div className="border-t border-gray-200 pt-4">
                     <div className="flex justify-between text-lg font-bold text-gray-900">
