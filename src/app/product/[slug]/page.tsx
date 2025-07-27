@@ -161,7 +161,7 @@ export default function ProductPage() {
             ) : null}
 
             {/* Product title with gradient text */}
-<h1 className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-teal-600 to-teal-800 bg-clip-text text-transparent mb-4 leading-tight">
+<h1 className="text-xl lg:text-2xl font-bold text-black mb-4 leading-tight">
   {product.name}
 </h1>
 
@@ -196,13 +196,13 @@ export default function ProductPage() {
                 </div>
               </div>
               
-              {/* Delivery info with icon */}
+              {/* Delivery info with icon
               <div className="flex items-center text-teal-700 bg-teal-50 rounded-xl p-2 border border-teal-200">
                 <span className="text-base mr-2">⚡</span>
                 <span className="font-medium text-xs lg:text-sm">
                   For Fastest delivery, order within <span className="font-bold text-orange-600">4 hrs 58 mins</span>
                 </span>
-              </div>
+              </div> */}
             </div>
 
             {/* Enhanced CTA button with animation */}
@@ -231,7 +231,7 @@ export default function ProductPage() {
               )}
             </button>
 
-            {/* Enhanced membership banner */}
+            {/* Enhanced membership banner
             <div className="bg-gradient-to-r from-orange-50 to-teal-50 border-2 border-dashed border-orange-300 rounded-2xl p-4 mb-6 relative overflow-hidden">
               <div className="absolute top-0 right-0 bg-gradient-to-l from-orange-500 to-orange-600 text-white px-2 py-1 rounded-bl-2xl text-xs font-bold">
                 SPECIAL OFFER
@@ -255,7 +255,7 @@ export default function ProductPage() {
                   JOIN NOW
                 </button>
               </div>
-            </div>
+            </div> */}
 
             {/* Enhanced benefits grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
