@@ -151,7 +151,7 @@ export default function ProductPage() {
 
         {/* Details Section with modern card design */}
         <div className="lg:w-1/2">
-          <div className="bg-white rounded-3xl shadow-xl p-6 border border-gray-100">
+          <div className="bg-white rounded-3xl shadow-xl p-2 md:p-6 border border-gray-100">
             {/* Product attributes */}
             {product.attributes?.length ? (
               <div className="mb-4 p-3 bg-gradient-to-r from-teal-50 to-teal-100 rounded-2xl border border-teal-200">
