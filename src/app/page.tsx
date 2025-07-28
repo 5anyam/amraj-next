@@ -78,7 +78,7 @@ export default function Homepage() {
     Failed to load products.
   </div>
 ) : (
-  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative z-10">
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative z-10">
     {/* Only first 3 products */}
     {data?.slice(0, 3).map((prod) => (
       <ProductCard key={prod.id} product={prod} />
