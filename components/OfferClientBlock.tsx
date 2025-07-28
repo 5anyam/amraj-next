@@ -19,34 +19,40 @@ interface OfferClientBlockProps {
 
 export default function OfferClientBlock({ product }: OfferClientBlockProps) {
   const { addToCart } = useCart();
-  const [offer] = useState<SelectedOffer>({
-    label: "1 Month",
-    duration: "1 Month",
-    qty: 1,
-    discountPercent: 10,
-  });
+  // ⬇️ No default offer selected; offers only assigned after user selects
+  const [offer, setOffer] = useState<SelectedOffer>(undefined);
+
   const price = parseFloat(product.price?.toString() || "0");
-  const discountedPrice = price * offer.qty * (1 - offer.discountPercent / 100);
-  const originalPrice = price * offer.qty;
+  // Show discounted/original price only if an offer is selected
+  const discountedPrice = offer ? price * offer.qty * (1 - offer.discountPercent / 100) : 0;
+  const originalPrice = offer ? price * offer.qty : 0;
 
   return (
     <>
-      <OfferTab price={price} />
+      <OfferTab price={price} onOfferChange={setOffer} />
       <div className="mb-4">
-        <span className="text-2xl font-bold">₹{discountedPrice.toFixed(2)}</span>
-        <span className="line-through text-gray-400 ml-3">₹{originalPrice.toFixed(2)}</span>
+        <span className="text-2xl font-bold">
+          {offer ? `₹${discountedPrice.toFixed(2)}` : "Select offer"}
+        </span>
+        {offer && (
+          <span className="line-through text-gray-400 ml-3">
+            ₹{originalPrice.toFixed(2)}
+          </span>
+        )}
       </div>
       <button
-        className="bg-[#168b3f] hover:bg-[#137633] text-white w-full py-4 rounded-xl font-bold"
+        className="bg-[#168b3f] hover:bg-[#137633] text-white w-full py-4 rounded-xl font-bold disabled:opacity-60"
+        disabled={!offer}
         onClick={() => {
+          if (!offer) return; // safety
           for (let i = 0; i < offer.qty; i++) {
             addToCart({
               id: Number(product.id),
               name: `${product.name}${offer.qty > 1 ? ` (${i + 1} of ${offer.qty})` : ""}`,
               price: (price * (1 - offer.discountPercent / 100)).toString(),
               images: product.images ?? [],
-              regular_price: product.regular_price, // ✅ Add this line
-            });            
+              regular_price: product.regular_price,
+            });
           }
           toast({
             title: "Added to cart",
@@ -54,7 +60,9 @@ export default function OfferClientBlock({ product }: OfferClientBlockProps) {
           });
         }}
       >
-        ADD TO CART — ₹{discountedPrice.toFixed(2)}
+        {offer
+          ? `ADD TO CART — ₹${discountedPrice.toFixed(2)}`
+          : "SELECT AN OFFER FIRST"}
       </button>
     </>
   );
