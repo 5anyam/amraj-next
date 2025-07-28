@@ -11,15 +11,15 @@ import OfferTab, { SelectedOffer } from '../../../../components/OfferTab';
 import { Tab } from '@headlessui/react';
 import SmoothMarquee from '../../../../components/ProductSlide';
 
-// Product Type Definitions
+// --- Product Type Definitions ---
 export interface ImageData { src: string; }
 export interface Attribute { option: string; }
 export interface Product {
   id: number;
   name: string;
   slug: string;
-  price: string;
-  regular_price: string;
+  price: string;                // sale price, or reg price if no sale
+  regular_price: string;        // always MRP
   description?: string;
   short_description?: string;
   images: ImageData[];
@@ -27,12 +27,11 @@ export interface Product {
 }
 
 export default function ProductPage() {
-  // ✅ Fix slug extraction
   const params = useParams();
   const slugParam = params?.slug;
   const slug = Array.isArray(slugParam) ? slugParam[0] : slugParam || '';
 
-  // ✅ Fetch products safely
+  // Fetch products where slug match
   const { data: products, isLoading, error } = useQuery<Product[]>({
     queryKey: ['all-products'],
     queryFn: async () => await fetchProducts() as Product[],
@@ -40,14 +39,10 @@ export default function ProductPage() {
   });
 
   const { addToCart } = useCart();
-
-  // ✅ Offer state: NO offer selected by default!
   const [offer, setOffer] = useState<SelectedOffer>(undefined);
-
-  // Add state for button animation
   const [isAddingToCart, setIsAddingToCart] = useState(false);
 
-  // ✅ Loading and Error Handling
+  // --- Loading and Error Handling ---
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-teal-50 to-orange-50 flex items-center justify-center">
@@ -91,12 +86,28 @@ export default function ProductPage() {
     );
   }
 
-  const price = parseFloat(product.price || '0');
-  // Only show discountedPrice if offer is selected
-  const discountedPrice = offer ? price * offer.qty * (1 - offer.discountPercent / 100) : 0;
-  const originalPrice = offer ? price * offer.qty : 0;
+  // --- Prices and Discount Logic ---
+  const salePrice = parseFloat(product.price || '0');              // May be sale or reg
+  const regularPrice = parseFloat(product.regular_price || product.price || '0');    // Fallback to price if missing
+  const hasSiteSale = salePrice < regularPrice;
 
-  // Add to cart – only runs if offer is set!
+  const qty = offer?.qty || 0;
+
+  // Final price for one unit after offer (if selected)
+  const finalUnitPrice = offer
+    ? salePrice * (1 - offer.discountPercent / 100)
+    : salePrice;
+
+  // total price = per unit × qty
+  const discountedPrice = offer
+    ? finalUnitPrice * qty
+    : salePrice * qty;
+
+  const crossedPrice = regularPrice * (offer ? qty : 1);
+  const siteSaleSave = hasSiteSale ? (regularPrice - salePrice) * (offer ? qty : 1) : 0;
+  const totalSave = crossedPrice - discountedPrice;
+
+  // --- Add To Cart ---
   const handleAddToCart = async () => {
     if (!offer) return;
     setIsAddingToCart(true);
@@ -104,7 +115,7 @@ export default function ProductPage() {
       addToCart({
         ...product,
         name: product.name + (offer.qty > 1 ? ` (${i + 1} of ${offer.qty})` : ''),
-        price: (price * (1 - offer.discountPercent / 100)).toString(),
+        price: finalUnitPrice.toString(),
         images: product.images || [],
       });
     }
@@ -139,7 +150,6 @@ export default function ProductPage() {
         {/* Details Section */}
         <div className="lg:w-1/2">
           <div className="bg-white rounded-3xl shadow-xl p-2 md:p-6 border border-gray-100">
-            {/* Product attributes */}
             {product.attributes?.length ? (
               <div className="mb-4 p-3 bg-gradient-to-r from-teal-50 to-teal-100 rounded-2xl border border-teal-200">
                 <span className="text-teal-700 font-semibold text-xs uppercase tracking-wide">Flavour:</span>
@@ -147,19 +157,17 @@ export default function ProductPage() {
               </div>
             ) : null}
 
-            {/* Product title */}
             <h1 className="text-xl lg:text-2xl font-bold text-black mb-4 leading-tight">
               {product.name}
             </h1>
 
             <SmoothMarquee/>
 
-            {/* Short description */}
             {product.short_description && (
               <div
-              className="prose prose-sm max-w-none text-gray-700 leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: product.short_description }}
-            />
+                className="prose prose-sm max-w-none text-gray-700 leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: product.short_description }}
+              />
             )}
 
             {/* Mobile Image Gallery */}
@@ -167,31 +175,46 @@ export default function ProductPage() {
               <ImageGallery images={product.images || []} />
             </div>
 
-            {/* Offer tab */}
+            {/* OfferTab - always pass salePrice as base price */}
             <div className="mb-4">
-              <OfferTab price={price} onOfferChange={setOffer} />
+              <OfferTab price={salePrice} onOfferChange={setOffer} />
             </div>
 
-            {/* Pricing section */}
+            {/* PRICING SECTION */}
             <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-4 mb-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-end gap-2">
                   <span className="text-2xl lg:text-3xl font-bold text-teal-600">
-                    {offer ? `₹${discountedPrice.toFixed(2)}` : <span className="text-base text-gray-400">Select Offer</span>}
+                    {offer
+                      ? `₹${discountedPrice.toFixed(2)}`
+                      : hasSiteSale
+                        ? `₹${salePrice.toFixed(2)}`
+                        : `₹${regularPrice.toFixed(2)}`
+                    }
                   </span>
-                  {offer && (
+                  {/* show cross only if site sale or offer present */}
+                  {(hasSiteSale || offer) && (
                     <span className="line-through text-gray-500 font-semibold text-base lg:text-lg">
-                      ₹{originalPrice.toFixed(2)}
+                      ₹{crossedPrice.toFixed(2)}
                     </span>
                   )}
                 </div>
                 <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-1 rounded-full font-bold text-xs shadow-lg">
-                  {offer ? `SAVE ₹${(originalPrice - discountedPrice).toFixed(2)}` : "—"}
+                  {offer
+                    ? `SAVE ₹${totalSave.toFixed(2)}`
+                    : (hasSiteSale
+                        ? `SAVE ₹${siteSaleSave.toFixed(2)}`
+                        : '—')}
                 </div>
               </div>
+              {hasSiteSale && !offer && (
+                <div className="text-xs mt-1 text-orange-600 font-semibold">
+                  (MRP: ₹{regularPrice.toFixed(2)})
+                </div>
+              )}
             </div>
 
-            {/* CTA Button */}
+            {/* CTA BUTTON */}
             <button
               className={`w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold px-6 py-3 lg:py-4 rounded-2xl text-sm lg:text-base shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 mb-6 relative overflow-hidden group ${
                 isAddingToCart ? 'scale-95 shadow-inner' : ''
@@ -215,7 +238,7 @@ export default function ProductPage() {
               )}
             </button>
 
-            {/* Benefits grid */}
+            {/* BENEFITS grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
                 ['🚚', 'Fast Delivery', 'Express shipping'],
@@ -234,7 +257,7 @@ export default function ProductPage() {
         </div>
       </div>
 
-      {/* Extra "Add to Cart" button - Only on Mobile */}
+      {/* MOBILE BOTTOM ADD TO CART */}
       <div className="lg:hidden fixed bottom-0 z-10 left-0 w-full bg-white border-t border-gray-200 p-3">
         <button
           className={`w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold px-6 py-3 rounded-2xl text-sm shadow-xl hover:shadow-2xl transition-all duration-300 ${
@@ -263,7 +286,7 @@ export default function ProductPage() {
         </button>
       </div>
 
-      {/* Description tabs */}
+      {/* DESCRIPTION TABS */}
       <div className="max-w-7xl mx-auto mt-8 p-4 lg:p-6">
         <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
           <Tab.Group>
