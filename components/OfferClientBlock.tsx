@@ -19,17 +19,19 @@ interface OfferClientBlockProps {
 
 export default function OfferClientBlock({ product }: OfferClientBlockProps) {
   const { addToCart } = useCart();
-  // ⬇️ No default offer selected; offers only assigned after user selects
   const [offer, setOffer] = useState<SelectedOffer>(undefined);
 
-  const price = parseFloat(product.price?.toString() || "0");
-  // Show discounted/original price only if an offer is selected
-  const discountedPrice = offer ? price * offer.qty * (1 - offer.discountPercent / 100) : 0;
-  const originalPrice = offer ? price * offer.qty : 0;
+  // Always parse both for correct logic!
+  const salePrice = parseFloat(product.price?.toString() || "0");              // Active sale or regular
+  const regularPrice = parseFloat(product.regular_price?.toString() || salePrice.toString());
+
+  // Use correct values for calculation
+  const discountedPrice = offer ? salePrice * offer.qty * (1 - offer.discountPercent / 100) : 0;
+  const originalPrice = offer ? regularPrice * offer.qty : 0;
 
   return (
     <>
-      <OfferTab price={price} onOfferChange={setOffer} />
+      <OfferTab salePrice={salePrice} regularPrice={regularPrice} onOfferChange={setOffer} />
       <div className="mb-4">
         <span className="text-2xl font-bold">
           {offer ? `₹${discountedPrice.toFixed(2)}` : "Select offer"}
@@ -49,7 +51,7 @@ export default function OfferClientBlock({ product }: OfferClientBlockProps) {
             addToCart({
               id: Number(product.id),
               name: `${product.name}${offer.qty > 1 ? ` (${i + 1} of ${offer.qty})` : ""}`,
-              price: (price * (1 - offer.discountPercent / 100)).toString(),
+              price: (salePrice * (1 - offer.discountPercent / 100)).toString(),
               images: product.images ?? [],
               regular_price: product.regular_price,
             });

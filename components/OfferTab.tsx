@@ -8,7 +8,6 @@ type Offer = {
   discountPercent: number;
   isRecommended?: boolean;
 };
-
 export type SelectedOffer = Offer | undefined;
 
 // Offers list
@@ -19,31 +18,35 @@ const OFFERS: Offer[] = [
 ];
 
 export default function OfferTab({
-  price = 299,
+  salePrice = 299,
+  regularPrice = 299,
   onOfferChange = () => {},
 }: {
-  price?: number;
+  salePrice?: number;        // Pass product.price (Woo: could be discounted)
+  regularPrice?: number;     // Pass product.regular_price (always MRP)
   onOfferChange?: (offer: SelectedOffer) => void;
 }) {
-  // By default: no offer selected
   const [selected, setSelected] = useState<SelectedOffer>(undefined);
 
-  // Only notify parent when user selects (or clears) an offer
   useEffect(() => {
     onOfferChange(selected);
   }, [selected, onOfferChange]);
 
-  // Calculate savings
+  // Calculate savings from MRP to final (offer-discounted sale price)
   const getSaveAmount = (offer: Offer) => {
-    const original = price * offer.qty;
-    const discounted = original * (1 - offer.discountPercent / 100);
-    return Math.round(original - discounted);
+    const mrp = regularPrice * offer.qty;
+    const final = salePrice * offer.qty * (1 - offer.discountPercent / 100);
+    return Math.round(mrp - final);
   };
 
-  // Calculate MRP (before discount)
+  // Final price after offer (show as main price)
+  const getFinalPrice = (offer: Offer) => {
+    return Math.round(salePrice * offer.qty * (1 - offer.discountPercent / 100));
+  };
+
+  // Always show MRP (original, crossed)
   const getMRP = (offer: Offer) => {
-    if (!offer.discountPercent) return price * offer.qty;
-    return Math.round((price * offer.qty) / (1 - offer.discountPercent / 100));
+    return Math.round(regularPrice * offer.qty);
   };
 
   return (
@@ -70,7 +73,7 @@ export default function OfferTab({
             {/* Duration */}
             <div className="font-bold text-xs sm:text-lg text-[#168b3f] mt-2 sm:mt-0">{offer.duration}</div>
 
-            {/* Pack Info */}
+            {/* Pack info */}
             <div className="text-xs mt-1 text-gray-700">
               <span className="block">Pack Of {offer.qty}</span>
               <span className="block text-gray-400 text-xs">
@@ -78,12 +81,12 @@ export default function OfferTab({
               </span>
             </div>
 
-            {/* Price */}
+            {/* Price after offer discount */}
             <div className="mt-1 text-sm sm:text-2xl font-bold text-[#168b3f]">
-              ₹{Math.round(price * offer.qty * (1 - offer.discountPercent / 100))}
+              ₹{getFinalPrice(offer)}
             </div>
 
-            {/* MRP */}
+            {/* MRP (crossed) */}
             <div className="mt-1 text-xs text-gray-500 line-through">
               MRP: ₹{getMRP(offer)}
             </div>

@@ -177,7 +177,7 @@ export default function ProductPage() {
 
             {/* OfferTab - always pass salePrice as base price */}
             <div className="mb-4">
-              <OfferTab price={salePrice} onOfferChange={setOffer} />
+            <OfferTab salePrice={parseFloat(product.price)} regularPrice={parseFloat(product.regular_price)} onOfferChange={setOffer} />
             </div>
 
             {/* PRICING SECTION */}
