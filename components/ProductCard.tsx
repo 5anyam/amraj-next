@@ -111,7 +111,7 @@ export default function ProductCard({ product }: { product: Product }) {
             <svg className="w-3 h-3 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
               <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 11h-2v-1H8a1 1 0 010-2h1V9H8a1 1 0 010-2h1V6h2v1h1a1 1 0 010 2h-1v1h1a1 1 0 010 2h-1v1z" />
             </svg>
-            Doctor Recommended
+            Trusted By Doctors
           </div>
 
           {/* Rating */}
@@ -157,13 +157,12 @@ export default function ProductCard({ product }: { product: Product }) {
                 <span className="text-xs sm:text-sm text-orange-400 line-through font-medium">
                   ₹{originalPrice.toLocaleString()}
                 </span>
+                
               )}
-            </div>
-            {isOnSale && (
               <div className="text-xs text-green-600 font-semibold bg-green-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
-                <span className="hidden sm:inline">Save </span>₹{(originalPrice - salePrice).toLocaleString()}
+                <span>Save </span>₹{(originalPrice - salePrice).toLocaleString()}
               </div>
-            )}
+            </div>
           </div>
 
           {/* Description */}
