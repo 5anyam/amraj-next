@@ -70,20 +70,30 @@ export default function Homepage() {
         </p>
         
         {isLoading ? (
-          <div className="text-center text-orange-500 animate-pulse">
-            Loading products...
-          </div>
-        ) : error ? (
-          <div className="text-center text-red-600">
-            Failed to load products.
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 relative z-10">
-            {data?.slice(0, 4).map((prod) => (
-              <ProductCard key={prod.id} product={prod} />
-            ))}
-          </div>
-        )}
+  <div className="text-center text-orange-500 animate-pulse">
+    Loading products...
+  </div>
+) : error ? (
+  <div className="text-center text-red-600">
+    Failed to load products.
+  </div>
+) : (
+  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 relative z-10">
+    {/* Only first 3 products */}
+    {data?.slice(0, 3).map((prod) => (
+      <ProductCard key={prod.id} product={prod} />
+    ))}
+
+    {/* 4th Column: Special Card with Image only */}
+    <div className="flex items-center justify-center rounded-xl bg-white shadow-md p-4">
+      <img
+        src="/coming-soon.png" // <-- Yahan apni image ka path daalein
+        alt="Special Card"
+        className="w-full h-full object-contain"
+      />
+    </div>
+  </div>
+)}
       </div>
       </section>
       <AboutUsSection/>
