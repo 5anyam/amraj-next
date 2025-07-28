@@ -10,9 +10,9 @@ type Offer = {
 };
 
 const OFFERS: Offer[] = [
-  { label: "1 Month", duration: "1 Month", qty: 1, discountPercent: 0 },
-  { label: "2 Months", duration: "2 Months", qty: 2, discountPercent: 5 },
-  { label: "3 Months", duration: "3 Months", qty: 3, discountPercent: 8, isRecommended: true },
+  { label: "2 Month", duration: "2 Month", qty: 2, discountPercent: 5 },
+  { label: "3 Months", duration: "3 Months", qty: 3, discountPercent: 7 },
+  { label: "4 Months", duration: "4 Months", qty: 4, discountPercent: 10, isRecommended: true },
 ];
 
 export type SelectedOffer = Offer;
