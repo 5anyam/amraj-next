@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
 import React, { useState, useRef, useEffect } from "react";
 import { usePathname } from 'next/navigation';
 import { ChevronLeft, ChevronRight, ZoomIn, X, Maximize2 } from "lucide-react";
+
+// --- Types and Interfaces ---
 
 type Image = { src: string; alt?: string };
 
@@ -17,6 +19,8 @@ interface ExtendedHTMLElement extends HTMLElement {
   webkitRequestFullscreen?: () => Promise<void>;
   msRequestFullscreen?: () => Promise<void>;
 }
+
+// --- MAIN COMPONENT ---
 
 export default function ImageGallery({ images }: { images: Image[] }) {
   const pathname = usePathname();
@@ -46,6 +50,7 @@ export default function ImageGallery({ images }: { images: Image[] }) {
 
   const displayImages = images && images.length > 0 ? images : [];
 
+  // --- Background Images Logic ---
   const backgroundImages: Record<string, string> = {
     liver: "https://cms.amraj.in/wp-content/uploads/2025/07/liver-bg.png",
     prostate: "https://cms.amraj.in/wp-content/uploads/2025/07/prostate-bg.png",
@@ -64,18 +69,22 @@ export default function ImageGallery({ images }: { images: Image[] }) {
 
   const bgImage = getBackgroundImage();
 
+  // --- Image Loading State ---
   useEffect(() => {
-    const img = new Image();
+    const img = new window.Image();
     img.onload = () => setIsLoading(false);
     img.src = displayImages[active]?.src;
     setIsLoading(true);
   }, [active, displayImages]);
+
+  // --- Navigation/Drag Logic ---
 
   const handlePrevious = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
     setActive((prev) => (prev === 0 ? displayImages.length - 1 : prev - 1));
     setTimeout(() => setIsTransitioning(false), 300);
+    setIsZoomed(false);
   };
 
   const handleNext = () => {
@@ -83,8 +92,10 @@ export default function ImageGallery({ images }: { images: Image[] }) {
     setIsTransitioning(true);
     setActive((prev) => (prev === displayImages.length - 1 ? 0 : prev + 1));
     setTimeout(() => setIsTransitioning(false), 300);
+    setIsZoomed(false);
   };
 
+  // -- Touch/Drag handlers (main area & fullscreen mobile)
   const handleTouchStart = (e: React.TouchEvent) => {
     if (isZoomed) return;
     const touch = e.touches[0];
@@ -123,6 +134,7 @@ export default function ImageGallery({ images }: { images: Image[] }) {
     setCurrentX(0);
   };
 
+  // -- Desktop Mouse drag
   const handleMouseDown = (e: React.MouseEvent) => {
     if (isZoomed) return;
     setStartX(e.clientX);
@@ -156,7 +168,9 @@ export default function ImageGallery({ images }: { images: Image[] }) {
     setCurrentX(0);
   };
 
+  // --- Keyboard Navigation ---
   const handleKeyDown = (e: KeyboardEvent) => {
+    if (!isFullscreen) return;
     if (e.key === 'ArrowLeft') handlePrevious();
     if (e.key === 'ArrowRight') handleNext();
     if (e.key === 'Escape') {
@@ -168,15 +182,18 @@ export default function ImageGallery({ images }: { images: Image[] }) {
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+    // eslint-disable-next-line
+  }, [isFullscreen, active]);
 
+  // --- Fullscreen logic ---
   const enterFullscreen = () => {
     setIsFullscreen(true);
+    setIsZoomed(false); // Don't zoom on entry
     if (fullscreenRef.current) {
       const element = fullscreenRef.current as ExtendedHTMLElement;
-      if (element.requestFullscreen) element.requestFullscreen().catch(console.log);
-      else if (element.webkitRequestFullscreen) element.webkitRequestFullscreen().catch(console.log);
-      else if (element.msRequestFullscreen) element.msRequestFullscreen().catch(console.log);
+      if (element.requestFullscreen) element.requestFullscreen().catch(()=>{});
+      else if (element.webkitRequestFullscreen) element.webkitRequestFullscreen().catch(()=>{});
+      else if (element.msRequestFullscreen) element.msRequestFullscreen().catch(()=>{});
     }
   };
 
@@ -184,12 +201,13 @@ export default function ImageGallery({ images }: { images: Image[] }) {
     setIsFullscreen(false);
     setIsZoomed(false);
     const doc = document as ExtendedDocument;
-    if (document.fullscreenElement) document.exitFullscreen().catch(console.log);
-    else if (doc.webkitFullscreenElement) doc.webkitExitFullscreen?.().catch(console.log);
-    else if (doc.msFullscreenElement) doc.msExitFullscreen?.().catch(console.log);
+    if (document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+    else if (doc.webkitFullscreenElement) doc.webkitExitFullscreen?.().catch(()=>{});
+    else if (doc.msFullscreenElement) doc.msExitFullscreen?.().catch(()=>{});
   };
 
   useEffect(() => {
+    // Clean up on native fullscreen exit (escape, android nav, etc)
     const handleFullscreenChange = () => {
       const doc = document as ExtendedDocument;
       if (!document.fullscreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
@@ -197,7 +215,6 @@ export default function ImageGallery({ images }: { images: Image[] }) {
         setIsZoomed(false);
       }
     };
-
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
     document.addEventListener('msfullscreenchange', handleFullscreenChange);
@@ -211,13 +228,14 @@ export default function ImageGallery({ images }: { images: Image[] }) {
 
   if (!displayImages || displayImages.length === 0) return null;
 
+  // --- UI RETURN ---
   return (
     <>
       {/* Main Image Container */}
       <div className="relative group">
         <div
           ref={containerRef}
-          className="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-200/50 h-[400px] md:h-[600px] lg:h-[700px] touch-pan-y"
+          className="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-200/50 h-[400px] md:h-[600px] lg:h-[700px] bg-white touch-pan-y"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -225,12 +243,12 @@ export default function ImageGallery({ images }: { images: Image[] }) {
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
-          style={{ 
-            cursor: isDragging ? 'grabbing' : 'grab',
-            touchAction: isDragging ? 'none' : 'pan-y'
+          style={{
+            cursor: isDragging ? "grabbing" : "grab",
+            touchAction: isDragging ? "none" : "pan-y"
           }}
         >
-          {/* Fixed Beautiful Background - Automatically changes based on URL */}
+          {/* Fixed Background */}
           <div className="absolute inset-0">
             <div className="absolute inset-0 opacity-20">
               <div
@@ -240,7 +258,7 @@ export default function ImageGallery({ images }: { images: Image[] }) {
             </div>
           </div>
 
-          {/* Loading State */}
+          {/* Loading Spinner */}
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center z-20">
               <div className="relative">
@@ -250,17 +268,17 @@ export default function ImageGallery({ images }: { images: Image[] }) {
             </div>
           )}
 
-          {/* Images Container with Smooth Dragging - INCREASED ZOOM */}
+          {/* Images Container with Drag */}
           <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
             {displayImages.map((img, i) => (
               <div
                 key={i}
                 className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ease-out ${
-                  i === active 
-                    ? 'opacity-100 translate-x-0 scale-100 z-10' 
-                    : i < active 
-                      ? 'opacity-0 -translate-x-full scale-95 z-0' 
-                      : 'opacity-0 translate-x-full scale-95 z-0'
+                  i === active
+                    ? "opacity-100 translate-x-0 scale-100 z-10"
+                    : i < active
+                      ? "opacity-0 -translate-x-full scale-95 z-0"
+                      : "opacity-0 translate-x-full scale-95 z-0"
                 }`}
                 style={{
                   transform: i === active ? `translateX(${dragOffset}px)` : undefined
@@ -269,30 +287,34 @@ export default function ImageGallery({ images }: { images: Image[] }) {
                 <img
                   src={img.src}
                   alt={img.alt || `Product image ${i + 1}`}
-                  className={`w-[390px] h-[390px] object-cover transition-all duration-500 select-none mx-auto rounded-xl ${
-                    isZoomed && i === active 
-                      ? 'scale-200 cursor-zoom-out' 
-                      : 'cursor-zoom-in hover:scale-110'
+                  className={`w-[385px] h-[385px] sm:w-[490px] sm:h-[490px] object-cover transition-all duration-500 select-none mx-auto rounded-xl ${
+                    isZoomed && i === active
+                      ? "scale-200 cursor-zoom-out"
+                      : "cursor-pointer hover:scale-105"
                   }`}
-                  onClick={() => i === active && setIsZoomed(!isZoomed)}
+                  onClick={() => {
+                    setActive(i);
+                    setIsZoomed(false);
+                    enterFullscreen();
+                  }}
                   onLoad={() => i === active && setIsLoading(false)}
                   onDragStart={(e) => e.preventDefault()}
                   style={{
-                    filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.15)) drop-shadow(0 10px 20px rgba(0,0,0,0.1))',
-                    userSelect: 'none'
+                    filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.15)) drop-shadow(0 10px 20px rgba(0,0,0,0.1))",
+                    userSelect: "none"
                   }}
                 />
               </div>
             ))}
           </div>
 
-          {/* Navigation Arrows - Desktop only */}
+          {/* Desktop Navigation Arrows */}
           {displayImages.length > 1 && (
             <>
               <button
                 onClick={handlePrevious}
                 disabled={isTransitioning}
-                className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 border border-gray-200/50 z-30 hidden md:block disabled:opacity-50"
+                className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 border border-gray-200/50 z-30 hidden md:block disabled:opacity-50 focus:outline-none"
                 aria-label="Previous image"
               >
                 <ChevronLeft className="w-5 h-5" />
@@ -300,7 +322,7 @@ export default function ImageGallery({ images }: { images: Image[] }) {
               <button
                 onClick={handleNext}
                 disabled={isTransitioning}
-                className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 border border-gray-200/50 z-30 hidden md:block disabled:opacity-50"
+                className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 border border-gray-200/50 z-30 hidden md:block disabled:opacity-50 focus:outline-none"
                 aria-label="Next image"
               >
                 <ChevronRight className="w-5 h-5" />
@@ -308,12 +330,13 @@ export default function ImageGallery({ images }: { images: Image[] }) {
             </>
           )}
 
-          {/* Action Buttons */}
+          {/* Action Buttons (Zoom, Fullscreen) */}
           <div className="absolute top-4 right-4 flex gap-2 z-30">
             <button
               onClick={() => setIsZoomed(!isZoomed)}
               className="bg-white/90 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg backdrop-blur-sm hover:scale-110 transition-all duration-200 border border-gray-200/50 opacity-100 md:opacity-0 md:group-hover:opacity-100"
               aria-label={isZoomed ? "Zoom out" : "Zoom in"}
+              tabIndex={-1}
             >
               <ZoomIn className="w-4 h-4" />
             </button>
@@ -321,6 +344,7 @@ export default function ImageGallery({ images }: { images: Image[] }) {
               onClick={enterFullscreen}
               className="bg-white/90 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg backdrop-blur-sm hover:scale-110 transition-all duration-200 border border-gray-200/50 opacity-100 md:opacity-0 md:group-hover:opacity-100"
               aria-label="View fullscreen"
+              tabIndex={-1}
             >
               <Maximize2 className="w-4 h-4" />
             </button>
@@ -328,35 +352,35 @@ export default function ImageGallery({ images }: { images: Image[] }) {
 
           {/* Drag Indicator */}
           {isDragging && (
-            <div className="absolute bottom-20 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full text-sm backdrop-blur-sm border border-white/20 z-10">
+            <div className="absolute bottom-24 left-1/2 -translate-x-1/2 bg-black/80 text-white px-4 py-2 rounded-full text-sm backdrop-blur-sm border border-white/20 z-10">
               {Math.abs(dragOffset) > DRAG_THRESHOLD ? "Release to slide" : "Drag to slide"}
             </div>
           )}
 
-          {/* Image Counter */}
-          {displayImages.length > 1 && (
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm border border-white/20 z-10">
-              {active + 1} / {displayImages.length}
-            </div>
-          )}
+          {/* Improved Image Counter (bottom, spacing) */}
+    
         </div>
       </div>
 
+      {/* Thumbnails (desktop+mobile) */}
       {displayImages.length > 1 && (
-        <div className="mt-6">
-          <div className="flex overflow-x-auto gap-3 px-2 py-2 scrollbar-hide">
+        <div className="mt-8">
+          <div className="flex overflow-x-auto gap-4 px-2 py-2 scrollbar-hide">
             {displayImages.map((img, i) => (
               <button
                 key={i}
-                onClick={() => setActive(i)}
-                className={`flex-shrink-0 relative group/thumb transition-all duration-300 ${
-                  i === active 
-                    ? "ring-3 ring-blue-500 ring-offset-2 scale-105 shadow-lg" 
+                onClick={() => {
+                  setActive(i);
+                  setIsZoomed(false);
+                }}
+                className={`flex-shrink-0 relative group/thumb transition-all duration-300 focus:outline-none ${
+                  i === active
+                    ? "ring-2 ring-blue-500 ring-offset-2 scale-105 shadow-lg"
                     : "ring-2 ring-transparent hover:ring-gray-300 opacity-70 hover:opacity-100 hover:scale-105"
                 }`}
                 aria-label={`View image ${i + 1}`}
               >
-                <div className="w-20 h-20 rounded-xl overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200/50">
+                <div className="w-[64px] h-[64px] rounded-xl overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200/50">
                   <img
                     src={img.src}
                     alt={img.alt || `Thumbnail ${i + 1}`}
@@ -364,24 +388,23 @@ export default function ImageGallery({ images }: { images: Image[] }) {
                     loading="lazy"
                   />
                 </div>
-                {i === active && (
-                  <div className="absolute inset-0 bg-blue-500/20 rounded-xl border-2 border-blue-500/50"></div>
-                )}
               </button>
             ))}
           </div>
         </div>
       )}
 
-      {/* Dots Indicator for Mobile */}
+      {/* Mobile Dots Indicator */}
       {displayImages.length > 1 && (
-        <div className="flex justify-center mt-4 gap-2 sm:hidden">
+        <div className="flex justify-center mt-4 gap-3 sm:hidden">
           {displayImages.map((_, i) => (
             <button
               key={i}
               onClick={() => setActive(i)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 shadow-sm ${
-                i === active ? "bg-blue-500 w-8 shadow-blue-500/50" : "bg-gray-300 hover:bg-gray-400"
+              className={`w-8 h-2 rounded-full transition-all duration-300 shadow-sm ${
+                i === active
+                  ? "bg-gradient-to-r from-blue-500 via-indigo-400 to-blue-400 shadow-blue-500/40"
+                  : "bg-gray-300 hover:bg-gray-400"
               }`}
               aria-label={`Go to image ${i + 1}`}
             />
@@ -389,101 +412,67 @@ export default function ImageGallery({ images }: { images: Image[] }) {
         </div>
       )}
 
-      {/* Fullscreen Modal - WITH SLIDER INSTEAD OF ARROWS */}
+      {/* ----- FULLSCREEN MODAL ----- */}
       {isFullscreen && (
-        <div 
+        <div
           ref={fullscreenRef}
           className="fixed inset-0 bg-white z-[9999] flex flex-col items-center justify-center p-4"
-          style={{ width: '100vw', height: '100vh' }}
+          style={{ width: "100vw", height: "100vh" }}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
+         
+
+          {/* Close Button */}
+          <button
+            onClick={exitFullscreen}
+            className="absolute top-4 right-4 text-white hover:text-gray-300 p-2 z-40 rounded-full bg-black/70 hover:bg-black/80 transition-all duration-200 border border-white/20 focus:outline-none"
+            aria-label="Close fullscreen"
+          >
+            <X className="w-7 h-7" />
+          </button>
+
+          {/* Fullscreen Image */}
           <div className="relative w-full flex-1 flex items-center justify-center">
-            <button
-              onClick={exitFullscreen}
-              className="absolute top-4 right-4 text-white hover:text-gray-300 p-2 z-20 rounded-full bg-black/50 hover:bg-black/70 transition-all duration-200 border border-white/20"
-              aria-label="Close fullscreen"
-            >
-              <X className="w-6 h-6" />
-            </button>
-            
             <img
               src={displayImages[active].src}
               alt={displayImages[active].alt || `Product image ${active + 1}`}
-              className={`max-w-full max-h-full object-contain transition-transform duration-300 ${
-                isZoomed ? 'scale-200 cursor-zoom-out' : 'cursor-zoom-in'
+              className={`max-w-[98vw] max-h-[75vh] sm:max-h-[80vh] object-contain transition-transform duration-300 mx-auto rounded-2xl shadow-2xl ${
+                isZoomed ? "scale-150 cursor-zoom-out" : "cursor-zoom-in"
               }`}
               onClick={() => setIsZoomed(!isZoomed)}
+              onDragStart={(e) => e.preventDefault()}
               style={{
-                width: isZoomed ? '200%' : '100%',
-                height: isZoomed ? '200%' : '100%',
+                width: isZoomed ? "auto" : "auto",
+                height: isZoomed ? "auto" : "auto"
               }}
             />
           </div>
-          
-          {/* Fullscreen Slider - Replaces navigation arrows */}
+
+          {/* Fullscreen Slider and Thumbs */}
           {displayImages.length > 1 && (
-            <div className="w-full max-w-4xl px-8 pb-8">
-              <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                {/* Current Image Counter */}
-                <div className="text-center text-white mb-4 text-lg font-medium">
+            <div className="w-full max-w-4xl px-1 sm:px-8 pb-8">
+              <div className="bg-black/40 backdrop-blur-lg rounded-2xl p-5 border border-white/10 shadow-2xl">
+                {/* Counter */}
+                <div className="text-center text-white/90 mb-5 text-lg font-semibold tracking-wide">
                   {active + 1} / {displayImages.length}
                 </div>
+                {/* Range Slider */}
                 
-                {/* Slider Track */}
-                <div className="relative">
-                  <input
-                    type="range"
-                    min="0"
-                    max={displayImages.length - 1}
-                    value={active}
-                    onChange={(e) => setActive(parseInt(e.target.value))}
-                    className="w-full h-3 bg-white/20 rounded-lg appearance-none cursor-pointer slider-custom"
-                    style={{
-                      background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${(active / (displayImages.length - 1)) * 100}%, rgba(255,255,255,0.2) ${(active / (displayImages.length - 1)) * 100}%, rgba(255,255,255,0.2) 100%)`
-                    }}
-                  />
-                  
-                  {/* Slider Thumb Styling */}
-                  <style jsx>{`
-                    .slider-custom::-webkit-slider-thumb {
-                      appearance: none;
-                      width: 24px;
-                      height: 24px;
-                      border-radius: 50%;
-                      background: #3b82f6;
-                      cursor: pointer;
-                      border: 3px solid white;
-                      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                      transition: all 0.2s ease;
-                    }
-                    .slider-custom::-webkit-slider-thumb:hover {
-                      transform: scale(1.2);
-                      background: #2563eb;
-                    }
-                    .slider-custom::-moz-range-thumb {
-                      width: 24px;
-                      height: 24px;
-                      border-radius: 50%;
-                      background: #3b82f6;
-                      cursor: pointer;
-                      border: 3px solid white;
-                      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                    }
-                  `}</style>
-                </div>
-                
-                {/* Thumbnail Preview Row */}
-                <div className="flex justify-center gap-2 mt-4 overflow-x-auto pb-2">
+                {/* Thumbnails Row */}
+                <div className="flex justify-center gap-3 mt-2 overflow-x-auto pb-1">
                   {displayImages.map((img, i) => (
                     <button
                       key={i}
                       onClick={() => setActive(i)}
-                      className={`flex-shrink-0 transition-all duration-300 ${
-                        i === active 
-                          ? "ring-2 ring-blue-400 ring-offset-2 ring-offset-transparent scale-110" 
+                      className={`flex-shrink-0 transition-all duration-300 focus:outline-none ${
+                        i === active
+                          ? "ring-2 ring-blue-400 ring-offset-2 ring-offset-transparent scale-110"
                           : "opacity-60 hover:opacity-100 hover:scale-105"
                       }`}
                     >
-                      <div className="w-12 h-12 rounded-lg overflow-hidden">
+                      <div className="w-12 h-12 rounded-lg overflow-hidden shadow border border-white/10">
                         <img
                           src={img.src}
                           alt={img.alt || `Thumbnail ${i + 1}`}
