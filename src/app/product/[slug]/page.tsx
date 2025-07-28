@@ -44,7 +44,7 @@ export default function ProductPage() {
   });
 
   const { addToCart } = useCart();
-  const [offer] = useState<SelectedOffer>({
+  const [offer, setOffer] = useState<SelectedOffer>({
     label: '1 Month',
     duration: '1 Month',
     qty: 1,
@@ -181,7 +181,7 @@ export default function ProductPage() {
 
             {/* Offer tab with enhanced styling */}
             <div className="mb-4">
-              <OfferTab price={price}/>
+              <OfferTab price={price} onOfferChange={setOffer} />
             </div>
 
             {/* Pricing section with better visual hierarchy */}

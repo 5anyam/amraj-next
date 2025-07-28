@@ -10,9 +10,9 @@ type Offer = {
 };
 
 const OFFERS: Offer[] = [
-  { label: "2 Months", duration: "2 Months", qty: 2, discountPercent: 5 },
-  { label: "3 Months", duration: "3 Months", qty: 3, discountPercent: 7 },
-  { label: "4 Months", duration: "4 Months", qty: 4, discountPercent: 10, isRecommended: true },
+  { label: "1 Months", duration: "1 Months", qty: 1, discountPercent: 0 },
+  { label: "2 Months", duration: "2 Months", qty: 2, discountPercent: 7 },
+  { label: "3 Months", duration: "3 Months", qty: 3, discountPercent: 10, isRecommended: true },
 ];
 
 export type SelectedOffer = Offer;
@@ -22,18 +22,14 @@ export default function OfferTab({
   onOfferChange = () => {},
 }: {
   price?: number;
-  onOfferChange?: (offer: SelectedOffer | undefined) => void;
+  onOfferChange?: (offer: SelectedOffer) => void;
 }) {
-  // Default selection is nothing until user selects!
-  const [selected, setSelected] = useState<Offer | undefined>(undefined);
-
-  // onOfferChange only runs when user picks an offer
+  const [selected, setSelected] = useState(OFFERS[0]);
+  
   React.useEffect(() => {
-    if (selected) {
-      onOfferChange(selected);
-    }
+    onOfferChange(selected);
   }, [selected, onOfferChange]);
-
+  
   // Function to calculate "save" amount
   const getSaveAmount = (offer: Offer) => {
     const original = price * offer.qty;
@@ -54,14 +50,15 @@ export default function OfferTab({
           <button
             key={offer.label}
             className={`flex-1 relative px-2 sm:px-4 py-3 sm:py-5 border rounded-lg sm:rounded-xl shadow-sm transition-all text-left
-              ${
-                selected?.label === offer.label
-                  ? "border-green-700 bg-green-50 ring-2 ring-green-600"
-                  : "border-green-200 bg-white hover:border-green-600"
+              ${selected.label === offer.label
+                ? "border-green-700 bg-green-50 ring-2 ring-green-600"
+                : "border-green-200 bg-white hover:border-green-600"
               }`}
             onClick={() => setSelected(offer)}
             type="button"
           >
+           
+            
             {/* Save badge - responsive positioning and sizing */}
             <span className="absolute -top-2 sm:-top-3 left-1 sm:left-3 bg-[#168b3f] text-white text-xs font-bold px-1 sm:px-3 py-1 rounded-md sm:rounded-lg shadow">
               Save ₹{getSaveAmount(offer)}
@@ -89,7 +86,7 @@ export default function OfferTab({
             <div className="mt-1 text-xs text-gray-500 line-through">
               MRP: ₹{getMRP(offer)}
             </div>
-
+            
             {/* Recommended badge for 3rd month only */}
             {offer.isRecommended && (
               <div className="absolute -bottom-4 sm:-bottom-4 right-0 sm:right-0 m-1 sm:m-2 px-1 sm:px-2 py-1 text-[10px] rounded bg-orange-500 text-white font-semibold">
