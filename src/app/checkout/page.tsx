@@ -363,11 +363,6 @@ export default function Checkout() {
   function OrderConfirmationModal() {
     if (!showOrderConfirmation || !orderDetails) return null;
 
-    const handleViewOrderDetails = () => {
-      clear(); // Clear cart when user decides to view order details
-      setShowOrderConfirmation(false);
-      router.push(`/order-confirmation?orderId=${orderDetails.orderId}&wcOrderId=${orderDetails.wcOrderId}`);
-    };
 
     const handleContinueShopping = () => {
       clear(); // Clear cart when user continues shopping
@@ -389,12 +384,6 @@ export default function Checkout() {
             Your order has been placed successfully. You will receive updates on WhatsApp and pay when your order arrives.
           </p>
           <div className="space-y-3">
-            <button
-              onClick={handleViewOrderDetails}
-              className="w-full bg-gradient-to-r from-teal-500 to-orange-500 text-white py-3 rounded-lg font-semibold hover:from-teal-600 hover:to-orange-600 transition-all"
-            >
-              View Order Details
-            </button>
             <button
               onClick={handleContinueShopping}
               className="w-full border border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-all"

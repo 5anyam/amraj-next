@@ -269,7 +269,7 @@ export default function ImageGallery({ images }: { images: Image[] }) {
                 <img
                   src={img.src}
                   alt={img.alt || `Product image ${i + 1}`}
-                  className={`w-[350px] h-[350px] object-cover transition-all duration-500 select-none mx-auto rounded-xl ${
+                  className={`w-[340px] h-[340px] object-cover transition-all duration-500 select-none mx-auto rounded-xl ${
                     isZoomed && i === active 
                       ? 'scale-200 cursor-zoom-out' 
                       : 'cursor-zoom-in hover:scale-110'

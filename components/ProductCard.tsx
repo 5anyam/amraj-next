@@ -15,6 +15,13 @@ interface Product {
   badge?: "New" | "Sale";
 }
 
+const getRandomBoughtCount = () => {
+  const min = 50;
+  const max = 200;
+  const random = Math.floor(Math.random() * (max - min + 1)) + min;
+  return `${random}+ bought`;
+};
+
 export default function ProductCard({ product }: { product: Product }) {
   const productUrl = `/product/${productToSlug(product)}`;
   const rating = Number(product.average_rating);
@@ -129,7 +136,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
 {/* Bought Count */}
 <div className="text-xs text-gray-500">
-  10,000+ bought
+  {getRandomBoughtCount()}
 </div>
 
 
