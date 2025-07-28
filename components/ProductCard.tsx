@@ -24,7 +24,7 @@ function getStableBoughtCount(product: Product): string {
     const stored = window.localStorage.getItem(key);
     if (stored) return `${stored}+ bought`;
     // Use a believable “anchor” list—social proof!
-    const anchors = [213, 226, 245, 248, 259, 280, 299, 309, 326, 353, 398, 407, 421, 436, 479];
+    const anchors = [300,400,500];
     const pick = anchors[Math.floor(Math.random() * anchors.length)];
     window.localStorage.setItem(key, pick.toString());
     return `${pick}+ bought`;
@@ -65,7 +65,7 @@ export default function ProductCard({ product }: { product: Product }) {
             {isOnSale && (
               <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold px-2 sm:px-3 py-1 sm:py-1.5 animate-pulse rounded-full shadow-lg">
                 <span className="flex items-center gap-1">
-                  <span className="hidden sm:inline">🔥</span> {discountPercentage}% OFF
+                  <span>🔥</span> {discountPercentage}% OFF
                 </span>
               </div>
             )}
