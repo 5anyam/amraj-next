@@ -151,7 +151,7 @@ export default function ProductCard({ product }: { product: Product }) {
           <div className="flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-1 sm:gap-2">
               <span className="text-lg sm:text-2xl font-bold text-teal-600">
-                ₹{salePrice.toLocaleString()}OFF
+                ₹{salePrice.toLocaleString()}
               </span>
               {isOnSale && (
                 <span className="text-xs sm:text-sm text-orange-400 line-through font-medium">
