@@ -19,7 +19,7 @@ interface OfferClientBlockProps {
 
 export default function OfferClientBlock({ product }: OfferClientBlockProps) {
   const { addToCart } = useCart();
-  const [offer, setOffer] = useState<SelectedOffer>({
+  const [offer] = useState<SelectedOffer>({
     label: "1 Month",
     duration: "1 Month",
     qty: 1,
@@ -31,7 +31,7 @@ export default function OfferClientBlock({ product }: OfferClientBlockProps) {
 
   return (
     <>
-      <OfferTab price={price} onOfferChange={setOffer} />
+      <OfferTab price={price} />
       <div className="mb-4">
         <span className="text-2xl font-bold">₹{discountedPrice.toFixed(2)}</span>
         <span className="line-through text-gray-400 ml-3">₹{originalPrice.toFixed(2)}</span>

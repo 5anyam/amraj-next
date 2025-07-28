@@ -92,7 +92,7 @@ export default function Header() {
 
             {/* Desktop Nav */}
             {!isMobile && (
-              <nav className="ml-8 flex items-center gap-6">
+              <nav className="ml-8 flex items-center gap-4">
                 {navItems.map((item) => (
                   <div key={item.name} className="relative" ref={item.name === "Shop" ? shopMenuRef : undefined}>
                     {item.submenu ? (
