@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { fetchProducts } from '../../../../lib/woocommerceApi';
 import { useCart } from '../../../../lib/cart';
@@ -11,15 +11,15 @@ import OfferTab, { SelectedOffer } from '../../../../components/OfferTab';
 import { Tab } from '@headlessui/react';
 import SmoothMarquee from '../../../../components/ProductSlide';
 
-// --- Product Type Definitions ---
+// --- Product Type Definitions (as per your code) ---
 export interface ImageData { src: string; }
 export interface Attribute { option: string; }
 export interface Product {
   id: number;
   name: string;
   slug: string;
-  price: string;                // sale price, or reg price if no sale
-  regular_price: string;        // always MRP
+  price: string;            // sale price, or reg price if no sale
+  regular_price: string;    // always MRP
   description?: string;
   short_description?: string;
   images: ImageData[];
@@ -28,10 +28,11 @@ export interface Product {
 
 export default function ProductPage() {
   const params = useParams();
+  const router = useRouter();
   const slugParam = params?.slug;
   const slug = Array.isArray(slugParam) ? slugParam[0] : slugParam || '';
 
-  // Fetch products where slug match
+  // Fetch the products
   const { data: products, isLoading, error } = useQuery<Product[]>({
     queryKey: ['all-products'],
     queryFn: async () => await fetchProducts() as Product[],
@@ -41,11 +42,12 @@ export default function ProductPage() {
   const { addToCart } = useCart();
   const [offer, setOffer] = useState<SelectedOffer>(undefined);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isBuyingNow, setIsBuyingNow] = useState(false);
 
-  // --- Loading and Error Handling ---
+  // --- LOADING / ERROR States ---
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-teal-50 to-orange-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 to-orange-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-500 border-t-transparent mx-auto mb-3"></div>
           <p className="text-teal-700 text-sm font-medium">Loading product...</p>
@@ -56,7 +58,7 @@ export default function ProductPage() {
 
   if (error || !products) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-teal-50 to-orange-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 to-orange-50">
         <div className="text-center bg-white rounded-2xl shadow-xl p-6 max-w-md">
           <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
             <span className="text-red-500 text-lg">⚠️</span>
@@ -71,10 +73,9 @@ export default function ProductPage() {
   const product = products.find(
     (p) => p.slug === slug || p.id.toString() === slug
   );
-
   if (!product) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-teal-50 to-orange-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 to-orange-50">
         <div className="text-center bg-white rounded-2xl shadow-xl p-6 max-w-md">
           <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
             <span className="text-orange-500 text-lg">🔍</span>
@@ -86,28 +87,18 @@ export default function ProductPage() {
     );
   }
 
-  // --- Prices and Discount Logic ---
-  const salePrice = parseFloat(product.price || '0');              // May be sale or reg
-  const regularPrice = parseFloat(product.regular_price || product.price || '0');    // Fallback to price if missing
+  // --- Pricing/Offer Logic ---
+  const salePrice = parseFloat(product.price || '0');
+  const regularPrice = parseFloat(product.regular_price || product.price || '0');
   const hasSiteSale = salePrice < regularPrice;
-
   const qty = offer?.qty || 0;
-
-  // Final price for one unit after offer (if selected)
-  const finalUnitPrice = offer
-    ? salePrice * (1 - offer.discountPercent / 100)
-    : salePrice;
-
-  // total price = per unit × qty
-  const discountedPrice = offer
-    ? finalUnitPrice * qty
-    : salePrice * qty;
-
+  const finalUnitPrice = offer ? salePrice * (1 - offer.discountPercent / 100) : salePrice;
+  const discountedPrice = offer ? finalUnitPrice * qty : salePrice * qty;
   const crossedPrice = regularPrice * (offer ? qty : 1);
   const siteSaleSave = hasSiteSale ? (regularPrice - salePrice) * (offer ? qty : 1) : 0;
   const totalSave = crossedPrice - discountedPrice;
 
-  // --- Add To Cart ---
+  // --- Add to Cart ---
   const handleAddToCart = async () => {
     if (!offer) return;
     setIsAddingToCart(true);
@@ -126,9 +117,32 @@ export default function ProductPage() {
     setTimeout(() => setIsAddingToCart(false), 1000);
   };
 
+  // --- Buy Now ---
+  const handleBuyNow = async () => {
+    if (!offer) return;
+    setIsBuyingNow(true);
+    for (let i = 0; i < offer.qty; i++) {
+      addToCart({
+        ...product,
+        name: product.name + (offer.qty > 1 ? ` (${i + 1} of ${offer.qty})` : ''),
+        price: finalUnitPrice.toString(),
+        images: product.images || [],
+      });
+    }
+    toast({
+      title: 'Checkout started!',
+      description: `${offer.qty} x ${product.name} added. Redirecting to checkout...`,
+      duration: 1200,
+    });
+    setTimeout(() => {
+      router.push('/checkout');
+      setIsBuyingNow(false);
+    }, 1200);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-orange-50">
-      {/* Header with breadcrumb-style design */}
+      {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center space-x-2 text-xs text-gray-600">
@@ -143,13 +157,14 @@ export default function ProductPage() {
         {/* Image Section */}
         <div className="lg:w-1/2 hidden lg:block">
           <div className="bg-white rounded-3xl mx-3 shadow-xl lg:p-2 border border-gray-100 hover:shadow-2xl transition-shadow duration-300">
-              <ImageGallery images={product.images || []} />
+            <ImageGallery images={product.images || []} />
           </div>
         </div>
 
         {/* Details Section */}
         <div className="lg:w-1/2">
           <div className="bg-white rounded-3xl shadow-xl p-2 md:p-6 border border-gray-100">
+            {/* Attributes */}
             {product.attributes?.length ? (
               <div className="mb-4 p-3 bg-gradient-to-r from-teal-50 to-teal-100 rounded-2xl border border-teal-200">
                 <span className="text-teal-700 font-semibold text-xs uppercase tracking-wide">Flavour:</span>
@@ -161,8 +176,9 @@ export default function ProductPage() {
               {product.name}
             </h1>
 
-            <SmoothMarquee/>
+            <SmoothMarquee />
 
+            {/* Short Description */}
             {product.short_description && (
               <div
                 className="prose prose-sm max-w-none text-gray-700 leading-relaxed"
@@ -170,17 +186,21 @@ export default function ProductPage() {
               />
             )}
 
-            {/* Mobile Image Gallery */}
+            {/* Mobile Gallery */}
             <div className="bg-white block lg:hidden mt-3 rounded-3xl shadow-xl border border-gray-100 hover:shadow-2xl transition-shadow duration-300">
               <ImageGallery images={product.images || []} />
             </div>
 
-            {/* OfferTab - always pass salePrice as base price */}
+            {/* OfferTab */}
             <div className="mb-4">
-            <OfferTab salePrice={parseFloat(product.price)} regularPrice={parseFloat(product.regular_price)} onOfferChange={setOffer} />
+              <OfferTab
+                salePrice={salePrice}
+                regularPrice={regularPrice}
+                onOfferChange={setOffer}
+              />
             </div>
 
-            {/* PRICING SECTION */}
+            {/* Pricing Section */}
             <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-4 mb-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-end gap-2">
@@ -192,7 +212,6 @@ export default function ProductPage() {
                         : `₹${regularPrice.toFixed(2)}`
                     }
                   </span>
-                  {/* show cross only if site sale or offer present */}
                   {(hasSiteSale || offer) && (
                     <span className="line-through text-gray-500 font-semibold text-base lg:text-lg">
                       ₹{crossedPrice.toFixed(2)}
@@ -214,31 +233,52 @@ export default function ProductPage() {
               )}
             </div>
 
-            {/* CTA BUTTON */}
-            <button
-              className={`w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold px-6 py-3 lg:py-4 rounded-2xl text-sm lg:text-base shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 mb-6 relative overflow-hidden group ${
-                isAddingToCart ? 'scale-95 shadow-inner' : ''
-              }`}
-              onClick={handleAddToCart}
-              disabled={isAddingToCart || !offer}
-            >
-              <span className={`relative z-10 flex items-center justify-center transition-all duration-300 ${isAddingToCart ? 'scale-90' : ''}`}>
-                <span className={`mr-2 transition-all duration-300 ${isAddingToCart ? 'animate-bounce' : ''}`}>
-                  {isAddingToCart ? '✓' : '🛒'}
+            {/* CTA BUTTONS: Add To Cart + Buy Now */}
+            <div className="flex flex-col sm:flex-row gap-3 mb-6">
+              <button
+                className={`flex-1 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold px-6 py-3 lg:py-4 rounded-2xl text-sm lg:text-base shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group ${
+                  isAddingToCart ? 'scale-95 shadow-inner' : ''
+                }`}
+                onClick={handleAddToCart}
+                disabled={isAddingToCart || !offer}
+              >
+                <span className={`relative z-10 flex items-center justify-center transition-all duration-300 ${isAddingToCart ? 'scale-90' : ''}`}>
+                  <span className={`mr-2 transition-all duration-300 ${isAddingToCart ? 'animate-bounce' : ''}`}>
+                    {isAddingToCart ? '✓' : '🛒'}
+                  </span>
+                  {isAddingToCart
+                    ? 'ADDED TO CART!'
+                    : offer
+                      ? `ADD TO CART — ₹${discountedPrice.toFixed(2)}`
+                      : 'SELECT AN OFFER FIRST'}
                 </span>
-                {isAddingToCart
-                  ? 'ADDED TO CART!'
-                  : offer
-                    ? `ADD TO CART — ₹${discountedPrice.toFixed(2)}`
-                    : 'SELECT AN OFFER FIRST'}
-              </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              {isAddingToCart && (
-                <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-green-600 animate-pulse"></div>
-              )}
-            </button>
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                {isAddingToCart && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-green-600 animate-pulse"></div>
+                )}
+              </button>
+              <button
+                className={`flex-1 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-6 py-3 lg:py-4 rounded-2xl text-sm lg:text-base shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group ${
+                  isBuyingNow ? 'scale-95 shadow-inner' : ''
+                }`}
+                onClick={handleBuyNow}
+                disabled={isBuyingNow || !offer}
+              >
+                <span className={`relative z-10 flex items-center justify-center transition-all duration-300 ${isBuyingNow ? 'scale-90' : ''}`}>
+                  <span className={`mr-2 transition-all duration-300 ${isBuyingNow ? 'animate-bounce' : ''}`}>🚀</span>
+                  {isBuyingNow
+                    ? 'REDIRECTING...'
+                    : offer
+                      ? 'BUY NOW'
+                      : 'SELECT AN OFFER FIRST'}
+                </span>
+                {isBuyingNow && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-green-600 animate-pulse"></div>
+                )}
+              </button>
+            </div>
 
-            {/* BENEFITS grid */}
+            {/* Benefits Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
                 ['🚚', 'Fast Delivery', 'Express shipping'],
@@ -257,36 +297,10 @@ export default function ProductPage() {
         </div>
       </div>
 
-      {/* MOBILE BOTTOM ADD TO CART */}
-      <div className="lg:hidden fixed bottom-0 z-10 left-0 w-full bg-white border-t border-gray-200 p-3">
-        <button
-          className={`w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold px-6 py-3 rounded-2xl text-sm shadow-xl hover:shadow-2xl transition-all duration-300 ${
-            isAddingToCart ? 'scale-95 shadow-inner' : ''
-          }`}
-          onClick={handleAddToCart}
-          disabled={isAddingToCart || !offer}
-        >
-          <span className={`relative z-10 flex items-center justify-center transition-all duration-300 ${
-            isAddingToCart ? 'scale-90' : ''
-          }`}>
-            <span className={`mr-2 transition-all duration-300 ${
-              isAddingToCart ? 'animate-bounce' : ''
-            }`}>
-              {isAddingToCart ? '✓' : '🛒'}
-            </span>
-            {isAddingToCart
-              ? 'ADDED TO CART!'
-              : offer
-                ? `ADD TO CART — ₹${discountedPrice.toFixed(2)}`
-                : 'SELECT AN OFFER FIRST'}
-          </span>
-          {isAddingToCart && (
-            <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-green-600 animate-pulse rounded-2xl"></div>
-          )}
-        </button>
-      </div>
+      {/* MOBILE Add To Cart/Buy Now at bottom - (Add if needed in sticky bar) */}
+      {/* ... You can repeat the CTA bar here for mobile ... */}
 
-      {/* DESCRIPTION TABS */}
+      {/* Description Tabs */}
       <div className="max-w-7xl mx-auto mt-8 p-4 lg:p-6">
         <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
           <Tab.Group>

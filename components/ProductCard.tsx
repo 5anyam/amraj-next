@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { productToSlug } from "../lib/slug";
-import { useMemo } from "react";
 
 interface Product {
   id: number | string;
@@ -18,6 +17,22 @@ interface Product {
   badge?: "New" | "Sale";
 }
 
+// Stable bought count per product per user (localStorage)
+function getStableBoughtCount(product: Product): string {
+  const key = `boughtCount:${product.id || product.slug}`;
+  if (typeof window !== "undefined") {
+    const stored = window.localStorage.getItem(key);
+    if (stored) return `${stored}+ bought`;
+    // Use a believable “anchor” list—social proof!
+    const anchors = [213, 226, 245, 248, 259, 280, 299, 309, 326, 353, 398, 407, 421, 436, 479];
+    const pick = anchors[Math.floor(Math.random() * anchors.length)];
+    window.localStorage.setItem(key, pick.toString());
+    return `${pick}+ bought`;
+  }
+  // SSR fallback
+  return "";
+}
+
 export default function ProductCard({ product }: { product: Product }) {
   const productUrl = `/product/${productToSlug(product)}`;
   const rating = Number(product.average_rating);
@@ -29,12 +44,9 @@ export default function ProductCard({ product }: { product: Product }) {
     ? Math.round(((originalPrice - salePrice) / originalPrice) * 100)
     : 0;
 
-  // ✅ Random bought count only once per product render
-  const boughtCount = useMemo(() => {
-    const min = 55;
-    const max = 90;
-    return `${Math.floor(Math.random() * (max - min + 1)) + min}+ bought`;
-  }, []);
+  // Stable per-user “bought” count
+  const boughtCount =
+    typeof window !== "undefined" ? getStableBoughtCount(product) : "";
 
   return (
     <div className="group relative overflow-hidden rounded-2xl sm:rounded-3xl bg-white shadow-lg hover:shadow-2xl border border-gray-100 transition-all duration-200 sm:duration-300 hover:-translate-y-1 sm:hover:-translate-y-2 sm:hover:scale-[1.02] h-full flex flex-col">
@@ -130,12 +142,12 @@ export default function ProductCard({ product }: { product: Product }) {
             </div>
           )}
 
-          {/* ✅ Bought Count */}
+          {/* ✅ Bought Count - stable per user */}
           <div className="text-xs text-gray-500">
             {boughtCount}
           </div>
 
-          {/* Price */}
+          {/* Price and Savings */}
           <div className="flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-1 sm:gap-2">
               <span className="text-lg sm:text-2xl font-bold text-teal-600">

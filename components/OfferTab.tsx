@@ -22,29 +22,27 @@ export default function OfferTab({
   regularPrice = 299,
   onOfferChange = () => {},
 }: {
-  salePrice?: number;        // Pass product.price (Woo: could be discounted)
-  regularPrice?: number;     // Pass product.regular_price (always MRP)
+  salePrice?: number;
+  regularPrice?: number;
   onOfferChange?: (offer: SelectedOffer) => void;
 }) {
-  const [selected, setSelected] = useState<SelectedOffer>(undefined);
+  // ✅ First offer selected by default
+  const [selected, setSelected] = useState<SelectedOffer>(OFFERS[0]);
 
   useEffect(() => {
     onOfferChange(selected);
   }, [selected, onOfferChange]);
 
-  // Calculate savings from MRP to final (offer-discounted sale price)
   const getSaveAmount = (offer: Offer) => {
     const mrp = regularPrice * offer.qty;
     const final = salePrice * offer.qty * (1 - offer.discountPercent / 100);
     return Math.round(mrp - final);
   };
 
-  // Final price after offer (show as main price)
   const getFinalPrice = (offer: Offer) => {
     return Math.round(salePrice * offer.qty * (1 - offer.discountPercent / 100));
   };
 
-  // Always show MRP (original, crossed)
   const getMRP = (offer: Offer) => {
     return Math.round(regularPrice * offer.qty);
   };
@@ -103,3 +101,4 @@ export default function OfferTab({
     </div>
   );
 }
+
