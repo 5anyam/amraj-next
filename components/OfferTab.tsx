@@ -14,7 +14,7 @@ export type SelectedOffer = Offer | undefined;
 const OFFERS: Offer[] = [
   { label: "1 Months", duration: "1 Months", qty: 1, discountPercent: 0 },
   { label: "2 Months", duration: "2 Months", qty: 2, discountPercent: 7 },
-  { label: "3 Months", duration: "3 Months", qty: 3, discountPercent: 10, isRecommended: true },
+  { label: "3 Months", duration: "3 Months", qty: 3, discountPercent: 11.5, isRecommended: true },
 ];
 
 export default function OfferTab({
