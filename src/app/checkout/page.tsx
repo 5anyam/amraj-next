@@ -735,20 +735,17 @@ export default function Checkout() {
   <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
     <h3 className="text-gray-700 font-semibold mb-3 text-center">Pay with</h3>
     <div className="flex items-center justify-center gap-10 mb-5">
-      {/* UPI Icon + Label (as a button) */}
+      {/* UPI Block - now a button */}
       <button
         type="button"
         onClick={handleCheckout}
         disabled={loading || step === "processing"}
-        className={`flex flex-col items-center focus:outline-none cursor-pointer 
-          w-28 py-2 rounded-lg transition-all
-          bg-white border border-teal-200 hover:shadow-lg
+        className={`flex flex-col items-center focus:outline-none cursor-pointer w-28 py-2 rounded-lg transition-all bg-white border border-teal-200 hover:shadow-lg
           ${loading || step === "processing" ? "opacity-60 pointer-events-none" : ""}
         `}
         style={{ background: "#fff" }}
       >
         <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-2">
-          {/* UPI icon */}
           <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
             <rect width="36" height="36" rx="10" fill="#fff"/>
             <path d="M11 24l4.4-12h2.2l-4.4 12h-2.2zm5.2 0l4.4-12h2.2l-4.4 12h-2.2zm5.4 0l4.4-12h2.2l-4.4 12h-2.2z" fill="#14b8a6"/>
@@ -757,20 +754,17 @@ export default function Checkout() {
         <span className="text-base font-bold text-teal-700 tracking-wide">UPI</span>
         <span className="text-xs text-gray-500 mt-0.5">Google Pay, PhonePe, etc</span>
       </button>
-      {/* Cards Icon + Label (as a button) */}
+      {/* Cards Block - now a button */}
       <button
         type="button"
         onClick={handleCheckout}
         disabled={loading || step === "processing"}
-        className={`flex flex-col items-center focus:outline-none cursor-pointer 
-          w-28 py-2 rounded-lg transition-all
-          bg-white border border-orange-200 hover:shadow-lg
+        className={`flex flex-col items-center focus:outline-none cursor-pointer w-28 py-2 rounded-lg transition-all bg-white border border-orange-200 hover:shadow-lg
           ${loading || step === "processing" ? "opacity-60 pointer-events-none" : ""}
         `}
         style={{ background: "#fff" }}
       >
         <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-2">
-          {/* Card icon */}
           <svg width="32" height="32" fill="none">
             <rect x="6" y="10" width="20" height="12" rx="3" fill="#FDBA74" stroke="#F59E42" strokeWidth="1.5"/>
             <rect x="10" y="15" width="7" height="2" rx="1" fill="#fff"/>
@@ -783,7 +777,7 @@ export default function Checkout() {
       </button>
     </div>
 
-    {/* Neeche ka ekhi Pay Now button waise ka waisa CHALEGA */}
+    {/* Neeche tumhara pehla wala single PAY NOW button — unchanged */}
     <button
       type="submit"
       className={`w-full bg-gradient-to-r from-teal-500 to-orange-500 hover:from-teal-600 hover:to-orange-600 text-white py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 ${
@@ -820,6 +814,7 @@ export default function Checkout() {
     </div>
   </div>
 )}
+
 
 
           </form>
