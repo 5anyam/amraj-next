@@ -732,76 +732,64 @@ export default function Checkout() {
 
             {/* Payment Methods Display */}
             {paymentMethod === "online" && (
-  <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
-    <h3 className="text-gray-700 font-semibold mb-3 text-center">Pay with</h3>
-    <div className="flex items-center justify-center space-x-6">
-      {/* UPI Button */}
-      <button
-        type="button"
-        disabled={loading || step === "processing"}
-        onClick={handleCheckout}
-        className="flex flex-col items-center justify-center w-24 py-4 rounded-lg border-2 border-gray-200 hover:border-teal-600 bg-teal-50 hover:bg-teal-100 transition-all"
-      >
-        <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-2">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 333334 199007" shapeRendering="geometricPrecision" textRendering="geometricPrecision" imageRendering="optimizeQuality" fillRule="evenodd" clipRule="evenodd">
-            <path d="M44732 130924h1856l-1738 7215c-265 1061-206 1885 147 2415 354 530 1001 795 1973 795 942 0 1737-265 2356-795 618-531 1031-1355 1296-2415l1737-7215h1885l-1767 7392c-383 1590-1060 2798-2061 3593-972 795-2268 1208-3858 1208s-2680-383-3269-1179c-589-795-707-2002-324-3592l1767-7421zm223507 11868l2826-11868h6449l-383 1649h-4564l-706 2974h4564l-413 1679h-4564l-913 3827h4565l-412 1738h-6449z" fill="#3a3734"/>
-          </svg>
-        </div>
-        <span className="text-sm text-gray-600 font-medium">UPI</span>
-      </button>
+              <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
+                <h3 className="text-gray-700 font-semibold mb-3 text-center">Pay with</h3>
+                <div className="flex items-center justify-center space-x-6">
+                  <div className="flex flex-col items-center">
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 333334 199007" shapeRendering="geometricPrecision" textRendering="geometricPrecision" imageRendering="optimizeQuality" fillRule="evenodd" clipRule="evenodd"><path d="M44732 130924h1856l-1738 7215c-265 1061-206 1885 147 2415 354 530 1001 795 1973 795 942 0 1737-265 2356-795 618-531 1031-1355 1296-2415l1737-7215h1885l-1767 7392c-383 1590-1060 2798-2061 3593-972 795-2268 1208-3858 1208s-2680-383-3269-1179c-589-795-707-2002-324-3592l1767-7421zm223507 11868l2826-11868h6449l-383 1649h-4564l-706 2974h4564l-413 1679h-4564l-913 3827h4565l-412 1738h-6449z" fill="#3a3734"/></svg>
+                    </div>
+                    <span className="text-sm text-gray-600 font-medium">UPI</span>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div className="w-12 h-12 bg-gradient-to-r from-teal-500 to-orange-500 rounded-lg flex items-center justify-center mb-2">
+                      <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+                      </svg>
+                    </div>
+                    <span className="text-sm text-gray-600 font-medium">Cards</span>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-center mt-4 space-x-3 opacity-60">
+                  <span className="text-xs text-gray-500">Powered by:</span>
+                  <div className="flex space-x-2">
+                    <div className="px-2 py-1 bg-gray-100 rounded text-xs font-medium text-gray-600">Razorpay</div>
+                    <div className="px-2 py-1 bg-gray-100 rounded text-xs font-medium text-gray-600">Paytm</div>
+                    <div className="px-2 py-1 bg-gray-100 rounded text-xs font-medium text-gray-600">PhonePe</div>
+                  </div>
+                </div>
+              </div>
+            )}
 
-      {/* Cards Button */}
-      <button
-        type="button"
-        disabled={loading || step === "processing"}
-        onClick={handleCheckout}
-        className="flex flex-col items-center justify-center w-24 py-4 rounded-lg border-2 border-gray-200 hover:border-orange-600 bg-orange-50 hover:bg-orange-100 transition-all"
-      >
-        <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-2 bg-gradient-to-r from-teal-500 to-orange-500">
-          <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
-          </svg>
-        </div>
-        <span className="text-sm text-gray-600 font-medium">Cards</span>
-      </button>
-    </div>
-    
-    <div className="flex items-center justify-center mt-4 space-x-3 opacity-60">
-      <span className="text-xs text-gray-500">Powered by:</span>
-      <div className="flex space-x-2">
-        <div className="px-2 py-1 bg-gray-100 rounded text-xs font-medium text-gray-600">Razorpay</div>
-        <div className="px-2 py-1 bg-gray-100 rounded text-xs font-medium text-gray-600">Paytm</div>
-        <div className="px-2 py-1 bg-gray-100 rounded text-xs font-medium text-gray-600">PhonePe</div>
-      </div>
-    </div>
-  </div>
-)}
+            <button
+              type="submit"
+              className={`w-full bg-gradient-to-r from-teal-500 to-orange-500 hover:from-teal-600 hover:to-orange-600 text-white py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 ${
+                loading || step === "processing" ? "opacity-60 pointer-events-none scale-100" : ""
+              }`}
+              disabled={loading || step === "processing"}
+            >
+              {loading || step === "processing" ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                  {paymentMethod === "cod" ? "Placing Order..." : "Processing Payment..."}
+                </div>
+              ) : (
+                <div className="flex items-center justify-center">
+                  <span className="mr-2">{paymentMethod === "cod" ? "📦" : "🔒"}</span>
+                  {paymentMethod === "cod" ? "Buy Now" : "Pay Now"}
+                </div>
+              )}
+            </button>
 
-
-{/* HIDE original Pay Now button since UPI/Cards buttons trigger same handleCheckout */}
-{/* Or remove this button block if you want */}
-{/*
-<button
-  type="submit"
-  className={`w-full bg-gradient-to-r from-teal-500 to-orange-500 hover:from-teal-600 hover:to-orange-600 text-white py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 ${
-    loading || step === "processing" ? "opacity-60 pointer-events-none scale-100" : ""
-  }`}
-  disabled={loading || step === "processing"}
->
-  {loading || step === "processing" ? (
-    <div className="flex items-center justify-center">
-      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-      {paymentMethod === "cod" ? "Placing Order..." : "Processing Payment..."}
-    </div>
-  ) : (
-    <div className="flex items-center justify-center">
-      <span className="mr-2">{paymentMethod === "cod" ? "📦" : "🔒"}</span>
-      {paymentMethod === "cod" ? "Buy Now" : "Pay Now"}
-    </div>
-  )}
-</button>
-*/}
-
+            {step === "processing" && (
+              <div className="text-center text-teal-600 text-sm mt-3 animate-pulse">
+                {paymentMethod === "cod" 
+                  ? "Creating your order..." 
+                  : "Creating your order and launching secure payment gateway..."
+                }
+              </div>
+            )}
           </form>
 
           <div className="mt-8 text-center">
