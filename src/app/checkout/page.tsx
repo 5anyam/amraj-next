@@ -90,6 +90,16 @@ export default function Checkout() {
     }
   }, []);
 
+  function trackPurchaseEvent(orderId: string | number, value: number) {
+    if (typeof window !== "undefined" && window.fbq) {
+      window.fbq("track", "Purchase", {
+        order_id: orderId.toString(),
+        value,
+        currency: "INR",
+      });
+    }
+  }
+
   function validateForm(): boolean {
     const newErrors: Partial<FormData> = {};
     
@@ -190,6 +200,7 @@ export default function Checkout() {
       );
 
       // Don't clear cart yet - wait for user action in modal
+      trackPurchaseEvent(codOrderId, finalTotal);
       setOrderDetails({ orderId: codOrderId, wcOrderId: wooOrder.id });
       setShowOrderConfirmation(true);
       setLoading(false);
@@ -313,6 +324,7 @@ export default function Checkout() {
           );
 
           clear();
+          trackPurchaseEvent(wooOrder.id, finalTotal);
           toast({
             title: "🎉 Order placed successfully!",
             description: "Thank you for shopping with us. You'll receive updates on WhatsApp.",
