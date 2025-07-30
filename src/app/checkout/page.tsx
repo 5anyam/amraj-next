@@ -734,62 +734,69 @@ export default function Checkout() {
             {paymentMethod === "online" && (
   <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
     <h3 className="text-gray-700 font-semibold mb-3 text-center">Pay with</h3>
-    <div className="flex items-center justify-center gap-10 mb-5">
-      {/* UPI Icon + Label */}
+    <div className="flex items-center justify-center gap-10 mb-6">
+      {/* UPI BLOCK */}
       <div className="flex flex-col items-center">
         <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-2 bg-white border border-teal-200">
-          {/* UPI icon inspired by Google Pay */}
+          {/* UPI SVG (Google Pay inspired) */}
           <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
             <rect width="36" height="36" rx="10" fill="#fff"/>
-            <path d="M10 24l4.2-12h2.1l-4.2 12h-2.1zm4.7 0l4.2-12h2.15l-4.2 12h-2.15zm4.7 0l4.2-12h2.1l-4.2 12h-2.1z" fill="#14b8a6"/>
+            <path d="M11 24l4.4-12h2.2l-4.4 12h-2.2zm5.2 0l4.4-12h2.2l-4.4 12h-2.2zm5.4 0l4.4-12h2.2l-4.4 12h-2.2z" fill="#14b8a6"/>
           </svg>
         </div>
         <span className="text-base mt-0.5 font-bold text-teal-700 tracking-wide">UPI</span>
-        <span className="text-xs text-gray-500 mt-0.5">Google Pay, PhonePe, etc</span>
+        <span className="text-xs text-gray-500 mt-0.5 mb-3">Google Pay, PhonePe, etc</span>
+        {/* UPI Pay Now Button */}
+        <button
+          type="button"
+          onClick={handleCheckout}
+          disabled={loading || step === "processing"}
+          className={`w-32 bg-gradient-to-r from-teal-500 to-orange-400 hover:from-teal-600 hover:to-orange-600 text-white font-semibold py-2 rounded-lg text-sm flex items-center justify-center gap-2 transition-all 
+            ${loading || step === "processing" ? "opacity-60 pointer-events-none scale-100" : ""}`}
+        >
+          {loading && step === "processing" ? (
+            <span className="flex items-center"><span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>Processing...</span>
+          ) : (
+            <>
+              <span className="mr-0.5">🔒</span> Pay Now
+            </>
+          )}
+        </button>
       </div>
-      {/* Cards Icon + Label */}
+
+      {/* CARDS BLOCK */}
       <div className="flex flex-col items-center">
         <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-2 bg-white border border-orange-200">
-          {/* Card Icon */}
-          <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
-            <rect x="4" y="8" width="22" height="14" rx="3" fill="#FDBA74" stroke="#F59E42" strokeWidth="1.5"/>
-            <rect x="7.5" y="14.5" width="8" height="2" rx="1" fill="#fff"/>
-            <rect x="18" y="18" width="4" height="1.5" rx="0.75" fill="#F59E42"/>
-            <rect x="7.5" y="18" width="4" height="1.5" rx="0.75" fill="#F59E42"/>
+          {/* Card SVG */}
+          <svg width="32" height="32" fill="none">
+            <rect x="6" y="10" width="20" height="12" rx="3" fill="#FDBA74" stroke="#F59E42" strokeWidth="1.5"/>
+            <rect x="10" y="15" width="7" height="2" rx="1" fill="#fff"/>
+            <rect x="19" y="19" width="3" height="1.3" rx="0.65" fill="#F59E42"/>
+            <rect x="10" y="19" width="3" height="1.3" rx="0.65" fill="#F59E42"/>
           </svg>
         </div>
         <span className="text-base mt-0.5 font-bold text-orange-600 tracking-wide">Cards</span>
-        <span className="text-xs text-gray-500 mt-0.5">Debit, Credit, Rupay etc.</span>
+        <span className="text-xs text-gray-500 mt-0.5 mb-3">Debit, Credit, Rupay etc.</span>
+        {/* Cards Pay Now Button */}
+        <button
+          type="button"
+          onClick={handleCheckout}
+          disabled={loading || step === "processing"}
+          className={`w-32 bg-gradient-to-r from-orange-500 to-teal-500 hover:from-orange-600 hover:to-teal-600 text-white font-semibold py-2 rounded-lg text-sm flex items-center justify-center gap-2 transition-all
+            ${loading || step === "processing" ? "opacity-60 pointer-events-none scale-100" : ""}`}
+        >
+          {loading && step === "processing" ? (
+            <span className="flex items-center"><span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>Processing...</span>
+          ) : (
+            <>
+              <span className="mr-0.5">🔒</span> Pay Now
+            </>
+          )}
+        </button>
       </div>
     </div>
-
-    <button
-      type="submit"
-      className={`w-full bg-gradient-to-r from-teal-500 to-orange-500 hover:from-teal-600 hover:to-orange-600 text-white py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 ${
-        loading || step === "processing" ? "opacity-60 pointer-events-none scale-100" : ""
-      }`}
-      disabled={loading || step === "processing"}
-    >
-      {loading || step === "processing" ? (
-        <div className="flex items-center justify-center">
-          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-          {"Processing Payment..."}
-        </div>
-      ) : (
-        <div className="flex items-center justify-center">
-          <span className="mr-2">🔒</span>
-          Pay Now
-        </div>
-      )}
-    </button>
-
-    {step === "processing" && (
-      <div className="text-center text-teal-600 text-sm mt-3 animate-pulse">
-        Creating your order and launching secure payment gateway...
-      </div>
-    )}
-
-    <div className="flex items-center justify-center mt-4 space-x-2 opacity-60">
+    {/* Info Row */}
+    <div className="flex items-center justify-center mt-2 space-x-2 opacity-60">
       <span className="text-xs text-gray-500">Powered by:</span>
       <div className="flex space-x-2">
         <div className="px-2 py-1 bg-gray-100 rounded text-xs font-medium text-gray-600">Razorpay</div>
@@ -797,8 +804,15 @@ export default function Checkout() {
         <div className="px-2 py-1 bg-gray-100 rounded text-xs font-medium text-gray-600">Paytm</div>
       </div>
     </div>
+    {/* Optional: single status/progress below if you want */}
+    {step === "processing" && (
+      <div className="text-center text-teal-600 text-sm mt-3 animate-pulse">
+        Creating your order and launching secure payment gateway...
+      </div>
+    )}
   </div>
 )}
+
 
           </form>
 
