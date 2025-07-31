@@ -23,14 +23,6 @@ const testimonials = [
     bgColor: 'bg-orange-500',
   },
   {
-    name: 'Savita P.',
-    quote: 'Loved the easy navigation and beautiful design. Will shop again!',
-    image: '/users/savita.webp',
-    rating: 5,
-    color: 'yellow',
-    bgColor: 'bg-yellow-600',
-  },
-  {
     name: 'Anil Tyagi',
     quote: 'I purchased this for my father who was experiencing frequent urination issues at night. After about 3 weeks of use, he reported noticeable improvement in both frequency and comfort. Definitely worth trying if you have similar issues.',
     image: '/users/anil-tyagi.jpeg',
@@ -38,6 +30,14 @@ const testimonials = [
     color: 'teal',
     bgColor: 'bg-teal-500',
   },
+  {
+    name: 'Savita P.',
+    quote: 'Loved the easy navigation and beautiful design. Will shop again!',
+    image: '/users/savita.webp',
+    rating: 5,
+    color: 'yellow',
+    bgColor: 'bg-yellow-600',
+  }
 ];
 
 const TestimonialsCarousel = () => {
