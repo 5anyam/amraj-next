@@ -7,7 +7,7 @@ const testimonials = [
   {
     name: 'Vanshika',
     quote:
-      "I've been struggling with weight for years, but Weight Management Pro really helped me break the plateau. Within the first month, I felt more energetic, less bloated, and saw real change on the scale. Highly recommended for anyone looking for a natural boost to their weight loss journey!",
+      "I've been struggling with weight for years, but AMRAJ Weight Management Pro + really helped me break the plateau. Within the first month, I felt more energetic, less bloated, and saw real change on the scale. Highly recommended for anyone looking for a natural boost to their weight loss journey!",
     image: '/users/vanshika.jpeg',
     rating: 5,
     color: 'teal',
@@ -16,7 +16,7 @@ const testimonials = [
   {
     name: 'Dr Abhinav Rana',
     quote:
-      'Liver Detox Care by Amraj combines natural liver-supporting ingredients like milk thistle, dandelion root, and turmeric, which have shown clinical potential in supporting hepatic function and bile flow. I’ve recommended it to several patients with fatty liver, elevated SGPT levels, or post-antibiotic sluggishness, and many reported positive outcomes within 2-3 weeks. While it’s not a substitute for lifestyle changes or medical treatment, it is a helpful adjunct for liver health maintenance.',
+      "AMRAJ Advanced Liver Detox combines Modern science and time tested ingredients like Milk thistle ,L-ornithine turmeric,Triphala ,TUDCA which have shown clinical potential in supporting hepatic function and bile flow. I've recommended it to several patients with fatty liver, elevated GPT levels, and many reported positive outcomes within 2-3 weeks. While it's not a substitute for lifestyle changes or medical treatment, it is a helpful adjunct for liver health maintenance.",
     image: '/users/dr-abhinav-rana.jpeg',
     rating: 5,
     color: 'orange',
@@ -128,10 +128,7 @@ const TestimonialsCarousel = () => {
                     </div>
                   </div>
 
-                  {/* Main heading */}
-                  <h3 className="text-white text-xl font-bold mb-4 italic">
-                    Go to fitness drink
-                  </h3>
+            
 
                   {/* Quote */}
                   <blockquote className="text-white text-sm leading-relaxed mb-6">
