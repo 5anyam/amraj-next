@@ -28,11 +28,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             fbq('init', '1648859765778662');
             fbq('track', 'PageView');
             fbq('track', 'AddToCart');
-            fbq('track', 'CompleteRegistration');
             fbq('track', 'Contact');
             fbq('track', 'InitiateCheckout');
-            fbq('track', 'Lead');
             fbq('track', 'ViewContent');
+            fbq('track', 'AddPaymentInfo');
+            fbq('track', 'AddToWishlist');
+            fbq('track', 'Purchase');
+            fbq('track', 'Search');
+            fbq('track', 'Subscribe');
           `}
         </Script>
 
