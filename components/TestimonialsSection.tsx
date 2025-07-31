@@ -5,19 +5,19 @@ import Image from 'next/image';
 
 const testimonials = [
   {
-    name: 'Parul S.',
+    name: 'Vanshika',
     quote:
-      'The Blue range totally improved my energy — delivery was so fast, checkout simple, and products are really high quality.',
-    image: '/users/parul.avif',
+      "I've been struggling with weight for years, but Weight Management Pro really helped me break the plateau. Within the first month, I felt more energetic, less bloated, and saw real change on the scale. Highly recommended for anyone looking for a natural boost to their weight loss journey!",
+    image: '/users/vanshika.jpeg',
     rating: 5,
     color: 'teal',
     bgColor: 'bg-teal-500',
   },
   {
-    name: 'Ankit T.',
+    name: 'Dr Abhinav Rana',
     quote:
-      'I needed vegan supplements I could trust and the website experience was perfectly smooth.',
-    image: '/users/ankit.jpeg',
+      'Liver Detox Care by Amraj combines natural liver-supporting ingredients like milk thistle, dandelion root, and turmeric, which have shown clinical potential in supporting hepatic function and bile flow. I’ve recommended it to several patients with fatty liver, elevated SGPT levels, or post-antibiotic sluggishness, and many reported positive outcomes within 2-3 weeks. While it’s not a substitute for lifestyle changes or medical treatment, it is a helpful adjunct for liver health maintenance.',
+    image: '/users/dr-abhinav-rana.jpeg',
     rating: 5,
     color: 'orange',
     bgColor: 'bg-orange-500',
@@ -31,20 +31,12 @@ const testimonials = [
     bgColor: 'bg-yellow-600',
   },
   {
-    name: 'Rahul M.',
-    quote: 'Amazing product quality and customer service. Highly recommended!',
-    image: '/users/ankit.jpeg',
+    name: 'Anil Tyagi',
+    quote: 'I purchased this for my father who was experiencing frequent urination issues at night. After about 3 weeks of use, he reported noticeable improvement in both frequency and comfort. Definitely worth trying if you have similar issues.',
+    image: '/users/anil-tyagi.jpeg',
     rating: 5,
     color: 'teal',
     bgColor: 'bg-teal-500',
-  },
-  {
-    name: 'Priya K.',
-    quote: 'Fast shipping and excellent customer support. Very satisfied!',
-    image: '/users/savita.webp',
-    rating: 5,
-    color: 'orange',
-    bgColor: 'bg-orange-500',
   },
 ];
 
