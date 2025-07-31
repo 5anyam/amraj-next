@@ -32,7 +32,7 @@ const testimonials = [
   },
   {
     name: 'Savita P.',
-    quote: 'Loved the easy navigation and beautiful design. Will shop again!',
+    quote: 'Amraj advanced liver detox not only helps my fatty grade liver but also helps my skin glow and boost metabolism. Thanks for this amazing product. Loved it',
     image: '/users/savita.webp',
     rating: 5,
     color: 'yellow',

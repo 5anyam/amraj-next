@@ -27,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             'https://connect.facebook.net/en_US/fbevents.js');
             fbq('init', '1648859765778662');
             fbq('track', 'PageView');
+            fbq('track', 'AddToCart');
           `}
         </Script>
 
