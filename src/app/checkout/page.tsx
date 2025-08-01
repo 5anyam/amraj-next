@@ -22,7 +22,7 @@ interface FormData {
 
 interface WooOrder {
   id: number;
-  meta_data?: Array<{ key: string; value: [] }>;
+  meta_data?: Array<{ key: string; value: unknown }>; // ✅ unknown type
 }
 
 interface RazorpayHandlerResponse {
@@ -59,7 +59,17 @@ export default function Checkout() {
   const { items, clear } = useCart();
   const total = items.reduce((sum, i) => sum + parseFloat(i.price) * i.quantity, 0);
   const deliveryCharges = total >= 500 ? 0 : 50;
-  const finalTotal = total + deliveryCharges;
+  
+  // Coupon state
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState("");
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponError, setCouponError] = useState("");
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+  
+  // Final total calculation with coupon
+  const subtotalAfterCoupon = total - couponDiscount;
+  const finalTotal = subtotalAfterCoupon + deliveryCharges;
 
   const [form, setForm] = useState<FormData>({
     name: "",
@@ -89,6 +99,70 @@ export default function Checkout() {
       document.body.appendChild(script);
     }
   }, []);
+
+  // Coupon validation function
+  const validateCoupon = (code: string): { valid: boolean; discount: number; message: string } => {
+    const upperCode = code.toUpperCase().trim();
+    
+    if (upperCode === "WELCOME100") {
+      if (total >= 200) { // Minimum order amount for coupon
+        return { valid: true, discount: 100, message: "Coupon applied successfully!" };
+      } else {
+        return { valid: false, discount: 0, message: "Minimum order amount ₹200 required for this coupon" };
+      }
+    }
+    
+    return { valid: false, discount: 0, message: "Invalid coupon code" };
+  };
+
+  // Apply coupon function
+  const handleApplyCoupon = () => {
+    if (!couponCode.trim()) {
+      setCouponError("Please enter a coupon code");
+      return;
+    }
+
+    if (appliedCoupon === couponCode.toUpperCase()) {
+      setCouponError("Coupon already applied");
+      return;
+    }
+
+    setIsApplyingCoupon(true);
+    setCouponError("");
+
+    // Simulate API call delay
+    setTimeout(() => {
+      const validation = validateCoupon(couponCode);
+      
+      if (validation.valid) {
+        setAppliedCoupon(couponCode.toUpperCase());
+        setCouponDiscount(validation.discount);
+        setCouponError("");
+        toast({
+          title: "🎉 Coupon Applied!",
+          description: `You saved ₹${validation.discount} with ${couponCode.toUpperCase()}`,
+        });
+      } else {
+        setCouponError(validation.message);
+        setAppliedCoupon("");
+        setCouponDiscount(0);
+      }
+      
+      setIsApplyingCoupon(false);
+    }, 800);
+  };
+
+  // Remove coupon function
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon("");
+    setCouponDiscount(0);
+    setCouponCode("");
+    setCouponError("");
+    toast({
+      title: "Coupon Removed",
+      description: "Coupon discount has been removed from your order",
+    });
+  };
 
   function trackPurchaseEvent(orderId: string | number, value: number) {
     if (typeof window !== "undefined" && window.fbq) {
@@ -146,12 +220,10 @@ export default function Checkout() {
     }
   }
 
-  // Generate random order ID for COD
   function generateOrderId(): string {
     return 'COD' + Date.now() + Math.random().toString(36).substr(2, 5).toUpperCase();
   }
 
-  // Handle COD order placement
   async function handleCODOrder(): Promise<void> {
     try {
       const wooOrder = (await createOrder({
@@ -172,12 +244,11 @@ export default function Checkout() {
           email: form.email,
         },
         status: "processing",
-        notes: `${form.notes ? form.notes + '\n\n' : ''}WhatsApp: ${form.whatsapp}\nDelivery Charges: ₹${deliveryCharges}\nPayment Method: Cash on Delivery`,
+        notes: `${form.notes ? form.notes + '\n\n' : ''}WhatsApp: ${form.whatsapp}\nDelivery Charges: ₹${deliveryCharges}\nPayment Method: Cash on Delivery${appliedCoupon ? `\nCoupon Applied: ${appliedCoupon} (₹${couponDiscount} discount)` : ''}`,
       })) as WooOrder;
 
       const codOrderId = generateOrderId();
       
-      // Update order with COD meta data
       await fetch(
         `${process.env.NEXT_PUBLIC_WC_API_URL}/orders/${wooOrder.id}?consumer_key=${process.env.NEXT_PUBLIC_WC_CONSUMER_KEY}&consumer_secret=${process.env.NEXT_PUBLIC_WC_CONSUMER_SECRET}`,
         {
@@ -194,12 +265,18 @@ export default function Checkout() {
                 key: "cod_order_id",
                 value: codOrderId,
               },
+              ...(appliedCoupon ? [{
+                key: "coupon_code",
+                value: appliedCoupon,
+              }, {
+                key: "coupon_discount",
+                value: couponDiscount,
+              }] : [])
             ],
           }),
         }
       );
 
-      // Don't clear cart yet - wait for user action in modal
       trackPurchaseEvent(codOrderId, finalTotal);
       setOrderDetails({ orderId: codOrderId, wcOrderId: wooOrder.id });
       setShowOrderConfirmation(true);
@@ -237,7 +314,6 @@ export default function Checkout() {
     setLoading(true);
     setStep("processing");
 
-    // Handle COD orders
     if (paymentMethod === "cod") {
       try {
         await handleCODOrder();
@@ -249,7 +325,6 @@ export default function Checkout() {
       return;
     }
 
-    // Handle online payment orders
     let wooOrder: WooOrder;
 
     try {
@@ -271,7 +346,7 @@ export default function Checkout() {
           email: form.email,
         },
         status: "pending",
-        notes: `${form.notes ? form.notes + '\n\n' : ''}WhatsApp: ${form.whatsapp}\nDelivery Charges: ₹${deliveryCharges}\nPayment Method: Online Payment`,
+        notes: `${form.notes ? form.notes + '\n\n' : ''}WhatsApp: ${form.whatsapp}\nDelivery Charges: ₹${deliveryCharges}\nPayment Method: Online Payment${appliedCoupon ? `\nCoupon Applied: ${appliedCoupon} (₹${couponDiscount} discount)` : ''}`,
       })) as WooOrder;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Could not place order. Please try again.";
@@ -318,6 +393,13 @@ export default function Checkout() {
                     key: "razorpay_payment_id",
                     value: response.razorpay_payment_id,
                   },
+                  ...(appliedCoupon ? [{
+                    key: "coupon_code",
+                    value: appliedCoupon,
+                  }, {
+                    key: "coupon_discount",
+                    value: couponDiscount,
+                  }] : [])
                 ],
               }),
             }
@@ -371,13 +453,11 @@ export default function Checkout() {
     setLoading(false);
   }
 
-  // Order Confirmation Popup Component
   function OrderConfirmationModal() {
     if (!showOrderConfirmation || !orderDetails) return null;
 
-
     const handleContinueShopping = () => {
-      clear(); // Clear cart when user continues shopping
+      clear();
       setShowOrderConfirmation(false);
       router.push("/");
     };
@@ -391,6 +471,9 @@ export default function Checkout() {
             <p className="text-gray-600 mb-2">Your Order ID:</p>
             <p className="text-xl font-bold text-teal-600">{orderDetails.orderId}</p>
             <p className="text-sm text-gray-500 mt-2">WooCommerce Order: #{orderDetails.wcOrderId}</p>
+            {appliedCoupon && (
+              <p className="text-sm text-green-600 mt-2">✅ Coupon {appliedCoupon} applied (₹{couponDiscount} saved)</p>
+            )}
           </div>
           <p className="text-gray-600 mb-6">
             Your order has been placed successfully. You will receive updates on WhatsApp and pay when your order arrives.
@@ -456,6 +539,23 @@ export default function Checkout() {
                 <span>Subtotal:</span>
                 <span className="font-semibold text-teal-500">₹{total.toFixed(2)}</span>
               </div>
+              
+              {/* Coupon Discount Display */}
+              {appliedCoupon && (
+                <div className="flex justify-between text-green-600 items-center py-2">
+                  <div className="flex items-center gap-2">
+                    <span>Coupon ({appliedCoupon}):</span>
+                    <button
+                      onClick={handleRemoveCoupon}
+                      className="text-xs text-red-500 hover:text-red-700 underline"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <span className="font-semibold">-₹{couponDiscount.toFixed(2)}</span>
+                </div>
+              )}
+              
               <div className="flex justify-between text-black items-center py-2">
                 <div>
                   <span>Delivery Charges:</span>
@@ -469,6 +569,54 @@ export default function Checkout() {
                 <span className="text-lg text-black font-bold">Total:</span>
                 <span className="text-xl font-bold text-teal-600">₹{finalTotal.toFixed(2)}</span>
               </div>
+            </div>
+          </div>
+
+          {/* Coupon Code Section */}
+          <div className="bg-white shadow-xl rounded-2xl p-6 mb-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Have a Coupon Code?</h2>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex-1">
+                <input
+                  type="text"
+                  placeholder="Enter coupon code (e.g., WELCOME100)"
+                  value={couponCode}
+                  onChange={(e) => {
+                    setCouponCode(e.target.value);
+                    setCouponError("");
+                  }}
+                  className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-teal-500 focus:outline-none transition-colors text-black"
+                  disabled={!!appliedCoupon}
+                />
+                {couponError && (
+                  <p className="text-red-500 text-sm mt-1">{couponError}</p>
+                )}
+                {appliedCoupon && (
+                  <p className="text-green-600 text-sm mt-1 flex items-center gap-1">
+                    <span>✅</span> Coupon {appliedCoupon} applied successfully!
+                  </p>
+                )}
+              </div>
+              <button
+                onClick={appliedCoupon ? handleRemoveCoupon : handleApplyCoupon}
+                disabled={isApplyingCoupon}
+                className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+                  appliedCoupon
+                    ? 'bg-red-500 hover:bg-red-600 text-white'
+                    : 'bg-gradient-to-r from-teal-500 to-orange-500 hover:from-teal-600 hover:to-orange-600 text-white'
+                } ${isApplyingCoupon ? 'opacity-60 cursor-not-allowed' : ''}`}
+              >
+                {isApplyingCoupon ? (
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Applying...
+                  </div>
+                ) : appliedCoupon ? (
+                  'Remove'
+                ) : (
+                  'Apply Coupon'
+                )}
+              </button>
             </div>
           </div>
 
@@ -516,11 +664,11 @@ export default function Checkout() {
             </div>
           </div>
 
-          {/* Rest of the form code remains the same... */}
+          {/* Rest of the form (unchanged) */}
           <form onSubmit={handleCheckout} className="bg-white shadow-xl rounded-2xl p-8">
             <h2 className="text-xl font-semibold text-gray-800 mb-6">Delivery Information</h2>
             
-            {/* Form fields remain the same as in previous code... */}
+            {/* All your existing form fields... */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
@@ -724,99 +872,128 @@ export default function Checkout() {
             <div className="bg-gradient-to-r from-teal-50 to-orange-50 rounded-xl p-4 mb-6">
               <div className="flex items-center justify-between text-lg font-bold">
                 <span className="text-gray-800">Final Amount:</span>
-                <span className="text-2xl bg-gradient-to-r from-teal-600 to-orange-600 bg-clip-text text-transparent">
-                  ₹{finalTotal.toFixed(2)}
-                </span>
+                <div className="text-right">
+                  <span className="text-2xl bg-gradient-to-r from-teal-600 to-orange-600 bg-clip-text text-transparent">
+                    ₹{finalTotal.toFixed(2)}
+                  </span>
+                  {appliedCoupon && (
+                    <p className="text-sm text-green-600 mt-1">You saved ₹{couponDiscount} with {appliedCoupon}!</p>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Payment Methods Display */}
             {paymentMethod === "online" && (
-  <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
-    <h3 className="text-gray-700 font-semibold mb-3 text-center">Pay with</h3>
-    <div className="flex items-center justify-center gap-10 mb-5">
-      {/* UPI Block - now a button */}
-      <button
-        type="button"
-        onClick={handleCheckout}
-        disabled={loading || step === "processing"}
-        className={`flex flex-col items-center focus:outline-none cursor-pointer w-28 py-2 rounded-lg transition-all bg-white border border-teal-200 hover:shadow-lg
-          ${loading || step === "processing" ? "opacity-60 pointer-events-none" : ""}
-        `}
-        style={{ background: "#fff" }}
-      >
-        <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-2">
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-            <rect width="36" height="36" rx="10" fill="#fff"/>
-            <path d="M11 24l4.4-12h2.2l-4.4 12h-2.2zm5.2 0l4.4-12h2.2l-4.4 12h-2.2zm5.4 0l4.4-12h2.2l-4.4 12h-2.2z" fill="#14b8a6"/>
-          </svg>
-        </div>
-        <span className="text-base font-bold text-teal-700 tracking-wide">UPI</span>
-        <span className="text-xs text-gray-500 mt-0.5">Google Pay, PhonePe, etc</span>
-      </button>
-      {/* Cards Block - now a button */}
-      <button
-        type="button"
-        onClick={handleCheckout}
-        disabled={loading || step === "processing"}
-        className={`flex flex-col items-center focus:outline-none cursor-pointer w-28 py-2 rounded-lg transition-all bg-white border border-orange-200 hover:shadow-lg
-          ${loading || step === "processing" ? "opacity-60 pointer-events-none" : ""}
-        `}
-        style={{ background: "#fff" }}
-      >
-        <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-2">
-          <svg width="32" height="32" fill="none">
-            <rect x="6" y="10" width="20" height="12" rx="3" fill="#FDBA74" stroke="#F59E42" strokeWidth="1.5"/>
-            <rect x="10" y="15" width="7" height="2" rx="1" fill="#fff"/>
-            <rect x="19" y="19" width="3" height="1.3" rx="0.65" fill="#F59E42"/>
-            <rect x="10" y="19" width="3" height="1.3" rx="0.65" fill="#F59E42"/>
-          </svg>
-        </div>
-        <span className="text-base font-bold text-orange-600 tracking-wide">Cards</span>
-        <span className="text-xs text-gray-500 mt-0.5">Debit, Credit, Rupay etc.</span>
-      </button>
-    </div>
+              <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
+                <h3 className="text-gray-700 font-semibold mb-3 text-center">Pay with</h3>
+                <div className="flex items-center justify-center gap-10 mb-5">
+                  <button
+                    type="button"
+                    onClick={handleCheckout}
+                    disabled={loading || step === "processing"}
+                    className={`flex flex-col items-center focus:outline-none cursor-pointer w-28 py-2 rounded-lg transition-all bg-white border border-teal-200 hover:shadow-lg
+                      ${loading || step === "processing" ? "opacity-60 pointer-events-none" : ""}
+                    `}
+                  >
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-2">
+                      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                        <rect width="36" height="36" rx="10" fill="#fff"/>
+                        <path d="M11 24l4.4-12h2.2l-4.4 12h-2.2zm5.2 0l4.4-12h2.2l-4.4 12h-2.2zm5.4 0l4.4-12h2.2l-4.4 12h-2.2z" fill="#14b8a6"/>
+                      </svg>
+                    </div>
+                    <span className="text-base font-bold text-teal-700 tracking-wide">UPI</span>
+                    <span className="text-xs text-gray-500 mt-0.5">Google Pay, PhonePe, etc</span>
+                  </button>
+                  
+                  <button
+                    type="button"
+                    onClick={handleCheckout}
+                    disabled={loading || step === "processing"}
+                    className={`flex flex-col items-center focus:outline-none cursor-pointer w-28 py-2 rounded-lg transition-all bg-white border border-orange-200 hover:shadow-lg
+                      ${loading || step === "processing" ? "opacity-60 pointer-events-none" : ""}
+                    `}
+                  >
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-2">
+                      <svg width="32" height="32" fill="none">
+                        <rect x="6" y="10" width="20" height="12" rx="3" fill="#FDBA74" stroke="#F59E42" strokeWidth="1.5"/>
+                        <rect x="10" y="15" width="7" height="2" rx="1" fill="#fff"/>
+                        <rect x="19" y="19" width="3" height="1.3" rx="0.65" fill="#F59E42"/>
+                        <rect x="10" y="19" width="3" height="1.3" rx="0.65" fill="#F59E42"/>
+                      </svg>
+                    </div>
+                    <span className="text-base font-bold text-orange-600 tracking-wide">Cards</span>
+                    <span className="text-xs text-gray-500 mt-0.5">Debit, Credit, Rupay etc.</span>
+                  </button>
+                </div>
 
-    {/* Neeche tumhara pehla wala single PAY NOW button — unchanged */}
-    <button
-      type="submit"
-      className={`w-full bg-gradient-to-r from-teal-500 to-orange-500 hover:from-teal-600 hover:to-orange-600 text-white py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 ${
-        loading || step === "processing" ? "opacity-60 pointer-events-none scale-100" : ""
-      }`}
-      disabled={loading || step === "processing"}
-    >
-      {loading || step === "processing" ? (
-        <div className="flex items-center justify-center">
-          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-          {"Processing Payment..."}
-        </div>
-      ) : (
-        <div className="flex items-center justify-center">
-          <span className="mr-2">🔒</span>
-          Pay Now
-        </div>
-      )}
-    </button>
+                <button
+                  type="submit"
+                  className={`w-full bg-gradient-to-r from-teal-500 to-orange-500 hover:from-teal-600 hover:to-orange-600 text-white py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 ${
+                    loading || step === "processing" ? "opacity-60 pointer-events-none scale-100" : ""
+                  }`}
+                  disabled={loading || step === "processing"}
+                >
+                  {loading || step === "processing" ? (
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                      {"Processing Payment..."}
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center">
+                      <span className="mr-2">🔒</span>
+                      Pay Now
+                    </div>
+                  )}
+                </button>
 
-    {step === "processing" && (
-      <div className="text-center text-teal-600 text-sm mt-3 animate-pulse">
-        Creating your order and launching secure payment gateway...
-      </div>
-    )}
+                {step === "processing" && (
+                  <div className="text-center text-teal-600 text-sm mt-3 animate-pulse">
+                    Creating your order and launching secure payment gateway...
+                  </div>
+                )}
 
-    <div className="flex items-center justify-center mt-4 space-x-2 opacity-60">
-      <span className="text-xs text-gray-500">Powered by:</span>
-      <div className="flex space-x-2">
-        <div className="px-2 py-1 bg-gray-100 rounded text-xs font-medium text-gray-600">Razorpay</div>
-        <div className="px-2 py-1 bg-gray-100 rounded text-xs font-medium text-gray-600">PhonePe</div>
-        <div className="px-2 py-1 bg-gray-100 rounded text-xs font-medium text-gray-600">Paytm</div>
-      </div>
-    </div>
-  </div>
-)}
+                <div className="flex items-center justify-center mt-4 space-x-2 opacity-60">
+                  <span className="text-xs text-gray-500">Powered by:</span>
+                  <div className="flex space-x-2">
+                    <div className="px-2 py-1 bg-gray-100 rounded text-xs font-medium text-gray-600">Razorpay</div>
+                    <div className="px-2 py-1 bg-gray-100 rounded text-xs font-medium text-gray-600">PhonePe</div>
+                    <div className="px-2 py-1 bg-gray-100 rounded text-xs font-medium text-gray-600">Paytm</div>
+                  </div>
+                </div>
+              </div>
+            )}
 
+            {paymentMethod === "cod" && (
+              <button
+                type="submit"
+                className={`w-full bg-gradient-to-r from-teal-500 to-orange-500 hover:from-teal-600 hover:to-orange-600 text-white py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 ${
+                  loading || step === "processing" ? "opacity-60 pointer-events-none scale-100" : ""
+                }`}
+                disabled={loading || step === "processing"}
+              >
+                {loading || step === "processing" ? (
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                    {"Placing Order..."}
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center">
+                    <span className="mr-2">📦</span>
+                    Place Order (COD)
+                  </div>
+                )}
+              </button>
+            )}
 
-
+            {step === "processing" && (
+              <div className="text-center text-teal-600 text-sm mt-3 animate-pulse">
+                {paymentMethod === "cod" 
+                  ? "Creating your order..." 
+                  : "Creating your order and launching secure payment gateway..."
+                }
+              </div>
+            )}
           </form>
 
           <div className="mt-8 text-center">
@@ -841,7 +1018,6 @@ export default function Checkout() {
         </div>
       </div>
 
-      {/* Order Confirmation Modal */}
       <OrderConfirmationModal />
     </>
   );

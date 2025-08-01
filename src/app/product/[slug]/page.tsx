@@ -18,8 +18,8 @@ export interface Product {
   id: number;
   name: string;
   slug: string;
-  price: string;            // sale price, or reg price if no sale
-  regular_price: string;    // always MRP
+  price: string;
+  regular_price: string;
   description?: string;
   short_description?: string;
   images: ImageData[];
@@ -43,6 +43,18 @@ export default function ProductPage() {
   const [offer, setOffer] = useState<SelectedOffer>(undefined);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isBuyingNow, setIsBuyingNow] = useState(false);
+  const [isCouponCopied, setIsCouponCopied] = useState(false);
+
+  // Coupon copy function
+  const handleCopyCoupon = () => {
+    navigator.clipboard.writeText('WELCOME100');
+    setIsCouponCopied(true);
+    toast({
+      title: '🎉 Coupon Copied!',
+      description: 'WELCOME100 has been copied to clipboard. Apply it at checkout!',
+    });
+    setTimeout(() => setIsCouponCopied(false), 3000);
+  };
 
   // --- LOADING / ERROR States ---
   if (isLoading) {
@@ -73,6 +85,7 @@ export default function ProductPage() {
   const product = products.find(
     (p) => p.slug === slug || p.id.toString() === slug
   );
+  
   if (!product) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 to-orange-50">
@@ -200,6 +213,39 @@ export default function ProductPage() {
               />
             </div>
 
+            {/* 🎫 COUPON CODE SECTION */}
+            <div className="mb-4 bg-gradient-to-r from-orange-50 via-yellow-50 to-orange-50 border-2 border-dashed border-orange-300 rounded-2xl p-4 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-18 h-18 bg-orange-500 transform rotate-45 translate-x-8 -translate-y-8"></div>
+              <div className="absolute top-2 right-2 text-white text-xs font-bold">NEW</div>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-lg">🎁</span>
+                    <span className="text-orange-600 font-bold text-sm">SPECIAL OFFER</span>
+                  </div>
+                  <h3 className="font-bold text-gray-800 text-base lg:text-lg">Get ₹100 OFF on your first order!</h3>
+                  <p className="text-gray-600 text-xs lg:text-sm mt-1">Use coupon code at checkout</p>
+                </div>
+                
+                <div className="flex flex-col items-center gap-2">
+                  <div className="bg-white border-2 border-orange-300 rounded-lg px-3 py-2 font-mono font-bold text-orange-600 text-lg tracking-wider">
+                    WELCOME100
+                  </div>
+                  <button
+                    onClick={handleCopyCoupon}
+                    className={`px-4 py-1 rounded-full text-xs font-semibold transition-all duration-300 ${
+                      isCouponCopied 
+                        ? 'bg-green-500 text-white' 
+                        : 'bg-orange-500 hover:bg-orange-600 text-white'
+                    }`}
+                  >
+                    {isCouponCopied ? '✓ Copied!' : 'Copy Code'}
+                  </button>
+                </div>
+              </div>
+            </div>
+
             {/* Pricing Section */}
             <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-4 mb-4">
               <div className="flex items-center justify-between mb-3">
@@ -297,9 +343,6 @@ export default function ProductPage() {
         </div>
       </div>
 
-      {/* MOBILE Add To Cart/Buy Now at bottom - (Add if needed in sticky bar) */}
-      {/* ... You can repeat the CTA bar here for mobile ... */}
-
       {/* Description Tabs */}
       <div className="max-w-7xl mx-auto mt-8 p-4 lg:p-6">
         <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
@@ -326,24 +369,23 @@ export default function ProductPage() {
                      dangerouslySetInnerHTML={{ __html: product.description || '' }} />
               </Tab.Panel>
               <Tab.Panel>
-  <div className="prose max-w-none text-gray-700">
-    <h3 className="font-bold text-lg lg:text-xl bg-gradient-to-r from-teal-600 to-teal-800 bg-clip-text text-transparent mb-3">
-      Additional Information
-    </h3>
-    <div className="bg-gradient-to-r from-teal-50 to-orange-50 rounded-2xl p-4 border border-teal-200 space-y-3">
-      <p className="text-gray-700 leading-relaxed text-sm">
-        Here you can add any additional information about the product (size, storage instructions, FAQs, etc.).
-      </p>
-      <p className="text-gray-700 leading-relaxed text-sm">
-        Your tracking ID and order details will be sent to your WhatsApp once the order is placed successfully.
-      </p>
-      <p className="text-gray-700 leading-relaxed text-sm">
-        <strong>Shipping Details:</strong> Your order will be delivered within 2-3 business days after placing the order.
-      </p>
-    </div>
-  </div>
-</Tab.Panel>
-
+                <div className="prose max-w-none text-gray-700">
+                  <h3 className="font-bold text-lg lg:text-xl bg-gradient-to-r from-teal-600 to-teal-800 bg-clip-text text-transparent mb-3">
+                    Additional Information
+                  </h3>
+                  <div className="bg-gradient-to-r from-teal-50 to-orange-50 rounded-2xl p-4 border border-teal-200 space-y-3">
+                    <p className="text-gray-700 leading-relaxed text-sm">
+                      Here you can add any additional information about the product (size, storage instructions, FAQs, etc.).
+                    </p>
+                    <p className="text-gray-700 leading-relaxed text-sm">
+                      Your tracking ID and order details will be sent to your WhatsApp once the order is placed successfully.
+                    </p>
+                    <p className="text-gray-700 leading-relaxed text-sm">
+                      <strong>Shipping Details:</strong> Your order will be delivered within 2-3 business days after placing the order.
+                    </p>
+                  </div>
+                </div>
+              </Tab.Panel>
             </Tab.Panels>
           </Tab.Group>
         </div>
