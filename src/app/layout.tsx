@@ -48,6 +48,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             src="https://www.facebook.com/tr?id=1648859765778662&ev=PageView&noscript=1"
           />
         </noscript>
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-17423083060">
+</script>
+<script>
+  {`window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());}
+
+  gtag('config', 'AW-17423083060');`}
+</script>
       </head>
       <body className="overflow-x-hidden overflow-y-scroll">
         <ReactQueryProvider>
