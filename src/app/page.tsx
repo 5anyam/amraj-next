@@ -7,6 +7,7 @@ import HeroCarousel from "../../components/HeroCarousel";
 import MarqueeBanner from "../../components/MarqueeBanner";
 import AnimatedBackground from "../../components/AnimatedBackground";
 import AboutUsSection from "../../components/AboutUs";
+import CustomProductSlider from "../../components/CustomSlider";
 
 
 export interface Product {
@@ -97,6 +98,7 @@ export default function Homepage() {
       </div>
       </section>
       <AboutUsSection/>
+      <CustomProductSlider/>
       <Testimonials />
     </div>
   );
