@@ -4,7 +4,7 @@ import { CartProvider } from '../../lib/cart';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import Script from 'next/script';
-import EnhancedAnnouncementBar from '../../components/anouncement';
+import AnnouncementBar from '../../components/anouncement';
 
 export const metadata = {
   title: 'Amraj - Rooted in Tradition, Backed by Science',
@@ -62,7 +62,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="overflow-x-hidden overflow-y-scroll">
         <ReactQueryProvider>
           <CartProvider>
-            <EnhancedAnnouncementBar/>
+            <AnnouncementBar/>
             <Header />
             {children}
             <Footer />
