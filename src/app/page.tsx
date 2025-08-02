@@ -96,9 +96,9 @@ export default function Homepage() {
   </div>
 )}
       </div>
+      <CustomProductSlider/>
       </section>
       <AboutUsSection/>
-      <CustomProductSlider/>
       <Testimonials />
     </div>
   );
