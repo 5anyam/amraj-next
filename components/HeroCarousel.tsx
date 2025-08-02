@@ -3,12 +3,12 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const IMAGES = [
   {
-    src: 'https://cms.amraj.in/wp-content/uploads/2025/06/Amraj-Bg-Photo_20250623_113828_0000-scaled.jpg',
-    alt: 'Model smiling with serum',
+    src: 'https://cms.amraj.in/wp-content/uploads/2025/08/amraj-cover-scaled.jpg',
+    alt: 'Healthy skin with bottle',
   },
   {
     src: 'https://cms.amraj.in/wp-content/uploads/2025/06/Amraj-Bg-Photo_20250623_113828_0000-scaled.jpg',
-    alt: 'Healthy skin with bottle',
+    alt: 'Model smiling with serum',
   }
 ];
 
