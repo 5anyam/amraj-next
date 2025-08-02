@@ -8,6 +8,7 @@ import MarqueeBanner from "../../components/MarqueeBanner";
 import AnimatedBackground from "../../components/AnimatedBackground";
 import AboutUsSection from "../../components/AboutUs";
 import CustomProductSlider from "../../components/CustomSlider";
+import HorizontalCertificatesSlider from "../../components/certificates";
 
 
 export interface Product {
@@ -35,6 +36,7 @@ export default function Homepage() {
     <div className="min-h-screen bg-white pb-24 overflow-x-hidden transition-colors">
       <HeroCarousel />
       <MarqueeBanner/>
+      <HorizontalCertificatesSlider/>
       <section className="relative max-w-6xl mx-auto py-14 px-4">
         <AnimatedBackground/>
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-orange-100/10 via-teal-300/5 to-white pointer-events-none" />
