@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const IMAGES = [
   {
-    src: 'https://cms.amraj.in/wp-content/uploads/2025/08/amraj-cover-scaled.jpg',
+    src: 'https://cms.amraj.in/wp-content/uploads/2025/08/amraj-cover-1-scaled.jpg',
     alt: 'Healthy skin with bottle',
   },
   {
