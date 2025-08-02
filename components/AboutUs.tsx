@@ -59,7 +59,7 @@ export default function AboutUsSection() {
     {
       icon: <Leaf className="text-emerald-500 w-10 h-10" />,
       title: 'Plant-Based Formulas',
-      desc: 'Pure herbs like Jamun, Kutki, Milk Thistle, and more — completely natural ingredients.',
+      desc: 'Pure herbs like Moringa, Green Tea Extract, Caralluma, Gokshura and more — completely natural ingredients.',
       gradient: 'from-emerald-500/10 to-green-500/10'
     },
     {
