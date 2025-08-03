@@ -7,8 +7,9 @@ import type { FacebookPixelParams, Product, CartItem } from '../lib/facebook-pix
 export const useFacebookPixel = () => {
   const trackEvent = useCallback((eventName: string, parameters: FacebookPixelParams = {}) => {
     if (typeof window !== 'undefined' && window.fbq) {
-      window.fbq('track', eventName, parameters);
-      console.log(`FB Pixel: ${eventName}`, parameters); // Debug log
+      // ✅ Type assertion fix
+      window.fbq('track', eventName, parameters as Record<string, unknown>);
+      console.log(`FB Pixel: ${eventName}`, parameters);
     }
   }, []);
 
@@ -64,6 +65,28 @@ export const useFacebookPixel = () => {
     });
   }, [trackEvent]);
 
+  const trackContact = useCallback(() => {
+    trackEvent('Contact');
+  }, [trackEvent]);
+
+  const trackSubscribe = useCallback((value?: number) => {
+    trackEvent('Subscribe', value ? { value, currency: 'INR' } : {});
+  }, [trackEvent]);
+
+  const trackSearch = useCallback((searchString: string) => {
+    trackEvent('Search', { content_name: searchString });
+  }, [trackEvent]);
+
+  const trackAddToWishlist = useCallback((product: Product) => {
+    trackEvent('AddToWishlist', {
+      content_ids: [product.id.toString()],
+      content_name: product.name,
+      content_type: 'product',
+      value: parseFloat(product.price.toString()),
+      currency: 'INR',
+    });
+  }, [trackEvent]);
+
   return {
     trackEvent,
     trackViewContent,
@@ -71,5 +94,9 @@ export const useFacebookPixel = () => {
     trackInitiateCheckout,
     trackAddPaymentInfo,
     trackPurchase,
+    trackContact,
+    trackSubscribe,
+    trackSearch,
+    trackAddToWishlist,
   };
 };

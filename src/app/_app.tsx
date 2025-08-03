@@ -1,15 +1,17 @@
+// src/app/_app.tsx
 import { AppProps } from 'next/app';
 import Script from 'next/script';
 import '../styles/globals.css';
 import { useEffect } from "react";
 import { useRouter } from 'next/router';
 
-declare global {
-  interface Window {
-    fbq: (...args: unknown[]) => void;
-    _fbq?: (...args: unknown[]) => void;
-  }
-}
+// ✅ REMOVE THIS GLOBAL DECLARATION - It's conflicting
+// declare global {
+//   interface Window {
+//     fbq: (...args: unknown[]) => void;
+//     _fbq?: (...args: unknown[]) => void;
+//   }
+// }
 
 const FB_PIXEL_ID = '1648859765778662';
 
