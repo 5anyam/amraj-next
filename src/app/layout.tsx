@@ -3,8 +3,10 @@ import ReactQueryProvider from '../../components/ReactQueryProvider';
 import { CartProvider } from '../../lib/cart';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import FacebookPixel from '../../components/FacebookPixel';
 import Script from 'next/script';
 import AnnouncementBar from '../../components/anouncement';
+import { Suspense } from 'react';
 
 export const metadata = {
   title: 'Amraj - Rooted in Tradition, Backed by Science',
@@ -12,10 +14,13 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const fbPixelId = '1648859765778662';
+  const gtagId = 'AW-17423083060';
+
   return (
     <html lang="en">
       <head>
-        {/* Facebook Pixel Script */}
+        {/* Facebook Pixel Script - Updated */}
         <Script id="facebook-pixel" strategy="afterInteractive">
           {`
             !function(f,b,e,v,n,t,s)
@@ -26,17 +31,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             t.src=v;s=b.getElementsByTagName(e)[0];
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '1648859765778662');
+            fbq('init', '${fbPixelId}');
             fbq('track', 'PageView');
-            fbq('track', 'AddToCart');
-            fbq('track', 'Contact');
-            fbq('track', 'InitiateCheckout');
-            fbq('track', 'ViewContent');
-            fbq('track', 'AddPaymentInfo');
-            fbq('track', 'AddToWishlist');
-            fbq('track', 'Purchase');
-            fbq('track', 'Search');
-            fbq('track', 'Subscribe');
+          `}
+        </Script>
+
+        {/* Google Analytics - Cleaned Up */}
+        <Script 
+          src={`https://www.googletagmanager.com/gtag/js?id=${gtagId}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${gtagId}');
           `}
         </Script>
 
@@ -46,34 +56,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             height="1"
             width="1"
             style={{ display: 'none' }}
-            src="https://www.facebook.com/tr?id=1648859765778662&ev=PageView&noscript=1"
+            src={`https://www.facebook.com/tr?id=${fbPixelId}&ev=PageView&noscript=1`}
+            alt="facebook pixel"
           />
         </noscript>
-<script async src="https://www.googletagmanager.com/gtag/js?id=AW-17423083060">
-</script>
-<script>
-  {`window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());}
-
-  gtag('config', 'AW-17423083060');`}
-</script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=AW-17423083060"></script>
-<script>
-  {`window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'AW-17423083060');`}
-</script>
       </head>
       <body className="overflow-x-hidden overflow-y-scroll">
         <ReactQueryProvider>
           <CartProvider>
-            <AnnouncementBar/>
+            <AnnouncementBar />
             <Header />
             {children}
             <Footer />
+            
+            {/* Facebook Pixel Route Tracking */}
+            <Suspense fallback={null}>
+              <FacebookPixel pixelId={1648859765778662} />
+            </Suspense>
+            
+            {/* Debug Component (Development Only) */}
           </CartProvider>
         </ReactQueryProvider>
       </body>

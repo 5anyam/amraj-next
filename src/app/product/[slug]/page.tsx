@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { fetchProducts } from '../../../../lib/woocommerceApi';
 import { useCart } from '../../../../lib/cart';
 import { toast } from '../../../../hooks/use-toast';
+import { useFacebookPixel } from '../../../../hooks/useFacebookPixel';
 import ImageGallery from '../../../../components/ImageGallery';
 import OfferTab, { SelectedOffer } from '../../../../components/OfferTab';
 import { Tab } from '@headlessui/react';
@@ -32,6 +33,10 @@ export default function ProductPage() {
   const slugParam = params?.slug;
   const slug = Array.isArray(slugParam) ? slugParam[0] : slugParam || '';
 
+  // ✅ ALL HOOKS MUST BE AT THE TOP - BEFORE ANY EARLY RETURNS
+  const { addToCart } = useCart();
+  const { trackViewContent, trackAddToCart, trackInitiateCheckout } = useFacebookPixel();
+  
   // Fetch the products
   const { data: products, isLoading, error } = useQuery<Product[]>({
     queryKey: ['all-products'],
@@ -39,11 +44,27 @@ export default function ProductPage() {
     enabled: Boolean(slug),
   });
 
-  const { addToCart } = useCart();
+  // State hooks
   const [offer, setOffer] = useState<SelectedOffer>(undefined);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isBuyingNow, setIsBuyingNow] = useState(false);
   const [isCouponCopied, setIsCouponCopied] = useState(false);
+
+  // Find product
+  const product = products?.find(
+    (p) => p.slug === slug || p.id.toString() === slug
+  );
+
+  // ✅ Track ViewContent when product loads - HOOK AT TOP LEVEL
+  useEffect(() => {
+    if (product) {
+      trackViewContent({
+        id: product.id,
+        name: product.name,
+        price: product.price
+      });
+    }
+  }, [product, trackViewContent]);
 
   // Coupon copy function
   const handleCopyCoupon = () => {
@@ -56,7 +77,7 @@ export default function ProductPage() {
     setTimeout(() => setIsCouponCopied(false), 3000);
   };
 
-  // --- LOADING / ERROR States ---
+  // ✅ NOW SAFE TO HAVE EARLY RETURNS - ALL HOOKS ARE ABOVE
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 to-orange-50">
@@ -82,10 +103,6 @@ export default function ProductPage() {
     );
   }
 
-  const product = products.find(
-    (p) => p.slug === slug || p.id.toString() === slug
-  );
-  
   if (!product) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 to-orange-50">
@@ -115,42 +132,91 @@ export default function ProductPage() {
   const handleAddToCart = async () => {
     if (!offer) return;
     setIsAddingToCart(true);
-    for (let i = 0; i < offer.qty; i++) {
-      addToCart({
-        ...product,
-        name: product.name + (offer.qty > 1 ? ` (${i + 1} of ${offer.qty})` : ''),
-        price: finalUnitPrice.toString(),
-        images: product.images || [],
+    
+    try {
+      for (let i = 0; i < offer.qty; i++) {
+        addToCart({
+          ...product,
+          name: product.name + (offer.qty > 1 ? ` (${i + 1} of ${offer.qty})` : ''),
+          price: finalUnitPrice.toString(),
+          images: product.images || [],
+        });
+      }
+
+      // Track Facebook Pixel AddToCart
+      trackAddToCart({
+        id: product.id,
+        name: product.name,
+        price: finalUnitPrice
+      }, offer.qty);
+
+      toast({
+        title: 'Added to cart',
+        description: `${offer.qty} x ${product.name} added with ${offer.discountPercent}% off.`,
       });
+    } catch (error) {
+      console.error('Add to cart failed:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to add item to cart',
+        variant: 'destructive'
+      });
+    } finally {
+      setTimeout(() => setIsAddingToCart(false), 1000);
     }
-    toast({
-      title: 'Added to cart',
-      description: `${offer.qty} x ${product.name} added with ${offer.discountPercent}% off.`,
-    });
-    setTimeout(() => setIsAddingToCart(false), 1000);
   };
 
   // --- Buy Now ---
   const handleBuyNow = async () => {
     if (!offer) return;
     setIsBuyingNow(true);
-    for (let i = 0; i < offer.qty; i++) {
-      addToCart({
-        ...product,
-        name: product.name + (offer.qty > 1 ? ` (${i + 1} of ${offer.qty})` : ''),
-        price: finalUnitPrice.toString(),
-        images: product.images || [],
+    
+    try {
+      for (let i = 0; i < offer.qty; i++) {
+        addToCart({
+          ...product,
+          name: product.name + (offer.qty > 1 ? ` (${i + 1} of ${offer.qty})` : ''),
+          price: finalUnitPrice.toString(),
+          images: product.images || [],
+        });
+      }
+
+      // Track AddToCart first
+      trackAddToCart({
+        id: product.id,
+        name: product.name,
+        price: finalUnitPrice
+      }, offer.qty);
+
+      // Then track InitiateCheckout since they're going direct to checkout
+      const cartItems = [{
+        id: product.id,
+        name: product.name,
+        price: finalUnitPrice,
+        quantity: offer.qty
+      }];
+      const total = finalUnitPrice * offer.qty;
+      trackInitiateCheckout(cartItems, total);
+
+      toast({
+        title: 'Checkout started!',
+        description: `${offer.qty} x ${product.name} added. Redirecting to checkout...`,
+        duration: 1200,
       });
-    }
-    toast({
-      title: 'Checkout started!',
-      description: `${offer.qty} x ${product.name} added. Redirecting to checkout...`,
-      duration: 1200,
-    });
-    setTimeout(() => {
-      router.push('/checkout');
+      
+      setTimeout(() => {
+        router.push('/checkout');
+        setIsBuyingNow(false);
+      }, 1200);
+    } catch (error) {
+      console.error('Buy now failed:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to process buy now',
+        variant: 'destructive'
+      });
       setIsBuyingNow(false);
-    }, 1200);
+    }
   };
 
   return (

@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useCart } from "../../../lib/cart";
 import { createOrder, updateOrderStatus } from "../../../lib/woocommerceApi";
 import { toast } from "../../../hooks/use-toast";
+import { useFacebookPixel } from "../../../hooks/useFacebookPixel";
+import type { CartItem } from "../../../lib/facebook-pixel";
 
 const RAZORPAY_KEY_ID = "rzp_live_tGuZwArSWs7HdE";
 
@@ -56,7 +58,11 @@ declare global {
 }
 
 export default function Checkout() {
+  // ✅ ALL HOOKS MUST BE AT THE TOP - BEFORE ANY EARLY RETURNS
   const { items, clear } = useCart();
+  const router = useRouter();
+  const { trackInitiateCheckout, trackAddPaymentInfo, trackPurchase } = useFacebookPixel();
+
   const total = items.reduce((sum, i) => sum + parseFloat(i.price) * i.quantity, 0);
   const deliveryCharges = total >= 500 ? 0 : 50;
   
@@ -88,7 +94,6 @@ export default function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState<"online" | "cod">("online");
   const [showOrderConfirmation, setShowOrderConfirmation] = useState(false);
   const [orderDetails, setOrderDetails] = useState<{ orderId: string; wcOrderId: number } | null>(null);
-  const router = useRouter();
 
   useEffect(() => {
     if (typeof window !== "undefined" && !window.Razorpay) {
@@ -99,6 +104,19 @@ export default function Checkout() {
       document.body.appendChild(script);
     }
   }, []);
+
+  // ✅ Track InitiateCheckout when page loads
+  useEffect(() => {
+    if (items.length > 0) {
+      const cartItems: CartItem[] = items.map(item => ({
+        id: item.id,
+        name: item.name,
+        price: parseFloat(item.price),
+        quantity: item.quantity
+      }));
+      trackInitiateCheckout(cartItems, finalTotal);
+    }
+  }, [items, finalTotal, trackInitiateCheckout]);
 
   // Coupon validation function
   const validateCoupon = (code: string): { valid: boolean; discount: number; message: string } => {
@@ -198,8 +216,21 @@ export default function Checkout() {
     if (!form.city.trim()) newErrors.city = "City is required";
     if (!form.state.trim()) newErrors.state = "State is required";
 
+    const isValid = Object.keys(newErrors).length === 0;
+    
+    // ✅ Track AddPaymentInfo when form is valid
+    if (isValid && items.length > 0) {
+      const cartItems: CartItem[] = items.map(item => ({
+        id: item.id,
+        name: item.name,
+        price: parseFloat(item.price),
+        quantity: item.quantity
+      }));
+      trackAddPaymentInfo(cartItems, finalTotal);
+    }
+
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return isValid;
   }
 
   function onChange(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
@@ -276,6 +307,15 @@ export default function Checkout() {
           }),
         }
       );
+
+      // ✅ Track Facebook Pixel Purchase for COD
+      const orderItems: CartItem[] = items.map(item => ({
+        id: item.id,
+        name: item.name,
+        price: parseFloat(item.price),
+        quantity: item.quantity
+      }));
+      trackPurchase(orderItems, finalTotal, codOrderId);
 
       trackPurchaseEvent(codOrderId, finalTotal);
       setOrderDetails({ orderId: codOrderId, wcOrderId: wooOrder.id });
@@ -405,6 +445,15 @@ export default function Checkout() {
             }
           );
 
+          // ✅ Track Facebook Pixel Purchase for Online Payment
+          const orderItems: CartItem[] = items.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: parseFloat(item.price),
+            quantity: item.quantity
+          }));
+          trackPurchase(orderItems, finalTotal, response.razorpay_payment_id);
+
           clear();
           trackPurchaseEvent(wooOrder.id, finalTotal);
           toast({
@@ -491,6 +540,7 @@ export default function Checkout() {
     );
   }
 
+  // ✅ NOW SAFE TO HAVE EARLY RETURNS - ALL HOOKS ARE ABOVE
   if (items.length === 0 && !showOrderConfirmation) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-teal-50 to-orange-50">
