@@ -29,7 +29,7 @@ export default function Footer() {
               <Link href="#" className="text-white hover:underline transition duration-200">
                 <FaLinkedinIn />
               </Link>
-              <Link href="#" className="text-white hover:underline transition duration-200">
+              <Link href="https://www.youtube.com/@amraj-wellness" className="text-white hover:underline transition duration-200">
                 <FaYoutube />
               </Link>
             </div>
