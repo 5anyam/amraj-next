@@ -74,7 +74,7 @@ export default function Footer() {
                 <Link href="/shipping" className="text-white hover:underline transition duration-200">Shipping</Link>
               </li>
               <li>
-                <Link href="/sitemap" className="text-white hover:underline transition duration-200">Sitemap</Link>
+                <Link href="/sitemap.xml" className="text-white hover:underline transition duration-200">Sitemap</Link>
               </li>
             </ul>
           </div>
