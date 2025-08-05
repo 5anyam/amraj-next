@@ -51,6 +51,9 @@ export default function Footer() {
               <li>
                 <Link href="/checkout" className="text-white hover:underline transition duration-200">Checkout</Link>
               </li>
+              <li>
+                <Link href="/disclaimer" className="text-white hover:underline transition duration-200">Disclaimer</Link>
+              </li>
             </ul>
           </div>
 
