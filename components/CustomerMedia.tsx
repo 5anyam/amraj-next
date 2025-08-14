@@ -25,7 +25,7 @@ const mediaData: Record<string, MediaItem[]> = {
     {
       id: 'pc-video-1',
       type: 'video',
-      src: '/videos/prostate-testimonial-1.mp4',
+      src: 'https://cms.amraj.in/wp-content/uploads/2025/08/IMG_9043.mp4',
       // No thumbnail - will show first frame automatically
       customerName: 'Rajesh Kumar',
       customerLocation: 'Delhi',
@@ -37,37 +37,18 @@ const mediaData: Record<string, MediaItem[]> = {
       type: 'image',
       src: 'https://cms.amraj.in/wp-content/uploads/2025/08/IMG_0976-scaled.jpg',
       customerName: 'Suresh Sharma',
-      customerLocation: 'Mumbai',
+      customerLocation: 'Delhi',
       title: 'Lab Report Improvement',
       description: 'My PSA levels improved dramatically with consistent use.'
     },
-    {
-      id: 'pc-video-2',
-      type: 'video',
-      src: '/videos/prostate-testimonial-2.mp4',
-      thumbnail: '/images/prostate-thumb-2.jpg', // Optional - if you have custom thumbnail
-      customerName: 'Amit Singh',
-      customerLocation: 'Bangalore',
-      title: 'Life Changing Experience',
-      description: 'No more frequent trips to bathroom at night. Highly recommended!'
-    },
-    {
-      id: 'pc-image-2',
-      type: 'image',
-      src: '/images/prostate-before-after.jpg',
-      customerName: 'Dr. Verma',
-      customerLocation: 'Pune',
-      title: 'Before & After Results',
-      description: 'Clinical improvement visible in 8 weeks of usage.'
-    }
   ],
   'weight-management': [
     {
       id: 'wm-video-1',
       type: 'video',
-      src: '/videos/weight-loss-1.mp4',
+      src: 'https://cms.amraj.in/wp-content/uploads/2025/08/IMG_9018.mp4',
       customerName: 'Priya Patel',
-      customerLocation: 'Ahmedabad',
+      customerLocation: 'Delhi',
       title: 'Lost 15 KG in 3 Months!',
       description: 'Incredible weight loss journey with Amraj Weight Management Pro+.'
     },
@@ -76,19 +57,10 @@ const mediaData: Record<string, MediaItem[]> = {
       type: 'image',
       src: '/images/weight-before-after-1.jpg',
       customerName: 'Rohit Gupta',
-      customerLocation: 'Chennai',
+      customerLocation: 'Delhi',
       title: 'Transformation Photo',
       description: 'From 85kg to 72kg in just 4 months!'
     },
-    {
-      id: 'wm-video-2',
-      type: 'video',
-      src: '/videos/weight-loss-2.mp4',
-      customerName: 'Meera Joshi',
-      customerLocation: 'Kolkata',
-      title: 'Energy Levels Boosted',
-      description: 'Not just weight loss, my energy levels increased dramatically.'
-    }
   ],
   'liver-detox': [
     {
@@ -96,19 +68,38 @@ const mediaData: Record<string, MediaItem[]> = {
       type: 'video',
       src: 'https://cms.amraj.in/wp-content/uploads/2025/08/IMG_1117.mov',
       customerName: 'Anita Singh',
-      customerLocation: 'Lucknow',
+      customerLocation: 'Delhi',
       title: 'Fatty Liver Reversed',
       description: 'My fatty liver condition improved significantly in 2 months.'
     },
     {
       id: 'ld-image-2',
-      type: 'image',
+      type: 'video',
       src: 'https://cms.amraj.in/wp-content/uploads/2025/08/IMG_1148.mov',
       customerName: 'Vikas Yadav',
       customerLocation: 'Jaipur',
       title: 'Medical Reports',
       description: 'Liver function tests showed remarkable improvement.'
-    }
+    },
+    {
+        id: 'ld-image-3',
+        type: 'video',
+        src: 'https://cms.amraj.in/wp-content/uploads/2025/08/Amraj-Liver-Detox.1-1.mp4',
+        customerName: 'Vikas Yadav',
+        customerLocation: 'Jaipur',
+        title: 'Medical Reports',
+        description: 'Liver function tests showed remarkable improvement.'
+      },
+      {
+        id: 'ld-video-4',
+        type: 'video',
+        src: 'https://cms.amraj.in/wp-content/uploads/2025/08/IMG_9029.mp4',
+        customerName: 'Vikas Yadav',
+        customerLocation: 'Jaipur',
+        title: 'Medical Reports',
+        description: 'Liver function tests showed remarkable improvement.'
+      },
+
   ]
 };
 
@@ -173,7 +164,7 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug, productName 
     <>
       <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-teal-500 to-orange-500 p-6">
+        <div className="bg-teal-500 p-6">
           <h2 className="text-2xl lg:text-3xl font-bold text-white text-center">
             Customer Stories & Results
           </h2>
