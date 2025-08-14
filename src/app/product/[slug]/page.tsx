@@ -13,6 +13,7 @@ import { Tab } from '@headlessui/react';
 import SmoothMarquee from '../../../../components/ProductSlide';
 import ProductFAQ from '../../../../components/ProductFaq';
 import RelatedProducts from '../../../../components/RelatedProducts';
+import CustomerMedia from '../../../../components/CustomerMedia';
 
 // --- Product Type Definitions (as per your code) ---
 export interface ImageData { src: string; }
@@ -459,14 +460,17 @@ export default function ProductPage() {
         </div>
       </div>
       <div className="max-w-7xl mx-auto mt-8 p-4 lg:p-6">
-      <RelatedProducts
+      <div className="max-w-7xl mx-auto mt-8 p-4 lg:p-6">
+  <ProductFAQ productSlug={slug} productName={product.name} />
+</div>
+<div className="max-w-7xl mx-auto mt-8 p-4 lg:p-6">
+  <CustomerMedia productSlug={slug} productName={product.name} />
+</div>
+<RelatedProducts
         currentProduct={product} 
         allProducts={products || []} 
       />
     </div>
-      <div className="max-w-7xl mx-auto mt-8 p-4 lg:p-6">
-  <ProductFAQ productSlug={slug} productName={product.name} />
-</div>
     </div>
   );
 }
