@@ -9,6 +9,7 @@ import AnimatedBackground from "../../components/AnimatedBackground";
 import AboutUsSection from "../../components/AboutUs";
 import CustomProductSlider from "../../components/CustomSlider";
 import HorizontalCertificatesSlider from "../../components/certificates";
+import HomeFAQ from "../../components/HomeFaq";
 
 
 export interface Product {
@@ -102,6 +103,7 @@ export default function Homepage() {
       </section>
       <AboutUsSection/>
       <Testimonials />
+      <HomeFAQ/>
     </div>
   );
 }

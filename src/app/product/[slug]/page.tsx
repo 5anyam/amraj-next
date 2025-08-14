@@ -11,6 +11,7 @@ import ImageGallery from '../../../../components/ImageGallery';
 import OfferTab, { SelectedOffer } from '../../../../components/OfferTab';
 import { Tab } from '@headlessui/react';
 import SmoothMarquee from '../../../../components/ProductSlide';
+import ProductFAQ from '../../../../components/ProductFaq';
 
 // --- Product Type Definitions (as per your code) ---
 export interface ImageData { src: string; }
@@ -456,6 +457,9 @@ export default function ProductPage() {
           </Tab.Group>
         </div>
       </div>
+      <div className="max-w-7xl mx-auto mt-8 p-4 lg:p-6">
+  <ProductFAQ productSlug={slug} productName={product.name} />
+</div>
     </div>
   );
 }
