@@ -76,8 +76,8 @@ const mediaData: Record<string, MediaItem[]> = {
       id: 'ld-image-2',
       type: 'video',
       src: 'https://cms.amraj.in/wp-content/uploads/2025/08/IMG_1148.mov',
-      customerName: 'Vikas Yadav',
-      customerLocation: 'Jaipur',
+      customerName: 'Hritik Tyagi',
+      customerLocation: 'Delhi',
       title: 'Medical Reports',
       description: 'Liver function tests showed remarkable improvement.'
     },
@@ -86,7 +86,7 @@ const mediaData: Record<string, MediaItem[]> = {
         type: 'video',
         src: 'https://cms.amraj.in/wp-content/uploads/2025/08/Amraj-Liver-Detox.1-1.mp4',
         customerName: 'Vikas Yadav',
-        customerLocation: 'Jaipur',
+        customerLocation: 'Delhi',
         title: 'Medical Reports',
         description: 'Liver function tests showed remarkable improvement.'
       },

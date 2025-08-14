@@ -56,7 +56,7 @@ const HomeFAQ: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+    <div className="bg-white px-4 rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
       {/* Header */}
       <div className="bg-gradient-to-r from-teal-500 to-teal-600 p-6">
         <h2 className="text-2xl lg:text-3xl font-bold text-white text-center">
