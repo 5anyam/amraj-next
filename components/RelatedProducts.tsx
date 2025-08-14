@@ -41,7 +41,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, allPr
   }
 
   const handleProductClick = (productSlug: string) => {
-    router.push(`/products/${productSlug}`);
+    router.push(`/product/${productSlug}`);
   };
 
   const formatPrice = (price: string) => {

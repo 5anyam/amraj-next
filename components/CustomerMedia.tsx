@@ -36,7 +36,7 @@ const mediaData: Record<string, MediaItem[]> = {
       id: 'pc-image-1',
       type: 'image',
       src: 'https://cms.amraj.in/wp-content/uploads/2025/08/IMG_0976-scaled.jpg',
-      customerName: 'Suresh Sharma',
+      customerName: 'Rudra',
       customerLocation: 'Delhi',
       title: 'Lab Report Improvement',
       description: 'My PSA levels improved dramatically with consistent use.'
@@ -47,7 +47,7 @@ const mediaData: Record<string, MediaItem[]> = {
       id: 'wm-video-1',
       type: 'video',
       src: 'https://cms.amraj.in/wp-content/uploads/2025/08/IMG_9018.mp4',
-      customerName: 'Priya Patel',
+      customerName: 'Vanshika Tyagi',
       customerLocation: 'Delhi',
       title: 'Lost 15 KG in 3 Months!',
       description: 'Incredible weight loss journey with Amraj Weight Management Pro+.'
@@ -67,7 +67,7 @@ const mediaData: Record<string, MediaItem[]> = {
       id: 'ld-video-1',
       type: 'video',
       src: 'https://cms.amraj.in/wp-content/uploads/2025/08/IMG_1117.mov',
-      customerName: 'Anita Singh',
+      customerName: 'Vanshika Tyagi',
       customerLocation: 'Delhi',
       title: 'Fatty Liver Reversed',
       description: 'My fatty liver condition improved significantly in 2 months.'
@@ -282,12 +282,6 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug, productName 
                     </div>
                   </div>
 
-                  {/* Description */}
-                  {media.description && (
-                    <p className="text-xs text-gray-600 line-clamp-2">
-                      {media.description}
-                    </p>
-                  )}
 
                   {/* View Button */}
                   <button className="w-full mt-3 bg-gradient-to-r from-teal-500 to-orange-500 hover:from-teal-600 hover:to-orange-600 text-white font-semibold py-2 px-4 rounded-xl text-sm transition-all duration-300 transform group-hover:scale-105 shadow-lg hover:shadow-xl">
