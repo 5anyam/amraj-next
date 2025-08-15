@@ -25,7 +25,7 @@ const mediaData: Record<string, MediaItem[]> = {
     {
       id: 'pc-video-1',
       type: 'video',
-      src: 'https://youtube.com/shorts/78N-odODcWk?feature=share',
+      src: 'https://youtube.com/shorts/78N-odODcWk',
       // No thumbnail - will show first frame automatically
       customerName: 'Rajesh Kumar',
       customerLocation: 'Delhi',
@@ -46,7 +46,7 @@ const mediaData: Record<string, MediaItem[]> = {
     {
       id: 'wm-video-1',
       type: 'video',
-      src: 'https://youtube.com/shorts/eFe_floNWxU?feature=share',
+      src: 'https://youtube.com/shorts/eFe_floNWxU',
       customerName: 'Vanshika Tyagi',
       customerLocation: 'Delhi',
       title: 'Lost 15 KG in 3 Months!',
@@ -66,7 +66,7 @@ const mediaData: Record<string, MediaItem[]> = {
     {
       id: 'ld-video-1',
       type: 'video',
-      src: 'https://youtube.com/shorts/865MxbjZCSU?feature=share',
+      src: 'https://youtube.com/shorts/865MxbjZCSU',
       customerName: 'Vanshika Tyagi',
       customerLocation: 'Delhi',
       title: 'Fatty Liver Reversed',
@@ -75,7 +75,7 @@ const mediaData: Record<string, MediaItem[]> = {
     {
       id: 'ld-image-2',
       type: 'video',
-      src: 'https://youtube.com/shorts/uA-nYNBfm1I?feature=share',
+      src: 'https://youtube.com/shorts/uA-nYNBfm1I',
       customerName: 'Hritik Tyagi',
       customerLocation: 'Delhi',
       title: 'Medical Reports',
@@ -84,7 +84,7 @@ const mediaData: Record<string, MediaItem[]> = {
     {
         id: 'ld-image-3',
         type: 'video',
-        src: 'https://youtube.com/shorts/Xzyhd1kE1jc?feature=share',
+        src: 'https://youtube.com/shorts/Xzyhd1kE1jc',
         customerName: 'Vikas Yadav',
         customerLocation: 'Delhi',
         title: 'Medical Reports',
@@ -93,7 +93,7 @@ const mediaData: Record<string, MediaItem[]> = {
       {
         id: 'ld-video-4',
         type: 'video',
-        src: 'https://youtube.com/shorts/K2yZheyW3GY?feature=share',
+        src: 'https://youtube.com/shorts/K2yZheyW3GY',
         customerName: 'Vikas Yadav',
         customerLocation: 'Jaipur',
         title: 'Medical Reports',
