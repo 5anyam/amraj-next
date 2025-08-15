@@ -7,7 +7,7 @@ interface MediaItem {
   id: string;
   type: 'video' | 'image';
   src: string;
-  thumbnail?: string; // Optional thumbnail for videos
+  thumbnail?: string;
   customerName: string;
   customerLocation?: string;
   title: string;
@@ -26,7 +26,6 @@ const mediaData: Record<string, MediaItem[]> = {
       id: 'pc-video-1',
       type: 'video',
       src: 'https://youtube.com/shorts/78N-odODcWk',
-      // No thumbnail - will show first frame automatically
       customerName: 'Rajesh Kumar',
       customerLocation: 'Delhi',
       title: 'Amazing Results in 3 Weeks!',
@@ -40,7 +39,7 @@ const mediaData: Record<string, MediaItem[]> = {
       customerLocation: 'Delhi',
       title: 'Lab Report Improvement',
       description: 'My PSA levels improved dramatically with consistent use.'
-    },
+    }
   ],
   'weight-management': [
     {
@@ -60,7 +59,7 @@ const mediaData: Record<string, MediaItem[]> = {
       customerLocation: 'Delhi',
       title: 'Transformation Photo',
       description: 'From 85kg to 72kg in just 4 months!'
-    },
+    }
   ],
   'liver-detox': [
     {
@@ -73,7 +72,7 @@ const mediaData: Record<string, MediaItem[]> = {
       description: 'My fatty liver condition improved significantly in 2 months.'
     },
     {
-      id: 'ld-image-2',
+      id: 'ld-video-2',
       type: 'video',
       src: 'https://youtube.com/shorts/uA-nYNBfm1I',
       customerName: 'Hritik Tyagi',
@@ -82,24 +81,23 @@ const mediaData: Record<string, MediaItem[]> = {
       description: 'Liver function tests showed remarkable improvement.'
     },
     {
-        id: 'ld-image-3',
-        type: 'video',
-        src: 'https://youtube.com/shorts/Xzyhd1kE1jc',
-        customerName: 'Vikas Yadav',
-        customerLocation: 'Delhi',
-        title: 'Medical Reports',
-        description: 'Liver function tests showed remarkable improvement.'
-      },
-      {
-        id: 'ld-video-4',
-        type: 'video',
-        src: 'https://youtube.com/shorts/K2yZheyW3GY',
-        customerName: 'Vikas Yadav',
-        customerLocation: 'Jaipur',
-        title: 'Medical Reports',
-        description: 'Liver function tests showed remarkable improvement.'
-      },
-
+      id: 'ld-video-3',
+      type: 'video',
+      src: 'https://youtube.com/shorts/Xzyhd1kE1jc',
+      customerName: 'Vikas Yadav',
+      customerLocation: 'Delhi',
+      title: 'Medical Reports',
+      description: 'Liver function tests showed remarkable improvement.'
+    },
+    {
+      id: 'ld-video-4',
+      type: 'video',
+      src: 'https://youtube.com/shorts/K2yZheyW3GY',
+      customerName: 'Vikas Yadav',
+      customerLocation: 'Jaipur',
+      title: 'Medical Reports',
+      description: 'Liver function tests showed remarkable improvement.'
+    }
   ]
 };
 
@@ -120,6 +118,48 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug, productName 
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
   const [activeFilter, setActiveFilter] = useState<'all' | 'videos' | 'images'>('all');
   const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
+
+  // Extract YouTube video ID from URL
+  const extractYouTubeVideoId = (url: string): string | null => {
+    if (!url) return null;
+    
+    try {
+      const urlObj = new URL(url);
+      
+      // Handle youtube.com/shorts/VIDEO_ID
+      if (url.includes('shorts/')) {
+        const pathParts = urlObj.pathname.split('/');
+        const shortsIndex = pathParts.indexOf('shorts');
+        return shortsIndex !== -1 && pathParts[shortsIndex + 1] ? pathParts[shortsIndex + 1] : null;
+      }
+      
+      // Handle youtu.be/VIDEO_ID
+      if (urlObj.hostname === 'youtu.be') {
+        return urlObj.pathname.slice(1);
+      }
+      
+      // Handle youtube.com/watch?v=VIDEO_ID
+      if (urlObj.searchParams.has('v')) {
+        return urlObj.searchParams.get('v');
+      }
+      
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
+  // Get YouTube thumbnail URL
+  const getYouTubeThumbnail = (url: string): string | null => {
+    const videoId = extractYouTubeVideoId(url);
+    return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : null;
+  };
+
+  // Get embed URL for YouTube
+  const getYouTubeEmbedUrl = (url: string): string | null => {
+    const videoId = extractYouTubeVideoId(url);
+    return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1` : null;
+  };
 
   // Get media based on product slug
   const getMedia = (): MediaItem[] => {
@@ -200,96 +240,114 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug, productName 
         {/* Media Grid */}
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredMedia.map((media) => (
-              <div
-                key={media.id}
-                className="group bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border border-gray-200 hover:border-teal-300 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 cursor-pointer overflow-hidden"
-                onClick={() => openModal(media)}
-              >
-                {/* Media Preview */}
-                <div className="relative overflow-hidden rounded-t-2xl bg-white aspect-video">
-                  {/* Media Type Badge */}
-                  <div className="absolute top-3 left-3 bg-gradient-to-r from-teal-500 to-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10 shadow-lg">
-                    {media.type === 'video' ? '🎥 Video' : '📸 Photo'}
+            {filteredMedia.map((media) => {
+              const isYouTubeVideo = media.type === 'video' && media.src.includes('youtube.com');
+              const thumbnailUrl = isYouTubeVideo ? getYouTubeThumbnail(media.src) : media.thumbnail;
+
+              return (
+                <div
+                  key={media.id}
+                  className="group bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border border-gray-200 hover:border-teal-300 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 cursor-pointer overflow-hidden"
+                  onClick={() => openModal(media)}
+                >
+                  {/* Media Preview with 9:16 aspect ratio */}
+                  <div className="relative overflow-hidden rounded-t-2xl bg-white" style={{ aspectRatio: '9 / 16' }}>
+                    {/* Media Type Badge */}
+                    <div className="absolute top-3 left-3 bg-gradient-to-r from-teal-500 to-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10 shadow-lg">
+                      {media.type === 'video' ? '🎥 Video' : '📸 Photo'}
+                    </div>
+
+                    {media.type === 'video' ? (
+                      isYouTubeVideo ? (
+                        // YouTube Video Thumbnail
+                        <div className="relative w-full h-full">
+                          <img
+                            src={thumbnailUrl || '/placeholder-video.jpg'}
+                            alt={media.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            loading="lazy"
+                          />
+                          {/* Play Button Overlay */}
+                          <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center pointer-events-none">
+                            <div className="bg-white bg-opacity-90 rounded-full p-3 group-hover:scale-110 transition-transform duration-300">
+                              <PlayIcon className="h-8 w-8 text-teal-600" />
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        // Regular Video
+                        <div className="relative w-full h-full">
+                          <video
+                            ref={(el) => {
+                              videoRefs.current[media.id] = el;
+                            }}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            src={media.src}
+                            muted
+                            preload="metadata"
+                            poster={media.thumbnail}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.currentTime = 0;
+                              e.currentTarget.play().catch(() => {});
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.pause();
+                              e.currentTarget.currentTime = 0;
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openModal(media);
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center pointer-events-none">
+                            <div className="bg-white bg-opacity-90 rounded-full p-3 group-hover:scale-110 transition-transform duration-300">
+                              <PlayIcon className="h-8 w-8 text-teal-600" />
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    ) : (
+                      // Image
+                      <div className="w-full h-full bg-gradient-to-br from-teal-50 to-orange-50 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                        <img
+                          src={media.src}
+                          alt={media.title}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      </div>
+                    )}
                   </div>
 
-                  {media.type === 'video' ? (
-                    <div className="relative w-full h-full">
-                      {/* Video Preview - Shows first frame automatically */}
-                      <video
-                        ref={(el) => {
-                          videoRefs.current[media.id] = el;
-                        }}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        src={media.src}
-                        muted
-                        preload="metadata" // This loads first frame automatically
-                        poster={media.thumbnail} // Use thumbnail if available, else first frame
-                        onMouseEnter={(e) => {
-                          // Optional: Play on hover for better UX
-                          e.currentTarget.currentTime = 0;
-                          e.currentTarget.play().catch(() => {
-                            // Handle autoplay restrictions
-                          });
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.pause();
-                          e.currentTarget.currentTime = 0;
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openModal(media);
-                        }}
-                      />
-                      
-                      {/* Play Button Overlay */}
-                      <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center pointer-events-none">
-                        <div className="bg-white bg-opacity-90 rounded-full p-3 group-hover:scale-110 transition-transform duration-300">
-                          <PlayIcon className="h-8 w-8 text-teal-600" />
-                        </div>
+                  {/* Media Details */}
+                  <div className="p-4">
+                    <h3 className="font-bold text-gray-800 text-sm lg:text-base mb-2 group-hover:text-teal-600 transition-colors duration-300">
+                      {media.title}
+                    </h3>
+
+                    {/* Customer Info */}
+                    <div className="flex items-center mb-2">
+                      <div className="w-8 h-8 bg-gradient-to-r from-teal-400 to-orange-400 rounded-full flex items-center justify-center mr-3">
+                        <span className="text-white text-xs font-bold">
+                          {media.customerName.charAt(0)}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-800">{media.customerName}</p>
+                        {media.customerLocation && (
+                          <p className="text-xs text-gray-500">{media.customerLocation}</p>
+                        )}
                       </div>
                     </div>
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-teal-50 to-orange-50 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                      <img
-                        src={media.src}
-                        alt={media.title}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                    </div>
-                  )}
-                </div>
 
-                {/* Media Details */}
-                <div className="p-4">
-                  <h3 className="font-bold text-gray-800 text-sm lg:text-base mb-2 group-hover:text-teal-600 transition-colors duration-300">
-                    {media.title}
-                  </h3>
-
-                  {/* Customer Info */}
-                  <div className="flex items-center mb-2">
-                    <div className="w-8 h-8 bg-gradient-to-r from-teal-400 to-orange-400 rounded-full flex items-center justify-center mr-3">
-                      <span className="text-white text-xs font-bold">
-                        {media.customerName.charAt(0)}
-                      </span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-800">{media.customerName}</p>
-                      {media.customerLocation && (
-                        <p className="text-xs text-gray-500">{media.customerLocation}</p>
-                      )}
-                    </div>
+                    {/* View Button */}
+                    <button className="w-full mt-3 bg-gradient-to-r from-teal-500 to-orange-500 hover:from-teal-600 hover:to-orange-600 text-white font-semibold py-2 px-4 rounded-xl text-sm transition-all duration-300 transform group-hover:scale-105 shadow-lg hover:shadow-xl">
+                      {media.type === 'video' ? 'Watch Video' : 'View Photo'}
+                    </button>
                   </div>
-
-
-                  {/* View Button */}
-                  <button className="w-full mt-3 bg-gradient-to-r from-teal-500 to-orange-500 hover:from-teal-600 hover:to-orange-600 text-white font-semibold py-2 px-4 rounded-xl text-sm transition-all duration-300 transform group-hover:scale-105 shadow-lg hover:shadow-xl">
-                    {media.type === 'video' ? 'Watch Video' : 'View Photo'}
-                  </button>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Empty State */}
@@ -318,17 +376,29 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug, productName 
             {/* Media Content */}
             <div className="p-6">
               {selectedMedia.type === 'video' ? (
-                <video
-                  controls
-                  className="w-full max-h-[60vh] rounded-xl"
-                  src={selectedMedia.src}
-                  poster={selectedMedia.thumbnail} // Use thumbnail if available, else first frame shows automatically
-                  preload="metadata"
-                  autoPlay={false}
-                >
-                  <source src={selectedMedia.src} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
+                selectedMedia.src.includes('youtube.com') ? (
+                  // YouTube iframe
+                  <iframe
+                    src={getYouTubeEmbedUrl(selectedMedia.src) || ''}
+                    title={selectedMedia.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-[60vh] rounded-xl"
+                  />
+                ) : (
+                  // Regular video
+                  <video
+                    controls
+                    className="w-full max-h-[60vh] rounded-xl"
+                    src={selectedMedia.src}
+                    poster={selectedMedia.thumbnail}
+                    preload="metadata"
+                    autoPlay={false}
+                  >
+                    <source src={selectedMedia.src} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                )
               ) : (
                 <img
                   src={selectedMedia.src}
