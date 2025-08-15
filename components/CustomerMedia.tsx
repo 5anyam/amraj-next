@@ -25,7 +25,7 @@ const mediaData: Record<string, MediaItem[]> = {
     {
       id: 'pc-video-1',
       type: 'video',
-      src: 'https://cms.amraj.in/wp-content/uploads/2025/08/IMG_9043.mp4',
+      src: 'https://youtube.com/shorts/78N-odODcWk?feature=share',
       // No thumbnail - will show first frame automatically
       customerName: 'Rajesh Kumar',
       customerLocation: 'Delhi',
@@ -46,7 +46,7 @@ const mediaData: Record<string, MediaItem[]> = {
     {
       id: 'wm-video-1',
       type: 'video',
-      src: 'https://cms.amraj.in/wp-content/uploads/2025/08/IMG_9018.mp4',
+      src: 'https://youtube.com/shorts/eFe_floNWxU?feature=share',
       customerName: 'Vanshika Tyagi',
       customerLocation: 'Delhi',
       title: 'Lost 15 KG in 3 Months!',
@@ -66,7 +66,7 @@ const mediaData: Record<string, MediaItem[]> = {
     {
       id: 'ld-video-1',
       type: 'video',
-      src: 'https://cms.amraj.in/wp-content/uploads/2025/08/IMG_1117.mov',
+      src: 'https://youtube.com/shorts/865MxbjZCSU?feature=share',
       customerName: 'Vanshika Tyagi',
       customerLocation: 'Delhi',
       title: 'Fatty Liver Reversed',
@@ -75,7 +75,7 @@ const mediaData: Record<string, MediaItem[]> = {
     {
       id: 'ld-image-2',
       type: 'video',
-      src: 'https://cms.amraj.in/wp-content/uploads/2025/08/IMG_1148.mov',
+      src: 'https://youtube.com/shorts/uA-nYNBfm1I?feature=share',
       customerName: 'Hritik Tyagi',
       customerLocation: 'Delhi',
       title: 'Medical Reports',
@@ -84,7 +84,7 @@ const mediaData: Record<string, MediaItem[]> = {
     {
         id: 'ld-image-3',
         type: 'video',
-        src: 'https://cms.amraj.in/wp-content/uploads/2025/08/Amraj-Liver-Detox.1-1.mp4',
+        src: 'https://youtube.com/shorts/Xzyhd1kE1jc?feature=share',
         customerName: 'Vikas Yadav',
         customerLocation: 'Delhi',
         title: 'Medical Reports',
@@ -93,7 +93,7 @@ const mediaData: Record<string, MediaItem[]> = {
       {
         id: 'ld-video-4',
         type: 'video',
-        src: 'https://cms.amraj.in/wp-content/uploads/2025/08/IMG_9029.mp4',
+        src: 'https://youtube.com/shorts/K2yZheyW3GY?feature=share',
         customerName: 'Vikas Yadav',
         customerLocation: 'Jaipur',
         title: 'Medical Reports',
