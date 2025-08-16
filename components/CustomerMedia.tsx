@@ -101,7 +101,6 @@ const mediaData: Record<string, MediaItem[]> = {
   ]
 };
 
-// Default media for products not specifically listed
 const defaultMedia: MediaItem[] = [
   {
     id: 'default-1',
@@ -114,31 +113,26 @@ const defaultMedia: MediaItem[] = [
   }
 ];
 
-const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug, productName }) => {
+const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
-  const [activeFilter, setActiveFilter] = useState<'all' | 'videos' | 'images'>('all');
   const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
 
-  // Extract YouTube video ID from URL
   const extractYouTubeVideoId = (url: string): string | null => {
     if (!url) return null;
     
     try {
       const urlObj = new URL(url);
       
-      // Handle youtube.com/shorts/VIDEO_ID
       if (url.includes('shorts/')) {
         const pathParts = urlObj.pathname.split('/');
         const shortsIndex = pathParts.indexOf('shorts');
         return shortsIndex !== -1 && pathParts[shortsIndex + 1] ? pathParts[shortsIndex + 1] : null;
       }
       
-      // Handle youtu.be/VIDEO_ID
       if (urlObj.hostname === 'youtu.be') {
         return urlObj.pathname.slice(1);
       }
       
-      // Handle youtube.com/watch?v=VIDEO_ID
       if (urlObj.searchParams.has('v')) {
         return urlObj.searchParams.get('v');
       }
@@ -149,19 +143,16 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug, productName 
     }
   };
 
-  // Get YouTube thumbnail URL
   const getYouTubeThumbnail = (url: string): string | null => {
     const videoId = extractYouTubeVideoId(url);
     return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : null;
   };
 
-  // Get embed URL for YouTube
   const getYouTubeEmbedUrl = (url: string): string | null => {
     const videoId = extractYouTubeVideoId(url);
     return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1` : null;
   };
 
-  // Get media based on product slug
   const getMedia = (): MediaItem[] => {
     if (mediaData[productSlug]) {
       return mediaData[productSlug];
@@ -180,14 +171,6 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug, productName 
 
   const allMedia = getMedia();
 
-  // Filter media based on active filter
-  const filteredMedia = allMedia.filter(item => {
-    if (activeFilter === 'all') return true;
-    if (activeFilter === 'videos') return item.type === 'video';
-    if (activeFilter === 'images') return item.type === 'image';
-    return true;
-  });
-
   const openModal = (media: MediaItem) => {
     setSelectedMedia(media);
   };
@@ -203,44 +186,9 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug, productName 
   return (
     <>
       <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-        {/* Header */}
-        <div className="bg-teal-500 p-6">
-          <h2 className="text-2xl lg:text-3xl font-bold text-white text-center">
-            Customer Stories & Results
-          </h2>
-          <p className="text-teal-100 text-center mt-2">
-            Real customers, real results with {productName}
-          </p>
-        </div>
-
-        {/* Filter Tabs */}
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
-          <div className="flex justify-center space-x-1 p-4">
-            {[
-              { key: 'all', label: 'All Media', icon: '📱' },
-              { key: 'videos', label: 'Videos', icon: '🎥' },
-              { key: 'images', label: 'Photos', icon: '📸' }
-            ].map(({ key, label, icon }) => (
-              <button
-                key={key}
-                onClick={() => setActiveFilter(key as 'all' | 'videos' | 'images')}
-                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
-                  activeFilter === key
-                    ? 'bg-teal-500 text-white shadow-lg'
-                    : 'bg-white text-gray-600 hover:bg-teal-50 hover:text-teal-600'
-                }`}
-              >
-                <span className="mr-2">{icon}</span>
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Media Grid */}
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredMedia.map((media) => {
+            {allMedia.map((media) => {
               const isYouTubeVideo = media.type === 'video' && media.src.includes('youtube.com');
               const thumbnailUrl = isYouTubeVideo ? getYouTubeThumbnail(media.src) : media.thumbnail;
 
@@ -250,16 +198,13 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug, productName 
                   className="group bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border border-gray-200 hover:border-teal-300 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 cursor-pointer overflow-hidden"
                   onClick={() => openModal(media)}
                 >
-                  {/* Media Preview with 9:16 aspect ratio */}
                   <div className="relative overflow-hidden rounded-t-2xl bg-white" style={{ aspectRatio: '9 / 16' }}>
-                    {/* Media Type Badge */}
                     <div className="absolute top-3 left-3 bg-gradient-to-r from-teal-500 to-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10 shadow-lg">
                       {media.type === 'video' ? '🎥 Video' : '📸 Photo'}
                     </div>
 
                     {media.type === 'video' ? (
                       isYouTubeVideo ? (
-                        // YouTube Video Thumbnail
                         <div className="relative w-full h-full">
                           <img
                             src={thumbnailUrl || '/placeholder-video.jpg'}
@@ -267,7 +212,6 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug, productName 
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             loading="lazy"
                           />
-                          {/* Play Button Overlay */}
                           <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center pointer-events-none">
                             <div className="bg-white bg-opacity-90 rounded-full p-3 group-hover:scale-110 transition-transform duration-300">
                               <PlayIcon className="h-8 w-8 text-teal-600" />
@@ -275,7 +219,6 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug, productName 
                           </div>
                         </div>
                       ) : (
-                        // Regular Video
                         <div className="relative w-full h-full">
                           <video
                             ref={(el) => {
@@ -307,7 +250,6 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug, productName 
                         </div>
                       )
                     ) : (
-                      // Image
                       <div className="w-full h-full bg-gradient-to-br from-teal-50 to-orange-50 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
                         <img
                           src={media.src}
@@ -318,54 +260,16 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug, productName 
                       </div>
                     )}
                   </div>
-
-                  {/* Media Details */}
-                  <div className="p-4">
-                    <h3 className="font-bold text-gray-800 text-sm lg:text-base mb-2 group-hover:text-teal-600 transition-colors duration-300">
-                      {media.title}
-                    </h3>
-
-                    {/* Customer Info */}
-                    <div className="flex items-center mb-2">
-                      <div className="w-8 h-8 bg-gradient-to-r from-teal-400 to-orange-400 rounded-full flex items-center justify-center mr-3">
-                        <span className="text-white text-xs font-bold">
-                          {media.customerName.charAt(0)}
-                        </span>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-gray-800">{media.customerName}</p>
-                        {media.customerLocation && (
-                          <p className="text-xs text-gray-500">{media.customerLocation}</p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* View Button */}
-                    <button className="w-full mt-3 bg-gradient-to-r from-teal-500 to-orange-500 hover:from-teal-600 hover:to-orange-600 text-white font-semibold py-2 px-4 rounded-xl text-sm transition-all duration-300 transform group-hover:scale-105 shadow-lg hover:shadow-xl">
-                      {media.type === 'video' ? 'Watch Video' : 'View Photo'}
-                    </button>
-                  </div>
                 </div>
               );
             })}
           </div>
-
-          {/* Empty State */}
-          {filteredMedia.length === 0 && (
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">📱</div>
-              <h3 className="text-lg font-semibold text-gray-600 mb-2">No {activeFilter} found</h3>
-              <p className="text-gray-500">Try selecting a different filter or check back later.</p>
-            </div>
-          )}
         </div>
       </div>
 
-      {/* Modal for Media Viewer */}
       {selectedMedia && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-4xl max-h-[90vh] overflow-hidden relative">
-            {/* Close Button */}
             <button
               onClick={closeModal}
               className="absolute top-4 right-4 bg-white bg-opacity-90 rounded-full p-2 hover:bg-opacity-100 transition-all duration-300 z-10"
@@ -373,11 +277,9 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug, productName 
               <XMarkIcon className="h-6 w-6 text-gray-600" />
             </button>
 
-            {/* Media Content */}
             <div className="p-6">
               {selectedMedia.type === 'video' ? (
                 selectedMedia.src.includes('youtube.com') ? (
-                  // YouTube iframe
                   <iframe
                     src={getYouTubeEmbedUrl(selectedMedia.src) || ''}
                     title={selectedMedia.title}
@@ -386,7 +288,6 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug, productName 
                     className="w-full h-[60vh] rounded-xl"
                   />
                 ) : (
-                  // Regular video
                   <video
                     controls
                     className="w-full max-h-[60vh] rounded-xl"
@@ -406,31 +307,6 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug, productName 
                   className="w-full max-h-[60vh] object-contain rounded-xl"
                 />
               )}
-
-              {/* Media Info */}
-              <div className="mt-4">
-                <h3 className="text-xl font-bold text-gray-800 mb-2">
-                  {selectedMedia.title}
-                </h3>
-                <div className="flex items-center mb-3">
-                  <div className="w-10 h-10 bg-gradient-to-r from-teal-400 to-orange-400 rounded-full flex items-center justify-center mr-3">
-                    <span className="text-white font-bold">
-                      {selectedMedia.customerName.charAt(0)}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-800">{selectedMedia.customerName}</p>
-                    {selectedMedia.customerLocation && (
-                      <p className="text-sm text-gray-500">{selectedMedia.customerLocation}</p>
-                    )}
-                  </div>
-                </div>
-                {selectedMedia.description && (
-                  <p className="text-gray-600 leading-relaxed">
-                    {selectedMedia.description}
-                  </p>
-                )}
-              </div>
             </div>
           </div>
         </div>
