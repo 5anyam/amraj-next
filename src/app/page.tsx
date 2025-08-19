@@ -82,20 +82,20 @@ export default function Homepage() {
     Failed to load products.
   </div>
 ) : (
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative z-10">
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
     {/* Only first 3 products */}
     {data?.slice(0, 3).map((prod) => (
       <ProductCard key={prod.id} product={prod} />
     ))}
 
     {/* 4th Column: Special Card with Image only */}
-    <div className="flex items-center justify-center rounded-xl bg-white shadow-md p-4">
+    {/* <div className="flex items-center justify-center rounded-xl bg-white shadow-md p-4">
       <img
         src="/coming-soon.png" // <-- Yahan apni image ka path daalein
         alt="Special Card"
         className="w-full h-full object-contain"
       />
-    </div>
+    </div> */}
   </div>
 )}
       </div>

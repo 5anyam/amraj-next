@@ -145,7 +145,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, allPr
           })}
         </div>
 
-        {/* View All Products Button */}
+        {/* View All Products Button
         <div className="text-center mt-8">
           <button
             onClick={() => router.push('/products')}
@@ -153,7 +153,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, allPr
           >
             🛍️ View All Products
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

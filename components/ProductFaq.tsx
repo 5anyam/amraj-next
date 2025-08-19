@@ -244,7 +244,7 @@ const ProductFAQ: React.FC<ProductFAQProps> = ({ productSlug, productName }) => 
         ))}
       </div>
 
-      {/* Footer */}
+      {/* Footer
       <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 text-center border-t border-gray-200">
         <p className="text-gray-600 text-sm mb-3">
           Still have questions? We are here to help!
@@ -257,7 +257,7 @@ const ProductFAQ: React.FC<ProductFAQProps> = ({ productSlug, productName }) => 
             📧 Email Us
           </button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
