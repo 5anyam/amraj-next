@@ -444,9 +444,6 @@ export default function ProductPage() {
                   </h3>
                   <div className="bg-gradient-to-r from-teal-50 to-orange-50 rounded-2xl p-4 border border-teal-200 space-y-3">
                     <p className="text-gray-700 leading-relaxed text-sm">
-                      Here you can add any additional information about the product (size, storage instructions, FAQs, etc.).
-                    </p>
-                    <p className="text-gray-700 leading-relaxed text-sm">
                       Your tracking ID and order details will be sent to your WhatsApp once the order is placed successfully.
                     </p>
                     <p className="text-gray-700 leading-relaxed text-sm">
