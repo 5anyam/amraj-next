@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { PlayIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { PlayIcon } from '@heroicons/react/24/outline';
 
 interface MediaItem {
   id: string;
@@ -16,7 +16,6 @@ interface MediaItem {
 
 interface CustomerMediaProps {
   productSlug: string;
-  productName: string;
 }
 
 // Media Data for different products
@@ -114,29 +113,25 @@ const defaultMedia: MediaItem[] = [
 ];
 
 const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
-  const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
+  // Track which media is currently “playing” inline
+  const [playingById, setPlayingById] = useState<Record<string, boolean>>({});
   const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
 
   const extractYouTubeVideoId = (url: string): string | null => {
     if (!url) return null;
-    
     try {
       const urlObj = new URL(url);
-      
       if (url.includes('shorts/')) {
         const pathParts = urlObj.pathname.split('/');
         const shortsIndex = pathParts.indexOf('shorts');
         return shortsIndex !== -1 && pathParts[shortsIndex + 1] ? pathParts[shortsIndex + 1] : null;
       }
-      
       if (urlObj.hostname === 'youtu.be') {
         return urlObj.pathname.slice(1);
       }
-      
       if (urlObj.searchParams.has('v')) {
         return urlObj.searchParams.get('v');
       }
-      
       return null;
     } catch {
       return null;
@@ -150,38 +145,34 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
 
   const getYouTubeEmbedUrl = (url: string): string | null => {
     const videoId = extractYouTubeVideoId(url);
-    return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1` : null;
+    // modestbranding=1, rel=0 to reduce distractions
+    return videoId
+      ? `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&modestbranding=1&rel=0`
+      : null;
   };
 
   const getMedia = (): MediaItem[] => {
-    if (mediaData[productSlug]) {
-      return mediaData[productSlug];
-    }
-
-    const slugKey = Object.keys(mediaData).find(key => 
-      productSlug.includes(key) || key.includes(productSlug.split('-')[0])
+    if (mediaData[productSlug]) return mediaData[productSlug];
+    const slugKey = Object.keys(mediaData).find(
+      key => productSlug.includes(key) || key.includes(productSlug.split('-')[0])
     );
-
-    if (slugKey) {
-      return mediaData[slugKey];
-    }
-
+    if (slugKey) return mediaData[slugKey];
     return defaultMedia;
   };
 
   const allMedia = getMedia();
 
-  const openModal = (media: MediaItem) => {
-    setSelectedMedia(media);
+  const handleCardClick = (media: MediaItem) => {
+    if (media.type !== 'video') return;
+    setPlayingById(prev => ({ ...prev, [media.id]: true }));
+    // For non-YouTube, try to play immediately
+    if (!media.src.includes('youtube.com')) {
+      const v = videoRefs.current[media.id];
+      v?.play?.().catch(() => {});
+    }
   };
 
-  const closeModal = () => {
-    setSelectedMedia(null);
-  };
-
-  if (allMedia.length === 0) {
-    return null;
-  }
+  if (allMedia.length === 0) return null;
 
   return (
     <>
@@ -189,68 +180,94 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {allMedia.map((media) => {
-              const isYouTubeVideo = media.type === 'video' && media.src.includes('youtube.com');
-              const thumbnailUrl = isYouTubeVideo ? getYouTubeThumbnail(media.src) : media.thumbnail;
+              const isYouTubeVideo =
+                media.type === 'video' && media.src.includes('youtube.com');
+              const thumbnailUrl =
+                isYouTubeVideo ? getYouTubeThumbnail(media.src) : media.thumbnail;
+              const isPlaying = !!playingById[media.id];
 
               return (
                 <div
                   key={media.id}
-                  className="group bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border border-gray-200 hover:border-teal-300 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 cursor-pointer overflow-hidden"
-                  onClick={() => openModal(media)}
+                  className={`group bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border border-gray-200 hover:border-teal-300 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 ${
+                    media.type === 'video' ? 'cursor-pointer' : ''
+                  } overflow-hidden`}
+                  onClick={() => handleCardClick(media)}
                 >
-                  <div className="relative overflow-hidden rounded-t-2xl bg-white" style={{ aspectRatio: '9 / 16' }}>
+                  <div
+                    className="relative overflow-hidden rounded-t-2xl bg-white"
+                    style={{ aspectRatio: '9 / 16' }}
+                  >
                     <div className="absolute top-3 left-3 bg-gradient-to-r from-teal-500 to-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10 shadow-lg">
                       {media.type === 'video' ? '🎥 Video' : '📸 Photo'}
                     </div>
 
                     {media.type === 'video' ? (
                       isYouTubeVideo ? (
-                        <div className="relative w-full h-full">
-                          <img
-                            src={thumbnailUrl || '/placeholder-video.jpg'}
-                            alt={media.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            loading="lazy"
+                        isPlaying ? (
+                          // Inline YouTube player (no modal)
+                          <iframe
+                            src={getYouTubeEmbedUrl(media.src) || ''}
+                            title={media.title}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowFullScreen
+                            className="w-full h-full rounded-t-2xl"
                           />
-                          <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center pointer-events-none">
-                            <div className="bg-white bg-opacity-90 rounded-full p-3 group-hover:scale-110 transition-transform duration-300">
-                              <PlayIcon className="h-8 w-8 text-teal-600" />
+                        ) : (
+                          // Show thumbnail until clicked
+                          <div className="relative w-full h-full">
+                            <img
+                              src={thumbnailUrl || '/placeholder-video.jpg'}
+                              alt={media.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              loading="lazy"
+                            />
+                            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                              <div className="bg-white/90 rounded-full p-3 group-hover:scale-110 transition-transform duration-300">
+                                <PlayIcon className="h-8 w-8 text-teal-600" />
+                              </div>
                             </div>
                           </div>
-                        </div>
+                        )
                       ) : (
+                        // Non-YouTube video inline
                         <div className="relative w-full h-full">
                           <video
                             ref={(el) => {
                               videoRefs.current[media.id] = el;
                             }}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            className="w-full h-full object-cover"
                             src={media.src}
-                            muted
+                            muted={!isPlaying}
                             preload="metadata"
                             poster={media.thumbnail}
+                            controls={isPlaying}
                             onMouseEnter={(e) => {
-                              e.currentTarget.currentTime = 0;
-                              e.currentTarget.play().catch(() => {});
+                              if (!isPlaying) {
+                                e.currentTarget.currentTime = 0;
+                                e.currentTarget.play().catch(() => {});
+                              }
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.pause();
-                              e.currentTarget.currentTime = 0;
+                              if (!isPlaying) {
+                                e.currentTarget.pause();
+                                e.currentTarget.currentTime = 0;
+                              }
                             }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              openModal(media);
-                            }}
+                            // Prevent card click double-trigger when clicking controls
+                            onClick={(e) => e.stopPropagation()}
                           />
-                          <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center pointer-events-none">
-                            <div className="bg-white bg-opacity-90 rounded-full p-3 group-hover:scale-110 transition-transform duration-300">
-                              <PlayIcon className="h-8 w-8 text-teal-600" />
+                          {!isPlaying && (
+                            <div className="absolute inset-0 bg-black/30 flex items-center justify-center pointer-events-none">
+                              <div className="bg-white/90 rounded-full p-3 group-hover:scale-110 transition-transform duration-300">
+                                <PlayIcon className="h-8 w-8 text-teal-600" />
+                              </div>
                             </div>
-                          </div>
+                          )}
                         </div>
                       )
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-teal-50 to-orange-50 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                      <div className="w-full h-full bg-gradient-to-br from-teal-50 to-orange-50 flex items-center justify-center">
                         <img
                           src={media.src}
                           alt={media.title}
@@ -260,57 +277,26 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
                       </div>
                     )}
                   </div>
+
+                  {/* Optional meta below the media card */}
+                  <div className="p-4">
+                    <div className="text-sm font-semibold text-gray-800">{media.title}</div>
+                    <div className="text-xs text-gray-500">
+                      {media.customerName}
+                      {media.customerLocation ? ` • ${media.customerLocation}` : ''}
+                    </div>
+                    {media.description && (
+                      <div className="text-xs text-gray-600 mt-1 line-clamp-2">
+                        {media.description}
+                      </div>
+                    )}
+                  </div>
                 </div>
               );
             })}
           </div>
         </div>
       </div>
-
-      {selectedMedia && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-4xl max-h-[90vh] overflow-hidden relative">
-            <button
-              onClick={closeModal}
-              className="absolute top-4 right-4 bg-white bg-opacity-90 rounded-full p-2 hover:bg-opacity-100 transition-all duration-300 z-10"
-            >
-              <XMarkIcon className="h-6 w-6 text-gray-600" />
-            </button>
-
-            <div className="p-6">
-              {selectedMedia.type === 'video' ? (
-                selectedMedia.src.includes('youtube.com') ? (
-                  <iframe
-                    src={getYouTubeEmbedUrl(selectedMedia.src) || ''}
-                    title={selectedMedia.title}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="w-full h-[60vh] rounded-xl"
-                  />
-                ) : (
-                  <video
-                    controls
-                    className="w-full max-h-[60vh] rounded-xl"
-                    src={selectedMedia.src}
-                    poster={selectedMedia.thumbnail}
-                    preload="metadata"
-                    autoPlay={false}
-                  >
-                    <source src={selectedMedia.src} type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-                )
-              ) : (
-                <img
-                  src={selectedMedia.src}
-                  alt={selectedMedia.title}
-                  className="w-full max-h-[60vh] object-contain rounded-xl"
-                />
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };
