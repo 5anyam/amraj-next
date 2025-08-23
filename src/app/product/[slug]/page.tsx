@@ -461,7 +461,7 @@ export default function ProductPage() {
   <ProductFAQ productSlug={slug} productName={product.name} />
 </div>
 <div className="max-w-7xl mx-auto mt-8 p-4 lg:p-6">
-  <CustomerMedia productSlug={slug} productName={product.name} />
+  <CustomerMedia productSlug={slug} />
 </div>
 <RelatedProducts
         currentProduct={product} 
