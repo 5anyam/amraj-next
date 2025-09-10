@@ -304,11 +304,6 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
                   <h3 className="text-sm font-bold text-gray-900 mb-1">
                     {media.customerName}
                   </h3>
-                  {media.customerLocation && (
-                    <p className="text-xs text-gray-600">
-                      📍 {media.customerLocation}
-                    </p>
-                  )}
                 </div>
               </article>
             );
