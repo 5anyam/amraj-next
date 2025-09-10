@@ -14,6 +14,7 @@ import SmoothMarquee from '../../../../components/ProductSlide';
 import ProductFAQ from '../../../../components/ProductFaq';
 import RelatedProducts from '../../../../components/RelatedProducts';
 import CustomerMedia from '../../../../components/CustomerMedia';
+import ProductReviews from '../../../../components/ProductReviews';
 
 // --- Product Type Definitions (as per your code) ---
 export interface ImageData { src: string; }
@@ -459,6 +460,9 @@ export default function ProductPage() {
       <div className="max-w-7xl mx-auto mt-8 p-4 lg:p-6">
       <div className="max-w-7xl mx-auto mt-8 p-4 lg:p-6">
   <ProductFAQ productSlug={slug} productName={product.name} />
+</div>
+<div className="max-w-7xl mx-auto mt-8 p-4 lg:p-6">
+  <ProductReviews productId={product.id} productName={product.name} />
 </div>
 <div className="max-w-7xl mx-auto mt-8 p-4 lg:p-6">
   <CustomerMedia productSlug={slug} />

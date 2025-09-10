@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { PlayIcon } from '@heroicons/react/24/solid';
 
 interface MediaItem {
@@ -113,9 +113,10 @@ const defaultMedia: MediaItem[] = [
 ];
 
 const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
-  // Track which media is “playing” inline
-  const [playingById, setPlayingById] = useState<Record<string, boolean>>({});
+  const [clickedVideo, setClickedVideo] = useState<string | null>(null);
+  const [autoplayVideos, setAutoplayVideos] = useState<Record<string, boolean>>({});
   const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
+  const iframeRefs = useRef<{ [key: string]: HTMLIFrameElement | null }>({});
 
   const extractYouTubeVideoId = (url: string): string | null => {
     if (!url) return null;
@@ -139,11 +140,19 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
     return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
   };
 
-  const getYouTubeEmbedUrl = (url: string): string | null => {
+  // YouTube embed URL without controls and autoplay
+  const getYouTubeEmbedAutoplayUrl = (url: string): string | null => {
     const id = extractYouTubeVideoId(url);
-    // Minimize branding; full removal not allowed by YouTube ToS
     return id
-      ? `https://www.youtube.com/embed/${id}?autoplay=1&controls=1&modestbranding=1&rel=0&iv_load_policy=3&fs=1`
+      ? `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&iv_load_policy=3&loop=1&playlist=${id}&playsinline=1`
+      : null;
+  };
+
+  // YouTube embed URL with controls for clicked videos
+  const getYouTubeEmbedClickUrl = (url: string): string | null => {
+    const id = extractYouTubeVideoId(url);
+    return id
+      ? `https://www.youtube.com/embed/${id}?autoplay=1&controls=1&modestbranding=1&rel=0&iv_load_policy=3&fs=1&playsinline=1`
       : null;
   };
 
@@ -157,20 +166,37 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
 
   const allMedia = getMedia();
 
+  // Auto-start YouTube videos on component mount
+  useEffect(() => {
+    const startAutoplay = () => {
+      const newAutoplayVideos: Record<string, boolean> = {};
+      allMedia.forEach((media) => {
+        if (media.type === 'video' && media.src.includes('youtube.com')) {
+          newAutoplayVideos[media.id] = true;
+        }
+      });
+      setAutoplayVideos(newAutoplayVideos);
+    };
+
+    // Delay to ensure DOM is ready
+    const timer = setTimeout(startAutoplay, 500);
+    return () => clearTimeout(timer);
+  }, [allMedia]);
+
   const handleCardClick = (media: MediaItem) => {
     if (media.type !== 'video') return;
-    // Play only clicked one; stop others
-    setPlayingById({ [media.id]: true });
-    Object.entries(videoRefs.current).forEach(([id, v]) => {
-      if (id !== media.id) {
-        try {
-          v?.pause();
-        } catch {}
+
+    if (media.src.includes('youtube.com')) {
+      // For YouTube videos, switch to controls version
+      setClickedVideo(media.id);
+    } else {
+      // For regular videos, unmute and play with controls
+      const video = videoRefs.current[media.id];
+      if (video) {
+        video.muted = false;
+        video.controls = true;
+        video.play().catch(() => {});
       }
-    });
-    if (!media.src.includes('youtube.com')) {
-      const v = videoRefs.current[media.id];
-      v?.play?.().catch(() => {});
     }
   };
 
@@ -178,12 +204,23 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
 
   return (
     <section className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+      {/* Header with customer stories title */}
+      <div className="bg-gradient-to-r from-teal-500 to-orange-500 p-6">
+        <h2 className="text-2xl lg:text-3xl font-bold text-white text-center">
+          Customer Stories & Results
+        </h2>
+        <p className="text-teal-100 text-center mt-2">
+          Real customers sharing their experiences
+        </p>
+      </div>
+
       <div className="p-6">
         {/* Grid: 2 on mobile, 4 on desktop */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
           {allMedia.map((media) => {
             const isYouTubeVideo = media.type === 'video' && media.src.includes('youtube.com');
-            const isPlaying = !!playingById[media.id];
+            const isClicked = clickedVideo === media.id;
+            const shouldAutoplay = autoplayVideos[media.id] && !isClicked;
             const thumbnailUrl = isYouTubeVideo ? getYouTubeThumbnail(media.src) : media.thumbnail;
 
             return (
@@ -194,17 +231,25 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
                 } bg-white`}
                 onClick={() => handleCardClick(media)}
               >
-                {/* Compact height for smaller cards */}
-                <div className="relative w-full h-[300px] sm:h-[320px] lg:h-[260px]">
+                {/* Media container with 9:16 aspect ratio */}
+                <div className="relative w-full" style={{ aspectRatio: '9 / 16' }}>
                   {media.type === 'video' ? (
                     isYouTubeVideo ? (
-                      isPlaying ? (
+                      shouldAutoplay || isClicked ? (
                         <iframe
-                          src={getYouTubeEmbedUrl(media.src) || ''}
+                          ref={(el) => {
+                            iframeRefs.current[media.id] = el;
+                          }}
+                          src={
+                            isClicked
+                              ? getYouTubeEmbedClickUrl(media.src) || ''
+                              : getYouTubeEmbedAutoplayUrl(media.src) || ''
+                          }
                           title={media.title}
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                           allowFullScreen
                           className="w-full h-full"
+                          style={{ border: 'none' }}
                         />
                       ) : (
                         <div className="relative w-full h-full">
@@ -214,7 +259,6 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
                             className="w-full h-full object-cover transform-gpu group-hover:scale-[1.03] transition-transform duration-300"
                             loading="lazy"
                           />
-                          {/* Clean play button (no black overlay) */}
                           <div className="absolute inset-0 flex items-center justify-center">
                             <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-white/95 shadow-lg ring-1 ring-black/5 group-hover:scale-110 transition-transform duration-200">
                               <PlayIcon className="h-6 w-6 text-teal-600" />
@@ -230,32 +274,19 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
                           }}
                           className="w-full h-full object-cover"
                           src={media.src}
-                          muted={!isPlaying}
+                          muted
+                          autoPlay
+                          loop
                           preload="metadata"
                           poster={media.thumbnail}
-                          controls={isPlaying}
                           playsInline
-                          onMouseEnter={(e) => {
-                            if (!isPlaying) {
-                              e.currentTarget.currentTime = 0;
-                              e.currentTarget.play().catch(() => {});
-                            }
-                          }}
-                          onMouseLeave={(e) => {
-                            if (!isPlaying) {
-                              e.currentTarget.pause();
-                              e.currentTarget.currentTime = 0;
-                            }
-                          }}
                           onClick={(e) => e.stopPropagation()}
                         />
-                        {!isPlaying && (
-                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                            <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-white/95 shadow-lg ring-1 ring-black/5 group-hover:scale-110 transition-transform duration-200">
-                              <PlayIcon className="h-6 w-6 text-teal-600" />
-                            </span>
-                          </div>
-                        )}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                          <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-white/95 shadow-lg ring-1 ring-black/5">
+                            <PlayIcon className="h-6 w-6 text-teal-600" />
+                          </span>
+                        </div>
                       </div>
                     )
                   ) : (
@@ -268,21 +299,30 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
                   )}
                 </div>
 
-                {/* Meta (tighter spacing) */}
-                <div className="p-3">
-                  <div className="text-sm font-semibold text-gray-900">{media.title}</div>
-                  <div className="text-xs text-gray-500">
+                {/* Customer name section - clean and minimal */}
+                <div className="p-4 text-center bg-gradient-to-r from-gray-50 to-gray-100">
+                  <h3 className="text-sm font-bold text-gray-900 mb-1">
                     {media.customerName}
-                    {media.customerLocation ? ` • ${media.customerLocation}` : ''}
-                  </div>
-                  {media.description && (
-                    <p className="text-xs text-gray-600 mt-1 line-clamp-2">{media.description}</p>
+                  </h3>
+                  {media.customerLocation && (
+                    <p className="text-xs text-gray-600">
+                      📍 {media.customerLocation}
+                    </p>
                   )}
                 </div>
               </article>
             );
           })}
         </div>
+
+        {/* Empty state */}
+        {allMedia.length === 0 && (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">🎥</div>
+            <h3 className="text-lg font-semibold text-gray-600 mb-2">No customer stories yet</h3>
+            <p className="text-gray-500">Check back later for amazing customer experiences!</p>
+          </div>
+        )}
       </div>
     </section>
   );
