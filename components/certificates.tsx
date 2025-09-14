@@ -8,8 +8,8 @@ export default function HorizontalCertificatesSlider() {
     { id: 4, name: "AYUSH Approved", icon: "/certificates/4.jpg"},
     { id: 5, name: "Organic Certified", icon: "/certificates/5.jpg" },
     { id: 6, name: "Lab Tested", icon: "/certificates/6.jpg" },
-    { id: 6, name: "Lab Tested", icon: "/certificates/7.jpg" },
-    { id: 6, name: "Lab Tested", icon: "/certificates/8.jpg" }
+    { id: 7, name: "Lab Tested", icon: "/certificates/7.jpg" },
+    { id: 8, name: "Lab Tested", icon: "/certificates/8.jpg" }
 
   ];
 

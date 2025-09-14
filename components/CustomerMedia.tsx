@@ -24,8 +24,8 @@ const mediaData: Record<string, MediaItem[]> = {
     {
       id: 'pc-video-1',
       type: 'video',
-      src: 'https://youtube.com/shorts/78N-odODcWk',
-      customerName: 'Rajesh Kumar',
+      src: 'https://youtube.com/shorts/P432UdyYQ4w?feature=share',
+      customerName: 'Deepika Sharma',
       customerLocation: 'Delhi',
       title: 'Amazing Results in 3 Weeks!',
       description: 'My night urination reduced significantly after using Amraj Prostate Care.'
@@ -38,6 +38,15 @@ const mediaData: Record<string, MediaItem[]> = {
       customerLocation: 'Delhi',
       title: 'Lab Report Improvement',
       description: 'My PSA levels improved dramatically with consistent use.'
+    },
+    {
+      id: 'pc-video-2',
+      type: 'video',
+      src: 'https://youtube.com/shorts/aHRxvoavSGY?feature=share',
+      customerName: 'Rajesh Kumar',
+      customerLocation: 'Delhi',
+      title: 'Amazing Results in 3 Weeks!',
+      description: 'My night urination reduced significantly after using Amraj Prostate Care.'
     }
   ],
   'weight-management': [

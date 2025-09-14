@@ -108,19 +108,24 @@ const HomeFAQ: React.FC = () => {
       </div>
 
       {/* Footer CTA */}
-      <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 text-center border-t border-gray-200">
+            <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 text-center border-t border-gray-200">
         <p className="text-gray-600 text-sm mb-3">
           Ready to start your wellness journey?
         </p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <button className="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-semibold px-6 py-3 rounded-full text-sm transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
-            🛍️ Shop Now
-          </button>
-          <button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold px-6 py-3 rounded-full text-sm transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
-            💬 Get Expert Advice
-          </button>
+        <div className="flex justify-center">
+          <a
+            href="https://www.amazon.in/s?k=AMRAJ&ref=bl_dp_s_web_0"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-semibold px-6 py-3 rounded-full text-sm transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg"
+          >
+            {/* Amazon icon (inline SVG) */}
+            <img className='h-8 w-8' src="/Amazon_icon.png" alt='amazon-img' height={100} width={100}/>
+            Buy now on Amazon
+          </a>
         </div>
       </div>
+
     </div>
   );
 };

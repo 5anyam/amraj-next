@@ -12,6 +12,7 @@ export interface Product {
   attributes?: { option: string }[];
 }
 
+// Add this to your types file
 export interface Category {
   id: number;
   name: string;
@@ -32,7 +33,7 @@ export interface Category {
   };
 }
 
-// Reviews (output for app)
+// 🆕 REVIEWS INTERFACE
 export interface Review {
   id: number;
   date_created: string;
@@ -45,7 +46,6 @@ export interface Review {
   rating: number;
   verified: boolean;
   reviewer_avatar_urls: { [key: string]: string };
-  images?: string[];
   _links: {
     self: Array<{ href: string }>;
     collection: Array<{ href: string }>;
@@ -53,43 +53,7 @@ export interface Review {
   };
 }
 
-// WooCommerce API shapes (strict)
-interface ApiMetaItem {
-  key: string;
-  value: unknown;
-}
-interface ApiLinks {
-  self?: Array<{ href: string }>;
-  collection?: Array<{ href: string }>;
-  up?: Array<{ href: string }>;
-}
-interface ApiReview {
-  id: number;
-  date_created?: string;
-  date_created_gmt?: string;
-  product_id?: number;
-  status?: string;
-  reviewer?: string;
-  reviewer_email?: string;
-  review?: string;
-  rating?: number;
-  verified?: boolean;
-  reviewer_avatar_urls?: { [key: string]: string };
-  meta_data?: ApiMetaItem[];
-  _links?: ApiLinks;
-}
-
-// Guards
-const isRecord = (v: unknown): v is Record<string, unknown> =>
-  typeof v === 'object' && v !== null;
-
-const isApiMetaItem = (m: unknown): m is ApiMetaItem =>
-  isRecord(m) && typeof m.key === 'string' && 'value' in m;
-
-const isApiReview = (r: unknown): r is ApiReview =>
-  isRecord(r) && typeof r.id === 'number';
-
-// Payloads
+// 🆕 REVIEW CREATE PAYLOAD
 export interface ReviewPayload {
   product_id: number;
   review: string;
@@ -97,8 +61,6 @@ export interface ReviewPayload {
   reviewer_email?: string;
   rating: number;
   status?: 'approved' | 'hold' | 'spam' | 'unspam' | 'trash' | 'untrash';
-  image_ids?: number[];
-  image_urls?: string[];
 }
 
 export interface LineItem {
@@ -126,102 +88,24 @@ export interface OrderPayload {
   notes?: string;
 }
 
-// Helpers
-const withKeys = (url: string) =>
-  `${url}${url.includes("?") ? "&" : "?"}consumer_key=${CONSUMER_KEY}&consumer_secret=${CONSUMER_SECRET}`;
-
-// Products
+// ✅ FETCH ALL PRODUCTS
 export async function fetchProducts(page = 1, perPage = 12, search?: string): Promise<Product[]> {
-  let url = `${API_BASE}/products?per_page=${perPage}&page=${page}`;
+  let url = `${API_BASE}/products?consumer_key=${CONSUMER_KEY}&consumer_secret=${CONSUMER_SECRET}&per_page=${perPage}&page=${page}`;
   if (search) url += `&search=${encodeURIComponent(search)}`;
-  const res = await fetch(withKeys(url));
+  const res = await fetch(url);
   if (!res.ok) throw new Error("Failed to fetch products");
-  return (await res.json()) as Product[];
+  return res.json();
 }
 
+// ✅ FETCH A SINGLE PRODUCT
 export async function fetchProduct(id: string): Promise<Product> {
-  const url = withKeys(`${API_BASE}/products/${id}`);
+  const url = `${API_BASE}/products/${id}?consumer_key=${CONSUMER_KEY}&consumer_secret=${CONSUMER_SECRET}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error("Failed to fetch product");
-  return (await res.json()) as Product;
+  return res.json();
 }
 
-// Resolve media IDs -> URLs
-async function resolveMediaUrls(mediaIds: number[]): Promise<string[]> {
-  const urls: string[] = [];
-  for (const id of mediaIds) {
-    try {
-      const r = await fetch(`https://cms.amraj.in/wp-json/wp/v2/media/${id}`);
-      if (!r.ok) continue;
-      const m: unknown = await r.json();
-      if (isRecord(m) && typeof m.source_url === 'string') {
-        urls.push(m.source_url);
-      }
-    } catch {
-      // ignore
-    }
-  }
-  return urls;
-}
-
-// Extract image urls from meta_data safely
-function extractImageUrlsFromMeta(meta?: ApiMetaItem[]): string[] | undefined {
-  if (!Array.isArray(meta)) return undefined;
-  const urlItem = meta.find((m) => isApiMetaItem(m) && m.key === 'amraj_review_image_urls');
-  if (urlItem && Array.isArray(urlItem.value) && urlItem.value.every((x) => typeof x === 'string')) {
-    return urlItem.value as string[];
-  }
-  const idItem = meta.find((m) => isApiMetaItem(m) && m.key === 'amraj_review_media');
-  if (idItem && Array.isArray(idItem.value) && idItem.value.every((x) => typeof x === 'number')) {
-    // Will be resolved by caller when needed
-    return undefined;
-  }
-  return undefined;
-}
-
-function extractImageIdsFromMeta(meta?: ApiMetaItem[]): number[] | undefined {
-  if (!Array.isArray(meta)) return undefined;
-  const idItem = meta.find((m) => isApiMetaItem(m) && m.key === 'amraj_review_media');
-  if (idItem && Array.isArray(idItem.value) && idItem.value.every((x) => typeof x === 'number')) {
-    return idItem.value as number[];
-  }
-  return undefined;
-}
-
-// Map ApiReview -> Review (optionally inject images)
-async function mapApiReviewToReview(rev: ApiReview): Promise<Review> {
-  const imagesFromUrls = extractImageUrlsFromMeta(rev.meta_data);
-  let images: string[] | undefined = imagesFromUrls;
-
-  if (!imagesFromUrls) {
-    const ids = extractImageIdsFromMeta(rev.meta_data);
-    if (Array.isArray(ids) && ids.length) {
-      images = await resolveMediaUrls(ids);
-    }
-  }
-
-  return {
-    id: rev.id,
-    date_created: rev.date_created ?? '',
-    date_created_gmt: rev.date_created_gmt ?? '',
-    product_id: typeof rev.product_id === 'number' ? rev.product_id : 0,
-    status: rev.status ?? 'approved',
-    reviewer: rev.reviewer ?? 'Anonymous',
-    reviewer_email: rev.reviewer_email ?? '',
-    review: rev.review ?? '',
-    rating: typeof rev.rating === 'number' ? rev.rating : 0,
-    verified: Boolean(rev.verified),
-    reviewer_avatar_urls: isRecord(rev.reviewer_avatar_urls) ? (rev.reviewer_avatar_urls as { [k: string]: string }) : {},
-    images,
-    _links: {
-      self: (rev._links?.self as Array<{ href: string }>) || [],
-      collection: (rev._links?.collection as Array<{ href: string }>) || [],
-      up: (rev._links?.up as Array<{ href: string }>) || [],
-    },
-  };
-}
-
-// FETCH REVIEWS
+// 🆕 ✅ FETCH REVIEWS FOR A PRODUCT (GLOBAL COLLECTION + product FILTER)
 export async function fetchProductReviews(
   productId: number,
   page = 1,
@@ -229,164 +113,147 @@ export async function fetchProductReviews(
   status: 'approved' | 'hold' | 'all' = 'approved'
 ): Promise<Review[]> {
   try {
-    const url = withKeys(`${API_BASE}/products/reviews?product=${productId}&per_page=${perPage}&page=${page}&status=${status}`);
-    const res = await fetch(url, { method: 'GET' });
-    if (!res.ok) return [];
+    // Using: /wp-json/wc/v3/products/reviews?product=ID
+    const url =
+      `${API_BASE}/products/reviews?product=${productId}` +
+      `&consumer_key=${CONSUMER_KEY}&consumer_secret=${CONSUMER_SECRET}` +
+      `&per_page=${perPage}&page=${page}&status=${status}`;
 
-    const data: unknown = await res.json();
-    const list: ApiReview[] = Array.isArray(data) ? data.filter(isApiReview) : [];
-    const mapped = await Promise.all(list.map(mapApiReviewToReview));
-    return mapped;
-  } catch {
+    console.log('Fetching reviews from:', url);
+
+    const res = await fetch(url, { method: 'GET', headers: { 'Content-Type': 'application/json' } });
+
+    if (!res.ok) {
+      console.error('Reviews fetch failed:', res.status, res.statusText);
+      return [];
+    }
+
+    const reviews = await res.json();
+    console.log(`Fetched ${Array.isArray(reviews) ? reviews.length : 0} reviews for product ${productId}`);
+    return Array.isArray(reviews) ? reviews : [];
+  } catch (error) {
+    console.error('Error fetching product reviews:', error);
     return [];
   }
 }
 
-// CREATE REVIEW
+// 🆕 ✅ CREATE A PRODUCT REVIEW (GLOBAL COLLECTION)
 export async function createProductReview(payload: ReviewPayload): Promise<Review> {
-  const url = withKeys(`${API_BASE}/products/reviews`);
+  try {
+    // POST to collection: /products/reviews
+    const url =
+      `${API_BASE}/products/reviews?consumer_key=${CONSUMER_KEY}&consumer_secret=${CONSUMER_SECRET}`;
 
-  const meta_data: Array<{ key: string; value: unknown }> = [];
-  if (payload.image_ids?.length) meta_data.push({ key: 'amraj_review_media', value: payload.image_ids });
-  if (payload.image_urls?.length) meta_data.push({ key: 'amraj_review_image_urls', value: payload.image_urls });
+    console.log('Creating review for product:', payload.product_id);
 
-  const body = {
-    product_id: payload.product_id,
-    review: payload.review,
-    reviewer: payload.reviewer,
-    reviewer_email: payload.reviewer_email || '',
-    rating: payload.rating,
-    status: payload.status || 'approved',
-    ...(meta_data.length ? { meta_data } : {})
-  };
+    const reviewData = {
+      product_id: payload.product_id,
+      review: payload.review,
+      reviewer: payload.reviewer,
+      reviewer_email: payload.reviewer_email || '',
+      rating: payload.rating,
+      status: payload.status || 'approved',
+    };
 
-  const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-  if (!res.ok) {
-    const err: unknown = await res.json().catch(() => undefined);
-    const msg = isRecord(err) && typeof err.message === 'string' ? err.message : res.statusText;
-    throw new Error("Review creation failed: " + msg);
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(reviewData),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      console.error('Review creation failed:', err);
+      throw new Error("Review creation failed: " + (err?.message || res.statusText));
+    }
+
+    const newReview = await res.json();
+    console.log('Review created successfully:', newReview?.id);
+    return newReview;
+  } catch (error) {
+    console.error('Error creating product review:', error);
+    throw error;
   }
-
-  const createdUnknown: unknown = await res.json();
-  // Narrow and map back to Review
-  if (isApiReview(createdUnknown)) {
-    return await mapApiReviewToReview(createdUnknown);
-  }
-  // Fallback minimal review
-  return {
-    id: Date.now(),
-    date_created: new Date().toISOString(),
-    date_created_gmt: new Date().toISOString(),
-    product_id: payload.product_id,
-    status: payload.status || 'approved',
-    reviewer: payload.reviewer,
-    reviewer_email: payload.reviewer_email || '',
-    review: payload.review,
-    rating: payload.rating,
-    verified: false,
-    reviewer_avatar_urls: {},
-    images: payload.image_urls,
-    _links: { self: [], collection: [], up: [] },
-  };
 }
 
-// UPDATE REVIEW
+// 🆕 ✅ UPDATE A PRODUCT REVIEW (by review ID on collection)
 export async function updateProductReview(
   _productId: number,
   reviewId: number,
   updates: Partial<ReviewPayload>
 ): Promise<Review> {
-  const url = withKeys(`${API_BASE}/products/reviews/${reviewId}`);
+  try {
+    // PUT on collection item: /products/reviews/{id}
+    const url =
+      `${API_BASE}/products/reviews/${reviewId}?consumer_key=${CONSUMER_KEY}&consumer_secret=${CONSUMER_SECRET}`;
 
-  const meta_data: Array<{ key: string; value: unknown }> = [];
-  if (updates.image_ids?.length) meta_data.push({ key: 'amraj_review_media', value: updates.image_ids });
-  if (updates.image_urls?.length) meta_data.push({ key: 'amraj_review_image_urls', value: updates.image_urls });
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updates),
+    });
 
-  const body: Record<string, unknown> = {};
-  if (typeof updates.review === 'string') body.review = updates.review;
-  if (typeof updates.reviewer === 'string') body.reviewer = updates.reviewer;
-  if (typeof updates.reviewer_email === 'string') body.reviewer_email = updates.reviewer_email;
-  if (typeof updates.rating === 'number') body.rating = updates.rating;
-  if (typeof updates.status === 'string') body.status = updates.status;
-  if (meta_data.length) body.meta_data = meta_data;
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error("Review update failed: " + (err?.message || res.statusText));
+    }
 
-  const res = await fetch(url, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-  if (!res.ok) {
-    const err: unknown = await res.json().catch(() => undefined);
-    const msg = isRecord(err) && typeof err.message === 'string' ? err.message : res.statusText;
-    throw new Error("Review update failed: " + msg);
+    return res.json();
+  } catch (error) {
+    console.error('Error updating product review:', error);
+    throw error;
   }
-
-  const updatedUnknown: unknown = await res.json();
-  if (isApiReview(updatedUnknown)) {
-    return await mapApiReviewToReview(updatedUnknown);
-  }
-  // Minimal fallback (should not happen)
-  return {
-    id: reviewId,
-    date_created: new Date().toISOString(),
-    date_created_gmt: new Date().toISOString(),
-    product_id: 0,
-    status: 'approved',
-    reviewer: updates.reviewer || 'Anonymous',
-    reviewer_email: updates.reviewer_email || '',
-    review: updates.review || '',
-    rating: updates.rating || 0,
-    verified: false,
-    reviewer_avatar_urls: {},
-    images: updates.image_urls,
-    _links: { self: [], collection: [], up: [] },
-  };
 }
 
-// DELETE REVIEW
+// 🆕 ✅ DELETE A PRODUCT REVIEW (by review ID on collection)
 export async function deleteProductReview(_productId: number, reviewId: number): Promise<Review> {
-  const url = withKeys(`${API_BASE}/products/reviews/${reviewId}?force=true`);
-  const res = await fetch(url, { method: "DELETE", headers: { "Content-Type": "application/json" } });
-  if (!res.ok) {
-    const err: unknown = await res.json().catch(() => undefined);
-    const msg = isRecord(err) && typeof err.message === 'string' ? err.message : res.statusText;
-    throw new Error("Review deletion failed: " + msg);
+  try {
+    const url =
+      `${API_BASE}/products/reviews/${reviewId}?consumer_key=${CONSUMER_KEY}&consumer_secret=${CONSUMER_SECRET}&force=true`;
+
+    const res = await fetch(url, { method: "DELETE", headers: { "Content-Type": "application/json" } });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error("Review deletion failed: " + (err?.message || res.statusText));
+    }
+
+    return res.json();
+  } catch (error) {
+    console.error('Error deleting product review:', error);
+    throw error;
   }
-  const deletedUnknown: unknown = await res.json();
-  if (isApiReview(deletedUnknown)) {
-    return await mapApiReviewToReview(deletedUnknown);
-  }
-  // Minimal fallback
-  return {
-    id: reviewId,
-    date_created: new Date().toISOString(),
-    date_created_gmt: new Date().toISOString(),
-    product_id: 0,
-    status: 'trash',
-    reviewer: 'Anonymous',
-    reviewer_email: '',
-    review: '',
-    rating: 0,
-    verified: false,
-    reviewer_avatar_urls: {},
-    _links: { self: [], collection: [], up: [] },
-  };
 }
 
-// ALL REVIEWS
+// 🆕 ✅ FETCH ALL REVIEWS (across all products)
 export async function fetchAllReviews(
   page = 1,
   perPage = 100,
   status: 'approved' | 'hold' | 'all' = 'approved'
 ): Promise<Review[]> {
-  const url = withKeys(`${API_BASE}/products/reviews?per_page=${perPage}&page=${page}&status=${status}`);
-  const res = await fetch(url);
-  if (!res.ok) return [];
-  const data: unknown = await res.json();
-  const list: ApiReview[] = Array.isArray(data) ? data.filter(isApiReview) : [];
-  const mapped = await Promise.all(list.map(mapApiReviewToReview));
-  return mapped;
+  try {
+    const url =
+      `${API_BASE}/products/reviews?consumer_key=${CONSUMER_KEY}&consumer_secret=${CONSUMER_SECRET}` +
+      `&per_page=${perPage}&page=${page}&status=${status}`;
+
+    const res = await fetch(url);
+    if (!res.ok) {
+      console.error('All reviews fetch failed:', res.status, res.statusText);
+      return [];
+    }
+
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error('Error fetching all reviews:', error);
+    return [];
+  }
 }
 
-// Orders & Categories (unchanged)
+// ✅ CREATE AN ORDER
 export async function createOrder(payload: OrderPayload): Promise<unknown> {
-  const url = withKeys(`${API_BASE}/orders`);
+  const url = `${API_BASE}/orders?consumer_key=${CONSUMER_KEY}&consumer_secret=${CONSUMER_SECRET}`;
+
   const orderData = {
     payment_method: payload.payment_method ?? "razorpay",
     payment_method_title: "Razorpay",
@@ -413,47 +280,61 @@ export async function createOrder(payload: OrderPayload): Promise<unknown> {
     email: payload.customer.email,
   };
 
-  const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(orderData) });
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(orderData),
+  });
+
   if (!res.ok) {
-    const err: unknown = await res.json().catch(() => undefined);
-    const msg = isRecord(err) && typeof err.message === 'string' ? err.message : res.statusText;
-    throw new Error("Order creation failed: " + msg);
+    const err = await res.json().catch(() => ({}));
+    throw new Error("Order creation failed: " + (err?.message || res.statusText));
   }
-  return res.json() as Promise<unknown>;
+
+  return res.json();
 }
 
+// ✅ UPDATE ORDER STATUS
 export async function updateOrderStatus(
   orderId: number,
   status: "pending" | "processing" | "completed" | "cancelled" | "on-hold" | "refunded" | "failed"
 ): Promise<unknown> {
-  const url = withKeys(`${API_BASE}/orders/${orderId}`);
-  const res = await fetch(url, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status }) });
+  const url = `${API_BASE}/orders/${orderId}?consumer_key=${CONSUMER_KEY}&consumer_secret=${CONSUMER_SECRET}`;
+  const res = await fetch(url, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status }),
+  });
   if (!res.ok) {
-    const err: unknown = await res.json().catch(() => undefined);
-    const msg = isRecord(err) && typeof err.message === 'string' ? err.message : res.statusText;
-    throw new Error(msg || "Failed to update order status");
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to update order status");
   }
-  return res.json() as Promise<unknown>;
+  return res.json();
 }
 
+// ✅ FETCH ALL PRODUCT CATEGORIES
 export async function fetchProductCategories(perPage = 12, hideEmpty = true): Promise<Category[]> {
-  let url = `${API_BASE}/products/categories?per_page=${perPage}`;
+  let url = `${API_BASE}/products/categories?consumer_key=${CONSUMER_KEY}&consumer_secret=${CONSUMER_SECRET}&per_page=${perPage}`;
   if (hideEmpty) url += `&hide_empty=true`;
-  const res = await fetch(withKeys(url));
+  const res = await fetch(url);
   if (!res.ok) throw new Error("Failed to fetch categories");
-  return (await res.json()) as Category[];
+  return res.json();
 }
 
+// ✅ FETCH SINGLE CATEGORY
 export async function fetchSingleCategory(categoryId: number): Promise<Category> {
-  const url = withKeys(`${API_BASE}/products/categories/${categoryId}`);
+  const url = `${API_BASE}/products/categories/${categoryId}?consumer_key=${CONSUMER_KEY}&consumer_secret=${CONSUMER_SECRET}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error("Failed to fetch category");
-  return (await res.json()) as Category;
+  return res.json();
 }
 
+// ✅ FETCH PRODUCTS BY CATEGORY
 export async function fetchProductsByCategory(categoryId: number, page = 1, perPage = 12): Promise<Product[]> {
-  const url = withKeys(`${API_BASE}/products?category=${categoryId}&per_page=${perPage}&page=${page}`);
+  const url =
+    `${API_BASE}/products?consumer_key=${CONSUMER_KEY}&consumer_secret=${CONSUMER_SECRET}` +
+    `&category=${categoryId}&per_page=${perPage}&page=${page}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error("Failed to fetch products by category");
-  return (await res.json()) as Product[];
+  return res.json();
 }
