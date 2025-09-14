@@ -18,7 +18,6 @@ const navItems = [
       { name: "Prostate Care", to: "https://www.amraj.in/product/advanced-prostate-care" },
       { name: "Weight Management", to: "https://www.amraj.in/product/weight-management-pro" },
       { name: "Detox", to: "https://www.amraj.in/product/advanced-liver-detox" },
-      { name: "Diabetes Care", to: "https://www.amraj.in/product/diabetes-care-coming-soon" },
     ]
   },
   { name: "About Us", to: "/about" },
