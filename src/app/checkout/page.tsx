@@ -294,25 +294,65 @@ export default function Checkout() {
     }
   }
 
-  // ✅ FIXED COD ORDER HANDLER
+  // ✅ IMPROVED COD ORDER HANDLER WITH PROPER ADDRESS & COUPON
   async function handleCODOrder(): Promise<void> {
     try {
+      // Create proper address string for Shiprocket compatibility
+      const fullAddress = `${form.address}, ${form.city}, ${form.state} - ${form.pincode}`;
+      
+      // Prepare line items with coupon discount applied
+      const lineItemsWithDiscount = items.map((i) => ({
+        product_id: i.id,
+        quantity: i.quantity,
+        name: i.name,
+        price: i.price,
+      }));
+
+      // Add coupon as negative fee if applied
+      const feeLines = appliedCoupon ? [{
+        name: `Coupon Discount (${appliedCoupon})`,
+        amount: (-couponDiscount).toString(),
+      }] : [];
+
+      // Add delivery charges as fee
+      const deliveryFee = deliveryCharges > 0 ? [{
+        name: "Delivery Charges",
+        amount: deliveryCharges.toString(),
+      }] : [];
+
       const wooOrder = (await createOrder({
-        lineItems: items.map((i) => ({
-          product_id: i.id, quantity: i.quantity, name: i.name, price: i.price,
-        })),
+        lineItems: lineItemsWithDiscount,
         shipping_address: {
           name: form.name,
-          address_1: `${form.address}, ${form.city}, ${form.state} - ${form.pincode}`,
-          email: form.email, phone: form.phone,
+          address_1: fullAddress, // ✅ Complete address for Shiprocket
+          city: form.city,
+          state: form.state,
+          postcode: form.pincode,
+          email: form.email,
+          phone: form.phone,
+        },
+        billing_address: {
+          name: form.name,
+          address_1: fullAddress,
+          city: form.city,
+          state: form.state,
+          postcode: form.pincode,
+          email: form.email,
+          phone: form.phone,
         },
         customer: { name: form.name, email: form.email },
         status: "processing",
-        notes: `${form.notes ? form.notes + '\n\n' : ''}WhatsApp: ${form.whatsapp}\nDelivery Charges: ₹${deliveryCharges}\nPayment Method: Cash on Delivery${appliedCoupon ? `\nCoupon Applied: ${appliedCoupon} (₹${couponDiscount} discount)` : ''}`,
+        payment_method: "cod",
+        payment_method_title: "Cash on Delivery",
+        fee_lines: [...feeLines, ...deliveryFee],
+        notes: `${form.notes ? form.notes + '\n\n' : ''}WhatsApp: ${form.whatsapp}\nPayment Method: Cash on Delivery${appliedCoupon ? `\nCoupon Applied: ${appliedCoupon} (₹${couponDiscount} discount)` : ''}`,
+        coupon_discount: couponDiscount,
+        applied_coupon: appliedCoupon,
       })) as WooOrder;
 
       const codOrderId = generateOrderId();
       
+      // Update order with metadata
       await fetch(
         `${process.env.NEXT_PUBLIC_WC_API_URL}/orders/${wooOrder.id}?consumer_key=${process.env.NEXT_PUBLIC_WC_CONSUMER_KEY}&consumer_secret=${process.env.NEXT_PUBLIC_WC_CONSUMER_SECRET}`,
         {
@@ -323,6 +363,7 @@ export default function Checkout() {
               ...(wooOrder.meta_data || []),
               { key: "payment_method", value: "cod" },
               { key: "cod_order_id", value: codOrderId },
+              { key: "shiprocket_address", value: fullAddress },
               ...(appliedCoupon ? [
                 { key: "coupon_code", value: appliedCoupon },
                 { key: "coupon_discount", value: couponDiscount }
@@ -357,7 +398,7 @@ export default function Checkout() {
     }
   }
 
-  // ✅ FIXED ONLINE PAYMENT HANDLER WITH INLINE APIs
+  // ✅ IMPROVED ONLINE PAYMENT HANDLER WITH PROPER ADDRESS & COUPON
   async function handleCheckout(event: FormEvent) {
     event.preventDefault();
     
@@ -387,19 +428,58 @@ export default function Checkout() {
     let wooOrder: WooOrder;
 
     try {
+      // Create proper address string for Shiprocket compatibility
+      const fullAddress = `${form.address}, ${form.city}, ${form.state} - ${form.pincode}`;
+      
+      // Prepare line items with coupon discount applied
+      const lineItemsWithDiscount = items.map((i) => ({
+        product_id: i.id,
+        quantity: i.quantity,
+        name: i.name,
+        price: i.price,
+      }));
+
+      // Add coupon as negative fee if applied
+      const feeLines = appliedCoupon ? [{
+        name: `Coupon Discount (${appliedCoupon})`,
+        amount: (-couponDiscount).toString(),
+      }] : [];
+
+      // Add delivery charges as fee
+      const deliveryFee = deliveryCharges > 0 ? [{
+        name: "Delivery Charges",
+        amount: deliveryCharges.toString(),
+      }] : [];
+
       // Step 1: Create WooCommerce Order
       wooOrder = (await createOrder({
-        lineItems: items.map((i) => ({
-          product_id: i.id, quantity: i.quantity, name: i.name, price: i.price,
-        })),
+        lineItems: lineItemsWithDiscount,
         shipping_address: {
           name: form.name,
-          address_1: `${form.address}, ${form.city}, ${form.state} - ${form.pincode}`,
-          email: form.email, phone: form.phone,
+          address_1: fullAddress, // ✅ Complete address for Shiprocket
+          city: form.city,
+          state: form.state,
+          postcode: form.pincode,
+          email: form.email,
+          phone: form.phone,
+        },
+        billing_address: {
+          name: form.name,
+          address_1: fullAddress,
+          city: form.city,
+          state: form.state,
+          postcode: form.pincode,
+          email: form.email,
+          phone: form.phone,
         },
         customer: { name: form.name, email: form.email },
         status: "pending",
-        notes: `${form.notes ? form.notes + '\n\n' : ''}WhatsApp: ${form.whatsapp}\nDelivery Charges: ₹${deliveryCharges}\nPayment Method: Online Payment${appliedCoupon ? `\nCoupon Applied: ${appliedCoupon} (₹${couponDiscount} discount)` : ''}`,
+        payment_method: "razorpay",
+        payment_method_title: "Razorpay",
+        fee_lines: [...feeLines, ...deliveryFee],
+        notes: `${form.notes ? form.notes + '\n\n' : ''}WhatsApp: ${form.whatsapp}\nPayment Method: Online Payment${appliedCoupon ? `\nCoupon Applied: ${appliedCoupon} (₹${couponDiscount} discount)` : ''}`,
+        coupon_discount: couponDiscount,
+        applied_coupon: appliedCoupon,
       })) as WooOrder;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Could not place order. Please try again.";
@@ -456,9 +536,9 @@ export default function Checkout() {
               console.warn('Payment capture failed, but proceeding...');
             }
             
-            // Step 6: Update Order Status (processing, not completed)
+            // Step 6: Update Order Status
             await updateOrderStatus(wooOrder.id, "processing");
-
+            
             // Step 7: Add Payment Metadata
             await fetch(
               `${process.env.NEXT_PUBLIC_WC_API_URL}/orders/${wooOrder.id}?consumer_key=${process.env.NEXT_PUBLIC_WC_CONSUMER_KEY}&consumer_secret=${process.env.NEXT_PUBLIC_WC_CONSUMER_SECRET}`,
@@ -472,6 +552,7 @@ export default function Checkout() {
                     { key: "razorpay_order_id", value: response.razorpay_order_id || razorpayOrder.id },
                     { key: "payment_status", value: "captured" },
                     { key: "payment_captured_at", value: new Date().toISOString() },
+                    { key: "shiprocket_address", value: `${form.address}, ${form.city}, ${form.state} - ${form.pincode}` },
                     ...(appliedCoupon ? [
                       { key: "coupon_code", value: appliedCoupon },
                       { key: "coupon_discount", value: couponDiscount }

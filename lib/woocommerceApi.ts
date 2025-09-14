@@ -12,7 +12,6 @@ export interface Product {
   attributes?: { option: string }[];
 }
 
-// Add this to your types file
 export interface Category {
   id: number;
   name: string;
@@ -33,7 +32,6 @@ export interface Category {
   };
 }
 
-// 🆕 REVIEWS INTERFACE
 export interface Review {
   id: number;
   date_created: string;
@@ -53,7 +51,6 @@ export interface Review {
   };
 }
 
-// 🆕 REVIEW CREATE PAYLOAD
 export interface ReviewPayload {
   product_id: number;
   review: string;
@@ -70,11 +67,24 @@ export interface LineItem {
   price?: string;
 }
 
+// ✅ UPDATED OrderPayload interface with proper address and coupon support
 export interface OrderPayload {
   lineItems: LineItem[];
   shipping_address: {
     name: string;
     address_1: string;
+    city?: string;
+    state?: string;
+    postcode?: string;
+    email?: string;
+    phone?: string;
+  };
+  billing_address?: {
+    name: string;
+    address_1: string;
+    city?: string;
+    state?: string;
+    postcode?: string;
     email?: string;
     phone?: string;
   };
@@ -84,8 +94,15 @@ export interface OrderPayload {
   };
   payment_id?: string;
   payment_method?: string;
+  payment_method_title?: string;
   status?: "pending" | "processing" | "completed" | "cancelled" | "on-hold" | "refunded" | "failed";
   notes?: string;
+  fee_lines?: Array<{
+    name: string;
+    amount: string;
+  }>;
+  coupon_discount?: number;
+  applied_coupon?: string;
 }
 
 // ✅ FETCH ALL PRODUCTS
@@ -105,7 +122,7 @@ export async function fetchProduct(id: string): Promise<Product> {
   return res.json();
 }
 
-// 🆕 ✅ FETCH REVIEWS FOR A PRODUCT (GLOBAL COLLECTION + product FILTER)
+// ✅ FETCH REVIEWS FOR A PRODUCT
 export async function fetchProductReviews(
   productId: number,
   page = 1,
@@ -113,7 +130,6 @@ export async function fetchProductReviews(
   status: 'approved' | 'hold' | 'all' = 'approved'
 ): Promise<Review[]> {
   try {
-    // Using: /wp-json/wc/v3/products/reviews?product=ID
     const url =
       `${API_BASE}/products/reviews?product=${productId}` +
       `&consumer_key=${CONSUMER_KEY}&consumer_secret=${CONSUMER_SECRET}` +
@@ -137,10 +153,9 @@ export async function fetchProductReviews(
   }
 }
 
-// 🆕 ✅ CREATE A PRODUCT REVIEW (GLOBAL COLLECTION)
+// ✅ CREATE A PRODUCT REVIEW
 export async function createProductReview(payload: ReviewPayload): Promise<Review> {
   try {
-    // POST to collection: /products/reviews
     const url =
       `${API_BASE}/products/reviews?consumer_key=${CONSUMER_KEY}&consumer_secret=${CONSUMER_SECRET}`;
 
@@ -176,14 +191,13 @@ export async function createProductReview(payload: ReviewPayload): Promise<Revie
   }
 }
 
-// 🆕 ✅ UPDATE A PRODUCT REVIEW (by review ID on collection)
+// ✅ UPDATE A PRODUCT REVIEW
 export async function updateProductReview(
   _productId: number,
   reviewId: number,
   updates: Partial<ReviewPayload>
 ): Promise<Review> {
   try {
-    // PUT on collection item: /products/reviews/{id}
     const url =
       `${API_BASE}/products/reviews/${reviewId}?consumer_key=${CONSUMER_KEY}&consumer_secret=${CONSUMER_SECRET}`;
 
@@ -205,7 +219,7 @@ export async function updateProductReview(
   }
 }
 
-// 🆕 ✅ DELETE A PRODUCT REVIEW (by review ID on collection)
+// ✅ DELETE A PRODUCT REVIEW
 export async function deleteProductReview(_productId: number, reviewId: number): Promise<Review> {
   try {
     const url =
@@ -225,7 +239,7 @@ export async function deleteProductReview(_productId: number, reviewId: number):
   }
 }
 
-// 🆕 ✅ FETCH ALL REVIEWS (across all products)
+// ✅ FETCH ALL REVIEWS
 export async function fetchAllReviews(
   page = 1,
   perPage = 100,
@@ -250,34 +264,61 @@ export async function fetchAllReviews(
   }
 }
 
-// ✅ CREATE AN ORDER
+// ✅ UPDATED CREATE ORDER with proper address and coupon support
 export async function createOrder(payload: OrderPayload): Promise<unknown> {
   const url = `${API_BASE}/orders?consumer_key=${CONSUMER_KEY}&consumer_secret=${CONSUMER_SECRET}`;
 
   const orderData = {
     payment_method: payload.payment_method ?? "razorpay",
-    payment_method_title: "Razorpay",
+    payment_method_title: payload.payment_method_title ?? "Razorpay",
     set_paid: false,
     status: payload.status ?? "pending",
+    
+    // ✅ Proper billing address for Shiprocket
     billing: {
       first_name: payload.shipping_address.name,
       address_1: payload.shipping_address.address_1,
+      city: payload.shipping_address.city || "",
+      state: payload.shipping_address.state || "",
+      postcode: payload.shipping_address.postcode || "",
       email: payload.shipping_address.email || payload.customer.email,
       phone: payload.shipping_address.phone || "",
+      country: "IN", // India
     },
+    
+    // ✅ Proper shipping address for Shiprocket
     shipping: {
       first_name: payload.shipping_address.name,
       address_1: payload.shipping_address.address_1,
+      city: payload.shipping_address.city || "",
+      state: payload.shipping_address.state || "",
+      postcode: payload.shipping_address.postcode || "",
+      country: "IN", // India
     },
+    
     line_items: payload.lineItems.map((item) => ({
       product_id: item.product_id,
       quantity: item.quantity,
       name: item.name,
       price: item.price,
     })),
-    meta_data: payload.payment_id ? [{ key: "razorpay_payment_id", value: payload.payment_id }] : [],
-    customer_note: payload.notes ?? `Order placed via PlixBlue frontend`,
-    email: payload.customer.email,
+    
+    // ✅ Add fee lines for discounts and delivery charges
+    fee_lines: payload.fee_lines || [],
+    
+    meta_data: [
+      ...(payload.payment_id ? [{ key: "razorpay_payment_id", value: payload.payment_id }] : []),
+      ...(payload.applied_coupon ? [
+        { key: "coupon_code", value: payload.applied_coupon },
+        { key: "coupon_discount", value: payload.coupon_discount }
+      ] : []),
+      { key: "shiprocket_address", value: payload.shipping_address.address_1 },
+    ],
+    
+    customer_note: payload.notes ?? `Order placed via Amraj Wellness frontend`,
+    customer: {
+      email: payload.customer.email,
+    },
   };
 
   const res = await fetch(url, {
