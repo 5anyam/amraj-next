@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
-import { PlayIcon } from '@heroicons/react/24/solid';
+import { PlayIcon, SpeakerWaveIcon } from '@heroicons/react/24/solid';
 
 interface MediaItem {
   id: string;
@@ -18,7 +18,7 @@ interface CustomerMediaProps {
   productSlug: string;
 }
 
-// Media Data for different products
+// Media Data for different products (same as before)
 const mediaData: Record<string, MediaItem[]> = {
   'prostate-care': [
     {
@@ -149,7 +149,7 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
     return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
   };
 
-  // YouTube embed URL without controls and autoplay
+  // YouTube embed URL without controls and muted for autoplay
   const getYouTubeEmbedAutoplayUrl = (url: string): string | null => {
     const id = extractYouTubeVideoId(url);
     return id
@@ -157,12 +157,12 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
       : null;
   };
 
-  // YouTube embed URL with controls for clicked videos
+  // ✅ Updated: YouTube embed URL with controls AND AUDIO for clicked videos
   const getYouTubeEmbedClickUrl = (url: string): string | null => {
     const id = extractYouTubeVideoId(url);
     return id
-      ? `https://www.youtube.com/embed/${id}?autoplay=1&controls=1&modestbranding=1&rel=0&iv_load_policy=3&fs=1&playsinline=1`
-      : null;
+      ? `https://www.youtube.com/embed/${id}?autoplay=1&controls=1&modestbranding=1&rel=0&iv_load_policy=3&fs=1&playsinline=1&mute=0`
+      : null; // ← Removed mute=1, added mute=0 to explicitly enable audio
   };
 
   const getMedia = (): MediaItem[] => {
@@ -196,7 +196,7 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
     if (media.type !== 'video') return;
 
     if (media.src.includes('youtube.com')) {
-      // For YouTube videos, switch to controls version
+      // ✅ For YouTube videos, switch to controls version WITH AUDIO
       setClickedVideo(media.id);
     } else {
       // For regular videos, unmute and play with controls
@@ -237,9 +237,17 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
                 key={media.id}
                 className={`group rounded-2xl overflow-hidden border border-gray-200 hover:border-teal-400 transition-all duration-300 hover:shadow-2xl ${
                   media.type === 'video' ? 'cursor-pointer' : ''
-                } bg-white`}
+                } bg-white relative`}
                 onClick={() => handleCardClick(media)}
               >
+                {/* ✅ Audio indicator for clicked videos */}
+                {isClicked && isYouTubeVideo && (
+                  <div className="absolute top-2 right-2 z-10 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-lg">
+                    <SpeakerWaveIcon className="h-3 w-3" />
+                    Audio ON
+                  </div>
+                )}
+
                 {/* Media container with 9:16 aspect ratio */}
                 <div className="relative w-full" style={{ aspectRatio: '9 / 16' }}>
                   {media.type === 'video' ? (
@@ -269,9 +277,15 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
                             loading="lazy"
                           />
                           <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-white/95 shadow-lg ring-1 ring-black/5 group-hover:scale-110 transition-transform duration-200">
-                              <PlayIcon className="h-6 w-6 text-teal-600" />
-                            </span>
+                            <div className="relative">
+                              <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-white/95 shadow-lg ring-1 ring-black/5 group-hover:scale-110 transition-transform duration-200">
+                                <PlayIcon className="h-6 w-6 text-teal-600" />
+                              </span>
+                              {/* ✅ Audio hint on hover */}
+                              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                                Click for audio
+                              </div>
+                            </div>
                           </div>
                         </div>
                       )
@@ -306,13 +320,6 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
                       loading="lazy"
                     />
                   )}
-                </div>
-
-                {/* Customer name section - clean and minimal */}
-                <div className="p-4 text-center bg-gradient-to-r from-gray-50 to-gray-100">
-                  <h3 className="text-sm font-bold text-gray-900 mb-1">
-                    {media.customerName}
-                  </h3>
                 </div>
               </article>
             );
