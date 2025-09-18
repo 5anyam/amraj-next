@@ -3,7 +3,10 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import ProductClient from './product-client'
 import { fetchProducts } from '../../../../lib/woocommerceApi'
 
-type Props = { params: { slug: string } }
+// ✅ Updated: Make params a Promise
+type Props = { 
+  params: Promise<{ slug: string }>  // ← Changed to Promise
+}
 
 type ProductWire = {
   id: number
@@ -46,11 +49,13 @@ async function getProductBySlug(slug: string) {
   return products.find(p => p.slug === slug || String(p.id) === slug)
 }
 
+// ✅ Updated: Await params in generateMetadata
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const product = await getProductBySlug(params.slug)
+  const { slug } = await params  // ← Await params here
+  const product = await getProductBySlug(slug)
 
   if (!product) {
     return {
@@ -130,7 +135,7 @@ export async function generateMetadata(
     keywords,
     alternates: { canonical: canonical.toString() },
     openGraph: {
-      type: 'website',  // ← Fixed: Changed from 'product' to 'website'
+      type: 'website',
       title,
       description,
       url: canonical.toString(),
@@ -151,14 +156,16 @@ export async function generateMetadata(
   }
 }
 
+// ✅ Updated: Await params in Page component
 export default async function Page({ params }: Props) {
-  const product = await getProductBySlug(params.slug)
+  const { slug } = await params  // ← Await params here
+  const product = await getProductBySlug(slug)
   const products = await getAllProducts()
   return (
     <ProductClient
       initialProduct={product}
       allProductsInitial={products}
-      slug={params.slug}
+      slug={slug}
     />
   )
 }
