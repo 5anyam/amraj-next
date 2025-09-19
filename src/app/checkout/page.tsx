@@ -8,7 +8,8 @@ import { toast } from "../../../hooks/use-toast";
 import { useFacebookPixel } from "../../../hooks/useFacebookPixel";
 import type { CartItem } from "../../../lib/facebook-pixel";
 
-const RAZORPAY_KEY_ID = "rzp_live_tGuZwArSWs7HdE";
+// ✅ Client-side Razorpay Key (Safe to expose)
+const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID!;
 
 interface FormData {
   name: string;
@@ -86,17 +87,39 @@ export default function Checkout() {
   const [step, setStep] = useState<"form" | "processing">("form");
   const [errors, setErrors] = useState<Partial<FormData>>({});
 
-  // Load Razorpay script
+  // Load Razorpay script with better error handling
   useEffect(() => {
-    if (typeof window !== "undefined" && !window.Razorpay) {
-      const script = document.createElement("script");
-      script.id = "razorpay-sdk";
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.async = true;
-      script.onload = () => console.log("Razorpay SDK loaded successfully");
-      script.onerror = () => console.error("Failed to load Razorpay SDK");
-      document.body.appendChild(script);
-    }
+    const loadRazorpayScript = async () => {
+      if (typeof window !== "undefined" && !window.Razorpay) {
+        // Remove existing script if any
+        const existingScript = document.getElementById("razorpay-sdk");
+        if (existingScript) {
+          existingScript.remove();
+        }
+
+        const script = document.createElement("script");
+        script.id = "razorpay-sdk";
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.async = true;
+        
+        return new Promise((resolve, reject) => {
+          script.onload = () => {
+            console.log("Razorpay SDK loaded successfully");
+            resolve(true);
+          };
+          script.onerror = () => {
+            console.error("Failed to load Razorpay SDK");
+            reject(false);
+          };
+          document.body.appendChild(script);
+        });
+      }
+      return Promise.resolve(true);
+    };
+
+    loadRazorpayScript().catch((error) => {
+      console.error("Razorpay SDK loading failed:", error);
+    });
   }, []);
 
   useEffect(() => {
@@ -108,30 +131,63 @@ export default function Checkout() {
     }
   }, [items, finalTotal, trackInitiateCheckout]);
 
-  // ✅ SIMPLIFIED RAZORPAY ORDER CREATION (No Server Route Needed)
-  async function createRazorpayOrder(amount: number): Promise<{ id: string; currency: string } | null> {
+  // ✅ SERVER-SIDE RAZORPAY ORDER CREATION
+  async function createRazorpayOrder(amount: number): Promise<{ id: string; currency: string; amount: number } | null> {
     try {
-      // For testing without server route, create a mock order
-      const mockOrder = {
-        id: `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        currency: 'INR',
-        amount: amount * 100
-      };
+      console.log('Creating Razorpay order for amount:', amount);
       
-      console.log('Mock Razorpay order created:', mockOrder);
-      return mockOrder;
+      const response = await fetch('/api/create-razorpay-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: Math.round(amount * 100), // Convert to paise
+          currency: 'INR',
+          receipt: `order_${Date.now()}`,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Server error response:', errorText);
+        throw new Error(`Server responded with ${response.status}: ${errorText}`);
+      }
+
+      const order = await response.json();
+      console.log('Razorpay order created successfully:', order);
+      return order;
     } catch (error) {
       console.error('Razorpay order creation failed:', error);
       return null;
     }
   }
 
-  // ✅ SIMPLIFIED PAYMENT VERIFICATION (Skip for now)
+  // ✅ SERVER-SIDE PAYMENT VERIFICATION
   async function verifyPayment(paymentId: string, orderId: string, signature: string): Promise<boolean> {
     try {
-      // For testing, always return true
-      console.log('Payment verification skipped for testing:', { paymentId, orderId, signature });
-      return true;
+      console.log('Verifying payment:', { paymentId, orderId, signature });
+      
+      const response = await fetch('/api/verify-razorpay-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          payment_id: paymentId,
+          order_id: orderId,
+          signature: signature,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error('Payment verification request failed');
+        return false;
+      }
+
+      const result = await response.json();
+      console.log('Payment verification result:', result);
+      return result.verified || false;
     } catch (error) {
       console.error('Payment verification failed:', error);
       return false;
@@ -256,7 +312,7 @@ export default function Checkout() {
     }
   }
 
-  // ✅ FIXED CHECKOUT HANDLER
+  // ✅ IMPROVED CHECKOUT HANDLER
   async function handleCheckout(event: FormEvent) {
     event.preventDefault();
     
@@ -269,16 +325,35 @@ export default function Checkout() {
       return;
     }
 
+    // Check if Razorpay SDK is loaded
+    if (!window.Razorpay) {
+      toast({
+        title: "Payment Gateway Loading",
+        description: "Payment system is loading. Please wait a moment and try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check if Razorpay key is available
+    if (!RAZORPAY_KEY_ID) {
+      toast({
+        title: "Configuration Error",
+        description: "Payment gateway not configured. Please contact support.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     setStep("processing");
 
-    // ✅ FIXED: Define fullAddress here in proper scope
+    // Define fullAddress in proper scope
     const fullAddress = `${form.address}, ${form.city}, ${form.state} - ${form.pincode}`;
-    
     let wooOrder: WooOrder;
 
     try {
-      // Prepare line items with coupon discount applied
+      // Prepare line items
       const lineItemsWithDiscount = items.map((i) => ({
         product_id: i.id,
         quantity: i.quantity,
@@ -344,34 +419,23 @@ export default function Checkout() {
       // Step 2: Create Razorpay Order
       const razorpayOrder = await createRazorpayOrder(finalTotal);
       if (!razorpayOrder) {
-        throw new Error('Failed to create Razorpay order');
-      }
-
-      if (!window.Razorpay) {
-        toast({
-          title: "Payment Gateway Error",
-          description: "Payment system not loaded. Please refresh and try again.",
-          variant: "destructive",
-        });
-        setLoading(false);
-        setStep("form");
-        return;
+        throw new Error('Failed to create Razorpay order. Please check your internet connection and try again.');
       }
 
       // Step 3: Configure Razorpay Options
       const options: RazorpayOptions = {
         key: RAZORPAY_KEY_ID,
-        amount: Math.round(finalTotal * 100),
-        currency: "INR",
+        amount: razorpayOrder.amount,
+        currency: razorpayOrder.currency,
         name: "Amraj Wellness LLP",
         description: `Order Payment (Order #${wooOrder.id})`,
         order_id: razorpayOrder.id,
         handler: async (response) => {
           try {
+            console.log('Payment response received:', response);
             setStep("processing");
-            console.log('Payment successful:', response);
             
-            // Step 4: Verify Payment (Simplified)
+            // Step 4: Verify Payment
             const isVerified = await verifyPayment(
               response.razorpay_payment_id,
               response.razorpay_order_id || razorpayOrder.id,
@@ -379,7 +443,7 @@ export default function Checkout() {
             );
             
             if (!isVerified) {
-              console.warn('Payment verification failed, but continuing for testing...');
+              throw new Error('Payment verification failed. Please contact support if amount was deducted.');
             }
             
             // Step 5: Update Order Status
@@ -410,6 +474,7 @@ export default function Checkout() {
               );
             } catch (metaError) {
               console.error('Failed to update order metadata:', metaError);
+              // Don't fail the entire process for metadata update failure
             }
 
             // Step 7: Track Events
@@ -438,9 +503,10 @@ export default function Checkout() {
               console.error('Failed to cancel order:', cancelError);
             }
             
+            const errorMessage = error instanceof Error ? error.message : "Payment processing failed";
             toast({
               title: "Payment Processing Failed",
-              description: "Please try again or contact support if amount was deducted.",
+              description: errorMessage,
               variant: "destructive",
             });
           } finally {
@@ -450,42 +516,55 @@ export default function Checkout() {
         },
         modal: {
           ondismiss: async () => {
-            console.log('Payment modal dismissed');
+            console.log('Payment modal dismissed by user');
             if (wooOrder?.id) {
               try {
                 await updateOrderStatus(wooOrder.id, "cancelled");
               } catch (dismissError) {
                 console.error('Failed to cancel order on dismiss:', dismissError);
               }
-              toast({
-                title: "Payment Cancelled",
-                description: "Order was cancelled. You can try again anytime.",
-                variant: "destructive",
-              });
-              setLoading(false);
-              setStep("form");
             }
+            
+            toast({
+              title: "Payment Cancelled",
+              description: "Order was cancelled. You can try again anytime.",
+              variant: "destructive",
+            });
+            setLoading(false);
+            setStep("form");
           },
         },
-        prefill: { name: form.name, email: form.email, contact: form.phone },
+        prefill: { 
+          name: form.name, 
+          email: form.email, 
+          contact: form.phone 
+        },
         theme: { color: "#14b8a6" },
       };
 
       console.log('Initializing Razorpay with options:', options);
+      
+      // Create and open Razorpay checkout
       const rzp = new window.Razorpay(options);
       rzp.open();
+      
+      // Reset loading state since Razorpay modal is now open
       setLoading(false);
       
     } catch (error) {
       console.error("Payment initialization failed:", error);
+      
+      // Cancel WooCommerce order if Razorpay initialization fails
       try {
         await updateOrderStatus(wooOrder.id, "cancelled");
       } catch (cancelError) {
         console.error('Failed to cancel order:', cancelError);
       }
+      
+      const errorMessage = error instanceof Error ? error.message : "Payment initialization failed";
       toast({
-        title: "Payment Initialization Failed",
-        description: "Please try again or contact support.",
+        title: "Payment Gateway Error",
+        description: errorMessage,
         variant: "destructive",
       });
       setLoading(false);
@@ -493,7 +572,7 @@ export default function Checkout() {
     }
   }
 
-  // Early returns after all hooks
+  // Early return for empty cart
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-teal-50 to-orange-50">
@@ -877,7 +956,7 @@ export default function Checkout() {
               {loading || step === "processing" ? (
                 <div className="flex items-center justify-center">
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  {"Processing Payment..."}
+                  {step === "processing" ? "Processing Payment..." : "Creating Order..."}
                 </div>
               ) : (
                 <div className="flex items-center justify-center">
