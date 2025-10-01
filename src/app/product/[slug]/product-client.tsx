@@ -9,7 +9,6 @@ import { useCart } from '../../../../lib/cart'
 import { toast } from '../../../../hooks/use-toast'
 import { useFacebookPixel } from '../../../../hooks/useFacebookPixel'
 import ImageGallery from '../../../../components/ImageGallery'
-import OfferTab, { SelectedOffer } from '../../../../components/OfferTab'
 import { Tab } from '@headlessui/react'
 import SmoothMarquee from '../../../../components/ProductSlide'
 import ProductFAQ from '../../../../components/ProductFaq'
@@ -57,7 +56,7 @@ export default function ProductClient({
     initialProduct ??
     products?.find((p) => p.slug === slug || p.id.toString() === slug)
 
-  const [offer, setOffer] = useState<SelectedOffer>(undefined)
+  const [quantity, setQuantity] = useState(1)
   const [isAddingToCart, setIsAddingToCart] = useState(false)
   const [isBuyingNow, setIsBuyingNow] = useState(false)
   const [isCouponCopied, setIsCouponCopied] = useState(false)
@@ -80,6 +79,12 @@ export default function ProductClient({
       description: 'WELCOME100 has been copied to clipboard. Apply it at checkout!',
     })
     setTimeout(() => setIsCouponCopied(false), 3000)
+  }
+
+  const handleQuantityChange = (newQty: number) => {
+    if (newQty >= 1 && newQty <= 99) {
+      setQuantity(newQty)
+    }
   }
 
   if (isLoading && !product) {
@@ -124,29 +129,25 @@ export default function ProductClient({
   const salePrice = parseFloat(product.price || '0')
   const regularPrice = parseFloat(product.regular_price || product.price || '0')
   const hasSiteSale = salePrice < regularPrice
-  const qty = offer?.qty || 0
-  const finalUnitPrice = offer ? salePrice * (1 - offer.discountPercent / 100) : salePrice
-  const discountedPrice = offer ? finalUnitPrice * qty : salePrice * qty
-  const crossedPrice = regularPrice * (offer ? qty : 1)
-  const siteSaleSave = hasSiteSale ? (regularPrice - salePrice) * (offer ? qty : 1) : 0
-  const totalSave = crossedPrice - discountedPrice
+  const totalPrice = salePrice * quantity
+  const totalRegularPrice = regularPrice * quantity
+  const totalSave = totalRegularPrice - totalPrice
 
   const handleAddToCart = async () => {
-    if (!offer) return
     setIsAddingToCart(true)
     try {
-      for (let i = 0; i < offer.qty; i++) {
+      for (let i = 0; i < quantity; i++) {
         addToCart({
           ...product,
-          name: product.name + (offer.qty > 1 ? ` (${i + 1} of ${offer.qty})` : ''),
-          price: finalUnitPrice.toString(),
+          name: product.name + (quantity > 1 ? ` (${i + 1} of ${quantity})` : ''),
+          price: salePrice.toString(),
           images: product.images || [],
         })
       }
-      trackAddToCart({ id: product.id, name: product.name, price: finalUnitPrice }, offer.qty)
+      trackAddToCart({ id: product.id, name: product.name, price: salePrice }, quantity)
       toast({
         title: 'Added to cart',
-        description: `${offer.qty} x ${product.name} added with ${offer.discountPercent}% off.`,
+        description: `${quantity} x ${product.name} added to cart.`,
       })
     } catch (error) {
       console.error('Add to cart failed:', error)
@@ -157,24 +158,23 @@ export default function ProductClient({
   }
 
   const handleBuyNow = async () => {
-    if (!offer) return
     setIsBuyingNow(true)
     try {
-      for (let i = 0; i < offer.qty; i++) {
+      for (let i = 0; i < quantity; i++) {
         addToCart({
           ...product,
-          name: product.name + (offer.qty > 1 ? ` (${i + 1} of ${offer.qty})` : ''),
-          price: finalUnitPrice.toString(),
+          name: product.name + (quantity > 1 ? ` (${i + 1} of ${quantity})` : ''),
+          price: salePrice.toString(),
           images: product.images || [],
         })
       }
-      trackAddToCart({ id: product.id, name: product.name, price: finalUnitPrice }, offer.qty)
-      const cartItems = [{ id: product.id, name: product.name, price: finalUnitPrice, quantity: offer.qty }]
-      const total = finalUnitPrice * offer.qty
+      trackAddToCart({ id: product.id, name: product.name, price: salePrice }, quantity)
+      const cartItems = [{ id: product.id, name: product.name, price: salePrice, quantity: quantity }]
+      const total = salePrice * quantity
       trackInitiateCheckout(cartItems, total)
       toast({
         title: 'Checkout started!',
-        description: `${offer.qty} x ${product.name} added. Redirecting to checkout...`,
+        description: `${quantity} x ${product.name} added. Redirecting to checkout...`,
         duration: 1200,
       })
       setTimeout(() => {
@@ -238,12 +238,30 @@ export default function ProductClient({
                 <ImageGallery images={product.images || []} />
               </div>
 
-              <div className="mb-4">
-                <OfferTab
-                  salePrice={salePrice}
-                  regularPrice={regularPrice}
-                  onOfferChange={setOffer}
-                />
+              {/* Quantity Selector */}
+              <div className="mb-4 mt-4">
+                <div className="bg-gradient-to-r from-teal-50 to-orange-50 rounded-2xl p-4 border-2 border-teal-200">
+                  <label className="block text-teal-700 font-bold text-sm mb-3 uppercase tracking-wide">Select Quantity</label>
+                  <div className="flex items-center justify-center gap-4">
+                    <button
+                      onClick={() => handleQuantityChange(quantity - 1)}
+                      disabled={quantity <= 1}
+                      className="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white font-bold w-12 h-12 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 text-2xl"
+                    >
+                      −
+                    </button>
+                    <div className="bg-white border-2 border-teal-300 rounded-xl px-8 py-3 min-w-[100px] text-center">
+                      <span className="text-2xl font-bold text-teal-700">{quantity}</span>
+                    </div>
+                    <button
+                      onClick={() => handleQuantityChange(quantity + 1)}
+                      disabled={quantity >= 99}
+                      className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white font-bold w-12 h-12 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 text-2xl"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <div className="mb-4 bg-gradient-to-r from-orange-50 via-yellow-50 to-orange-50 border-2 border-dashed border-orange-300 rounded-2xl p-4 relative overflow-hidden">
@@ -278,30 +296,23 @@ export default function ProductClient({
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-end gap-2">
                     <span className="text-2xl lg:text-3xl font-bold text-teal-600">
-                      {offer
-                        ? `₹${discountedPrice.toFixed(2)}`
-                        : hasSiteSale
-                          ? `₹${salePrice.toFixed(2)}`
-                          : `₹${regularPrice.toFixed(2)}`
-                      }
+                      ₹{totalPrice.toFixed(2)}
                     </span>
-                    {(hasSiteSale || offer) && (
+                    {hasSiteSale && (
                       <span className="line-through text-gray-500 font-semibold text-base lg:text-lg">
-                        ₹{crossedPrice.toFixed(2)}
+                        ₹{totalRegularPrice.toFixed(2)}
                       </span>
                     )}
                   </div>
-                  <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-1 rounded-full font-bold text-xs shadow-lg">
-                    {offer
-                      ? `SAVE ₹${totalSave.toFixed(2)}`
-                      : (hasSiteSale
-                          ? `SAVE ₹${siteSaleSave.toFixed(2)}`
-                          : '—')}
-                  </div>
+                  {hasSiteSale && (
+                    <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-1 rounded-full font-bold text-xs shadow-lg">
+                      SAVE ₹{totalSave.toFixed(2)}
+                    </div>
+                  )}
                 </div>
-                {hasSiteSale && !offer && (
-                  <div className="text-xs mt-1 text-orange-600 font-semibold">
-                    (MRP: ₹{regularPrice.toFixed(2)})
+                {quantity > 1 && (
+                  <div className="text-xs text-gray-600 font-medium">
+                    Price per unit: ₹{salePrice.toFixed(2)} × {quantity} items
                   </div>
                 )}
               </div>
@@ -311,7 +322,7 @@ export default function ProductClient({
                 <button
                   className={`flex-1 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold px-6 py-3 lg:py-4 rounded-2xl text-sm lg:text-base shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group ${isAddingToCart ? 'scale-95 shadow-inner' : ''}`}
                   onClick={handleAddToCart}
-                  disabled={isAddingToCart || !offer}
+                  disabled={isAddingToCart}
                 >
                   <span className={`relative z-10 flex items-center justify-center transition-all duration-300 ${isAddingToCart ? 'scale-90' : ''}`}>
                     <span className={`mr-2 transition-all duration-300 ${isAddingToCart ? 'animate-bounce' : ''}`}>
@@ -319,7 +330,7 @@ export default function ProductClient({
                     </span>
                     {isAddingToCart
                       ? 'ADDED TO CART!'
-                      : offer ? `ADD TO CART — ₹${discountedPrice.toFixed(2)}` : 'SELECT AN OFFER FIRST'}
+                      : `ADD TO CART — ₹${totalPrice.toFixed(2)}`}
                   </span>
                   <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   {isAddingToCart && (
@@ -329,11 +340,11 @@ export default function ProductClient({
                 <button
                   className={`flex-1 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-6 py-3 lg:py-4 rounded-2xl text-sm lg:text-base shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group ${isBuyingNow ? 'scale-95 shadow-inner' : ''}`}
                   onClick={handleBuyNow}
-                  disabled={isBuyingNow || !offer}
+                  disabled={isBuyingNow}
                 >
                   <span className={`relative z-10 flex items-center justify-center transition-all duration-300 ${isBuyingNow ? 'scale-90' : ''}`}>
                     <span className={`mr-2 transition-all duration-300 ${isBuyingNow ? 'animate-bounce' : ''}`}>🚀</span>
-                    {isBuyingNow ? 'REDIRECTING...' : (offer ? 'BUY NOW' : 'SELECT AN OFFER FIRST')}
+                    {isBuyingNow ? 'REDIRECTING...' : 'BUY NOW'}
                   </span>
                   {isBuyingNow && (
                     <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-green-600 animate-pulse"></div>
@@ -422,13 +433,13 @@ export default function ProductClient({
           <button
             className={`flex-1 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold px-4 py-3 rounded-xl text-sm shadow-lg transition-all duration-300 relative overflow-hidden ${isAddingToCart ? 'scale-95' : ''}`}
             onClick={handleAddToCart}
-            disabled={isAddingToCart || !offer}
+            disabled={isAddingToCart}
           >
             <span className={`flex items-center justify-center transition-all duration-300 ${isAddingToCart ? 'scale-90' : ''}`}>
               <span className={`mr-2 transition-all duration-300 ${isAddingToCart ? 'animate-bounce' : ''}`}>
                 {isAddingToCart ? '✓' : '🛒'}
               </span>
-              {isAddingToCart ? 'ADDED!' : (offer ? 'ADD TO CART' : 'SELECT OFFER')}
+              {isAddingToCart ? 'ADDED!' : 'ADD TO CART'}
             </span>
             {isAddingToCart && (
               <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-green-600 animate-pulse"></div>
@@ -437,11 +448,11 @@ export default function ProductClient({
           <button
             className={`flex-1 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-4 py-3 rounded-xl text-sm shadow-lg transition-all duration-300 relative overflow-hidden ${isBuyingNow ? 'scale-95' : ''}`}
             onClick={handleBuyNow}
-            disabled={isBuyingNow || !offer}
+            disabled={isBuyingNow}
           >
             <span className={`flex items-center justify-center transition-all duration-300 ${isBuyingNow ? 'scale-90' : ''}`}>
               <span className={`mr-2 transition-all duration-300 ${isBuyingNow ? 'animate-bounce' : ''}`}>🚀</span>
-              {isBuyingNow ? 'REDIRECTING...' : (offer ? 'BUY NOW' : 'SELECT OFFER')}
+              {isBuyingNow ? 'REDIRECTING...' : 'BUY NOW'}
             </span>
             {isBuyingNow && (
               <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-green-600 animate-pulse"></div>
