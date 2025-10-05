@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { StarIcon } from '@heroicons/react/24/solid';
-import { StarIcon as StarOutlineIcon } from '@heroicons/react/24/outline';
+import { StarIcon as StarOutlineIcon, CheckBadgeIcon } from '@heroicons/react/24/outline';
 import { toast } from '../hooks/use-toast';
 
 interface Review {
@@ -54,11 +54,14 @@ const stripHtml = (html: string): string => {
   return text.replace(/\n{3,}/g, '\n\n').trim();
 };
 
+const REVIEWS_PER_PAGE = 4; // Show 4 reviews initially
+
 const ProductReviews: React.FC<ProductReviewsProps> = ({ productId, productName }) => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [showForm, setShowForm] = useState<boolean>(false);
+  const [visibleCount, setVisibleCount] = useState<number>(REVIEWS_PER_PAGE); // Track visible reviews
 
   const [formData, setFormData] = useState<{
     reviewer: string;
@@ -216,6 +219,25 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId, productName 
       ? reviews.reduce<number>((acc, r) => acc + (r.rating || 0), 0) / reviews.length
       : 0;
 
+  // Get visible reviews based on visibleCount
+  const visibleReviews = reviews.slice(0, visibleCount);
+  const hasMore = visibleCount < reviews.length;
+
+  // Handle "Show More" button click
+  const handleShowMore = () => {
+    setVisibleCount(prev => Math.min(prev + REVIEWS_PER_PAGE, reviews.length));
+  };
+
+  // Handle "Show Less" button click
+  const handleShowLess = () => {
+    setVisibleCount(REVIEWS_PER_PAGE);
+    // Scroll to reviews section
+    const reviewsSection = document.getElementById('reviews-list');
+    if (reviewsSection) {
+      reviewsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <section className="bg-white rounded-2xl shadow border border-gray-100">
       {/* Header */}
@@ -323,46 +345,92 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId, productName 
             <p className="text-gray-600 text-sm">Be the first to review {productName}!</p>
           </div>
         ) : (
-          <ul className="space-y-4 sm:space-y-5">
-            {reviews.map((r) => (
-              <li
-                key={r.id}
-                className="p-4 sm:p-5 rounded-xl border border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100"
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="font-semibold text-gray-900 text-sm sm:text-base">
-                      {r.reviewer || 'Anonymous'}
-                    </p>
-                    <div className="mt-1 flex items-center gap-2">
-                      <StarRating rating={r.rating || 0} />
-                      <span className="text-xs text-gray-500">
-                        {r.date_created ? new Date(r.date_created).toLocaleDateString() : '—'}
-                      </span>
+          <>
+            <ul id="reviews-list" className="space-y-4 sm:space-y-5">
+              {visibleReviews.map((r) => (
+                <li
+                  key={r.id}
+                  className="p-4 sm:p-5 rounded-xl border border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100"
+                >
+                  <div className="flex items-start justify-between">
+                    <div>
+                      {/* Verified Badge */}
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold text-gray-900 text-sm sm:text-base">
+                          {r.reviewer || 'Anonymous'}
+                        </p>
+                        <div className="flex items-center gap-1 px-2 py-0.5 bg-teal-100 rounded-full border border-teal-300">
+                          <CheckBadgeIcon className="h-4 w-4 text-teal-600" />
+                          <span className="text-xs font-semibold text-teal-700">Verified</span>
+                        </div>
+                      </div>
+                      <div className="mt-1 flex items-center gap-2">
+                        <StarRating rating={r.rating || 0} />
+                        {r.date_created && (
+                          <span className="text-xs text-gray-500">
+                            {new Date(r.date_created).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric'
+                            })}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <p className="mt-3 text-gray-700 text-sm sm:text-base whitespace-pre-wrap">
-                  {stripHtml(r.review || '')}
-                </p>
+                  <p className="mt-3 text-gray-700 text-sm sm:text-base whitespace-pre-wrap">
+                    {stripHtml(r.review || '')}
+                  </p>
 
-                {Array.isArray(r.images) && r.images.length > 0 && (
-                  <div className="mt-3 grid grid-cols-3 gap-2">
-                    {r.images.map((src, i) => (
-                      <img
-                        key={`${r.id}-${i}`}
-                        src={src}
-                        alt="Review photo"
-                        className="w-full h-24 sm:h-28 object-cover rounded-md border border-gray-200"
-                        loading="lazy"
-                      />
-                    ))}
-                  </div>
+                  {Array.isArray(r.images) && r.images.length > 0 && (
+                    <div className="mt-3 grid grid-cols-3 gap-2">
+                      {r.images.map((src, i) => (
+                        <img
+                          key={`${r.id}-${i}`}
+                          src={src}
+                          alt="Review photo"
+                          className="w-full h-24 sm:h-28 object-cover rounded-md border border-gray-200"
+                          loading="lazy"
+                        />
+                      ))}
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+
+            {/* Show More / Show Less Buttons */}
+            {(hasMore || visibleCount > REVIEWS_PER_PAGE) && (
+              <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+                {hasMore && (
+                  <button
+                    onClick={handleShowMore}
+                    className="w-full sm:w-auto px-6 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-teal-500 to-orange-500 hover:from-teal-600 hover:to-orange-600 transition-all transform hover:-translate-y-0.5 shadow-md hover:shadow-lg"
+                  >
+                    Show More Reviews ({reviews.length - visibleCount} remaining)
+                  </button>
                 )}
-              </li>
-            ))}
-          </ul>
+                
+                {visibleCount > REVIEWS_PER_PAGE && (
+                  <button
+                    onClick={handleShowLess}
+                    className="w-full sm:w-auto px-6 py-3 rounded-xl text-sm font-semibold text-gray-700 bg-white border-2 border-gray-300 hover:border-teal-500 hover:text-teal-600 transition-all"
+                  >
+                    Show Less
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Review Counter */}
+            <div className="mt-4 text-center">
+              <p className="text-sm text-gray-600">
+                Showing <span className="font-semibold text-teal-600">{visibleReviews.length}</span> of{' '}
+                <span className="font-semibold text-teal-600">{reviews.length}</span> reviews
+              </p>
+            </div>
+          </>
         )}
       </div>
     </section>
