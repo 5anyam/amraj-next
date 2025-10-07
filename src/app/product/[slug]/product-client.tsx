@@ -467,7 +467,7 @@ export default function ProductClient({
                   ['🚚', 'Fast Delivery', 'Express shipping'],
                   ['🛡️', 'Authentic', 'Quality assured'],
                   ['🌿', 'Natural', 'Ayurvedic'],
-                  ['💸', 'COD Available', 'Pay on delivery'],
+                  ['💸', 'Prepaid Only', 'Pay in advance'],
                 ].map(([icon, label, subtitle], idx) => (
                   <div key={idx} className="bg-gray-50 rounded-xl p-3 text-center hover:bg-teal-50 transition-all duration-200 border border-gray-200 hover:border-teal-300">
                     <div className="text-xl mb-1">{icon}</div>
