@@ -105,7 +105,7 @@ function AnimatedStatsSection() {
                 {bottlesSold}+
               </div>
               <div className="text-xs md:text-base lg:text-lg font-medium opacity-90">
-                Bottles Sold Per Day
+                Bottles Sold Per Month
               </div>
             </div>
           </div>
