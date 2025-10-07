@@ -331,7 +331,7 @@ export default function ProductClient({
                 </div>
               ) : null}
 
-              <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-3 leading-tight">
+              <h1 className="text-xl lg:text-3xl font-bold text-gray-900 mb-3 leading-tight">
                 {product.name}
               </h1>
 
