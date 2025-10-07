@@ -24,7 +24,7 @@ function getStableBoughtCount(product: Product): string {
     const stored = window.localStorage.getItem(key);
     if (stored) return `${stored}+ bought`;
     // Use a believable “anchor” list—social proof!
-    const anchors = [300,400,500];
+    const anchors = [1000];
     const pick = anchors[Math.floor(Math.random() * anchors.length)];
     window.localStorage.setItem(key, pick.toString());
     return `${pick}+ bought`;
