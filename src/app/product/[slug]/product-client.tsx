@@ -10,7 +10,6 @@ import { toast } from '../../../../hooks/use-toast'
 import { useFacebookPixel } from '../../../../hooks/useFacebookPixel'
 import ImageGallery from '../../../../components/ImageGallery'
 import { Tab } from '@headlessui/react'
-import SmoothMarquee from '../../../../components/ProductSlide'
 import ProductFAQ from '../../../../components/ProductFaq'
 import RelatedProducts from '../../../../components/RelatedProducts'
 import CustomerMedia from '../../../../components/CustomerMedia'
@@ -301,15 +300,6 @@ export default function ProductClient({
   return (
     <div className="min-h-screen bg-white">
       {/* Breadcrumb */}
-      <div className="bg-gray-50 border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <span className="hover:text-teal-600 cursor-pointer transition-colors">Products</span>
-            <span className="text-gray-400">›</span>
-            <span className="text-teal-600 font-medium">{product.name}</span>
-          </div>
-        </div>
-      </div>
 
       <div className="pb-24 sm:pb-0">
         <div className="max-w-7xl mx-auto mt-6 md:py-8 md:px-4 flex flex-col lg:flex-row gap-8">
@@ -334,8 +324,12 @@ export default function ProductClient({
               <h1 className="text-xl lg:text-3xl font-bold text-gray-900 mb-3 leading-tight">
                 {product.name}
               </h1>
+              
+              {/* Mobile Image Gallery */}
+              <div className="bg-white block lg:hidden mt-4 rounded-2xl shadow-lg border border-gray-200">
+                <ImageGallery images={product.images || []} />
+              </div>
 
-              <SmoothMarquee />
 
               {product.short_description && (
                 <div
@@ -344,10 +338,7 @@ export default function ProductClient({
                 />
               )}
 
-              {/* Mobile Image Gallery */}
-              <div className="bg-white block lg:hidden mt-4 rounded-2xl shadow-lg border border-gray-200">
-                <ImageGallery images={product.images || []} />
-              </div>
+              
 
               {/* Price Section - Professional Look */}
               <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-5 mb-6 border border-gray-200 mt-6">
