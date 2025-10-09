@@ -366,6 +366,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId, productName 
                       </div>
                       <div className="mt-1 flex items-center gap-2">
                         <StarRating rating={r.rating || 0} />
+                        
                       </div>
                     </div>
                   </div>
