@@ -366,15 +366,6 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId, productName 
                       </div>
                       <div className="mt-1 flex items-center gap-2">
                         <StarRating rating={r.rating || 0} />
-                        {r.date_created && (
-                          <span className="text-xs text-gray-500">
-                            {new Date(r.date_created).toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric'
-                            })}
-                          </span>
-                        )}
                       </div>
                     </div>
                   </div>

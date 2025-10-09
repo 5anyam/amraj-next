@@ -88,7 +88,7 @@ function AnimatedStatsSection() {
   
   const bottlesSold = useCounterAnimation(1000, 2000, isVisible)
   const menTreated = useCounterAnimation(20000, 2500, isVisible)
-  const rating = useCounterAnimation(47, 2000, isVisible)
+  const rating = useCounterAnimation(45, 2000, isVisible)
   
   return (
     <div 
