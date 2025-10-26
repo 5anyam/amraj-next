@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
-import { PlayIcon, SpeakerWaveIcon, PhotoIcon } from '@heroicons/react/24/solid';
+import { PlayIcon, SpeakerWaveIcon, SpeakerXMarkIcon, PhotoIcon } from '@heroicons/react/24/solid';
 
 interface MediaItem {
   id: string;
@@ -122,10 +122,15 @@ const defaultMedia: MediaItem[] = [
 ];
 
 const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
-  const [clickedVideo, setClickedVideo] = useState<string | null>(null);
-  const [autoplayVideos, setAutoplayVideos] = useState<Record<string, boolean>>({});
+  // ✅ Fixed: Use separate state for each video's interaction mode
+  const [videoStates, setVideoStates] = useState<Record<string, {
+    isClicked: boolean;
+    isMuted: boolean;
+    isPlaying: boolean;
+    showAutoplay: boolean;
+  }>>({});
+  
   const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
-  const iframeRefs = useRef<{ [key: string]: HTMLIFrameElement | null }>({});
 
   const extractYouTubeVideoId = (url: string): string | null => {
     if (!url) return null;
@@ -156,10 +161,10 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
       : null;
   };
 
-  const getYouTubeEmbedClickUrl = (url: string): string | null => {
+  const getYouTubeEmbedClickUrl = (url: string, muted: boolean): string | null => {
     const id = extractYouTubeVideoId(url);
     return id
-      ? `https://www.youtube.com/embed/${id}?autoplay=1&controls=1&modestbranding=1&rel=0&iv_load_policy=3&fs=1&playsinline=1&mute=0`
+      ? `https://www.youtube.com/embed/${id}?autoplay=1&controls=1&modestbranding=1&rel=0&iv_load_policy=3&fs=1&playsinline=1&mute=${muted ? '1' : '0'}`
       : null;
   };
 
@@ -173,32 +178,110 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
 
   const allMedia = getMedia();
 
+  // ✅ Initialize video states
   useEffect(() => {
-    const startAutoplay = () => {
-      const newAutoplayVideos: Record<string, boolean> = {};
-      allMedia.forEach((media) => {
-        if (media.type === 'video' && media.src.includes('youtube.com')) {
-          newAutoplayVideos[media.id] = true;
-        }
-      });
-      setAutoplayVideos(newAutoplayVideos);
-    };
-
-    const timer = setTimeout(startAutoplay, 500);
-    return () => clearTimeout(timer);
+    const initialStates: Record<string, {
+      isClicked: boolean;
+      isMuted: boolean;
+      isPlaying: boolean;
+      showAutoplay: boolean;
+    }> = {};
+    
+    allMedia.forEach((media) => {
+      if (media.type === 'video') {
+        initialStates[media.id] = {
+          isClicked: false,
+          isMuted: true,
+          isPlaying: true,
+          showAutoplay: media.src.includes('youtube.com')
+        };
+      }
+    });
+    
+    setVideoStates(initialStates);
   }, [allMedia]);
 
-  const handleCardClick = (media: MediaItem) => {
-    if (media.type !== 'video') return;
+  // ✅ Toggle mute/unmute for specific video
+  const toggleMute = (mediaId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    const media = allMedia.find(m => m.id === mediaId);
+    if (!media || media.type !== 'video') return;
+
+    const isYouTube = media.src.includes('youtube.com');
+    
+    if (isYouTube) {
+      // For YouTube, update state and force re-render
+      setVideoStates(prev => ({
+        ...prev,
+        [mediaId]: {
+          ...prev[mediaId],
+          isMuted: !prev[mediaId]?.isMuted,
+          isClicked: true // Switch to clicked mode to apply mute change
+        }
+      }));
+    } else {
+      // For regular videos
+      const video = videoRefs.current[mediaId];
+      if (video) {
+        video.muted = !video.muted;
+        setVideoStates(prev => ({
+          ...prev,
+          [mediaId]: {
+            ...prev[mediaId],
+            isMuted: video.muted
+          }
+        }));
+      }
+    }
+  };
+
+  // ✅ Toggle play/pause for specific video
+  const togglePlayPause = (mediaId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    const media = allMedia.find(m => m.id === mediaId);
+    if (!media || media.type !== 'video') return;
+
+    const isYouTube = media.src.includes('youtube.com');
+    
+    if (!isYouTube) {
+      const video = videoRefs.current[mediaId];
+      if (video) {
+        if (video.paused) {
+          video.play().catch(() => {});
+          setVideoStates(prev => ({
+            ...prev,
+            [mediaId]: { ...prev[mediaId], isPlaying: true }
+          }));
+        } else {
+          video.pause();
+          setVideoStates(prev => ({
+            ...prev,
+            [mediaId]: { ...prev[mediaId], isPlaying: false }
+          }));
+        }
+      }
+    }
+  };
+
+  // ✅ Handle card click for specific video
+  const handleCardClick = (mediaId: string) => {
+    const media = allMedia.find(m => m.id === mediaId);
+    if (!media || media.type !== 'video') return;
 
     if (media.src.includes('youtube.com')) {
-      setClickedVideo(media.id);
+      setVideoStates(prev => ({
+        ...prev,
+        [mediaId]: {
+          ...prev[mediaId],
+          isClicked: true
+        }
+      }));
     } else {
-      const video = videoRefs.current[media.id];
+      const video = videoRefs.current[mediaId];
       if (video) {
-        video.muted = false;
         video.controls = true;
-        video.play().catch(() => {});
       }
     }
   };
@@ -225,9 +308,15 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {allMedia.map((media) => {
             const isYouTubeVideo = media.type === 'video' && media.src.includes('youtube.com');
-            const isClicked = clickedVideo === media.id;
-            const shouldAutoplay = autoplayVideos[media.id] && !isClicked;
             const thumbnailUrl = isYouTubeVideo ? getYouTubeThumbnail(media.src) : media.thumbnail;
+            
+            // ✅ Get state for THIS specific video
+            const state = videoStates[media.id] || {
+              isClicked: false,
+              isMuted: true,
+              isPlaying: true,
+              showAutoplay: false
+            };
 
             return (
               <article
@@ -235,14 +324,21 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
                 className={`group rounded-xl overflow-hidden border-2 border-gray-200 hover:border-emerald-400 transition-all duration-300 hover:shadow-lg ${
                   media.type === 'video' ? 'cursor-pointer' : ''
                 } bg-white relative`}
-                onClick={() => handleCardClick(media)}
+                onClick={() => handleCardClick(media.id)}
               >
-                {/* Audio indicator for clicked videos */}
-                {isClicked && isYouTubeVideo && (
-                  <div className="absolute top-2 right-2 z-10 bg-emerald-600 text-white px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1 shadow-md animate-pulse">
-                    <SpeakerWaveIcon className="h-3 w-3" />
-                    AUDIO ON
-                  </div>
+                {/* ✅ Mute/Unmute Button - Only for THIS video when playing */}
+                {media.type === 'video' && (state.showAutoplay || state.isClicked) && (
+                  <button
+                    onClick={(e) => toggleMute(media.id, e)}
+                    className="absolute top-2 right-2 z-20 bg-black/70 hover:bg-black/90 text-white p-2 rounded-full shadow-lg transition-all"
+                    aria-label={state.isMuted ? 'Unmute' : 'Mute'}
+                  >
+                    {state.isMuted ? (
+                      <SpeakerXMarkIcon className="h-5 w-5" />
+                    ) : (
+                      <SpeakerWaveIcon className="h-5 w-5" />
+                    )}
+                  </button>
                 )}
 
                 {/* Type Badge */}
@@ -260,14 +356,12 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
                 <div className="relative w-full" style={{ aspectRatio: '9 / 16' }}>
                   {media.type === 'video' ? (
                     isYouTubeVideo ? (
-                      shouldAutoplay || isClicked ? (
+                      state.showAutoplay || state.isClicked ? (
                         <iframe
-                          ref={(el) => {
-                            iframeRefs.current[media.id] = el;
-                          }}
+                          key={`${media.id}-${state.isMuted}`} // ✅ Force re-render when mute changes
                           src={
-                            isClicked
-                              ? getYouTubeEmbedClickUrl(media.src) || ''
+                            state.isClicked
+                              ? getYouTubeEmbedClickUrl(media.src, state.isMuted) || ''
                               : getYouTubeEmbedAutoplayUrl(media.src) || ''
                           }
                           title={media.title}
@@ -291,7 +385,7 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
                                 <PlayIcon className="h-8 w-8 text-emerald-600 ml-1" />
                               </div>
                               <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-white text-gray-900 text-xs font-semibold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap shadow-lg">
-                                Tap for audio
+                                Tap to play
                               </div>
                             </div>
                           </div>
@@ -305,18 +399,24 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
                           }}
                           className="w-full h-full object-cover"
                           src={media.src}
-                          muted
+                          muted={state.isMuted}
                           autoPlay
                           loop
                           preload="metadata"
                           poster={media.thumbnail}
                           playsInline
-                          onClick={(e) => e.stopPropagation()}
                         />
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl">
-                            <PlayIcon className="h-8 w-8 text-emerald-600 ml-1" />
-                          </div>
+                        
+                        {/* ✅ Play/Pause Overlay - Center Click */}
+                        <div 
+                          className="absolute inset-0 flex items-center justify-center cursor-pointer"
+                          onClick={(e) => togglePlayPause(media.id, e)}
+                        >
+                          {!state.isPlaying && (
+                            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl">
+                              <PlayIcon className="h-8 w-8 text-emerald-600 ml-1" />
+                            </div>
+                          )}
                         </div>
                       </div>
                     )
