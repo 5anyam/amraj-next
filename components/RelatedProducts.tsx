@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { SparklesIcon } from '@heroicons/react/24/outline';
 
-// ✅ Using the same Product interface as your home page
 interface Product {
   id: number;
   name: string;
@@ -24,18 +24,16 @@ interface RelatedProductsProps {
 const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, allProducts }) => {
   const router = useRouter();
 
-  // Get related products (exclude current product)
   const getRelatedProducts = (): Product[] => {
     const related = allProducts
       .filter(product => product.id !== currentProduct.id)
-      .slice(0, 4); // Show max 4 related products
+      .slice(0, 4);
     
     return related;
   };
 
   const relatedProducts = getRelatedProducts();
 
-  // Don't show section if no related products
   if (relatedProducts.length === 0) {
     return null;
   }
@@ -49,20 +47,22 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, allPr
   };
 
   return (
-    <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-teal-500 to-teal-600 p-6">
-        <h2 className="text-2xl lg:text-3xl font-bold text-white text-center">
-          You Might Also Like
-        </h2>
-        <p className="text-teal-100 text-center mt-2">
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      {/* Modern Header */}
+      <div className="p-6 border-b border-gray-200">
+        <div className="flex items-center justify-center gap-3 mb-2">
+          <h2 className="text-2xl lg:text-3xl font-bold text-gray-900">
+            You Might Also Like
+          </h2>
+        </div>
+        <p className="text-gray-600 text-center text-sm lg:text-base">
           Discover more premium wellness solutions
         </p>
       </div>
 
       {/* Products Grid */}
       <div className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {relatedProducts.map((product) => {
             const salePrice = parseFloat(product.price || '0');
             const regularPrice = parseFloat(product.regular_price || product.price || '0');
@@ -74,64 +74,64 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, allPr
             return (
               <div
                 key={product.id}
-                className="group bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border border-gray-200 hover:border-teal-300 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 cursor-pointer overflow-hidden"
+                className="group bg-white rounded-xl border-2 border-gray-200 hover:border-emerald-400 transition-all duration-300 hover:shadow-lg cursor-pointer overflow-hidden"
                 onClick={() => handleProductClick(product.slug)}
               >
                 {/* Product Image */}
-                <div className="relative overflow-hidden rounded-t-2xl bg-white">
+                <div className="relative overflow-hidden bg-gray-50">
                   {hasDiscount && (
-                    <div className="absolute top-3 left-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold px-2 py-1 rounded-full z-10 shadow-lg">
+                    <div className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full z-10 shadow-md">
                       {discountPercent}% OFF
                     </div>
                   )}
                   
-                  <div className="aspect-square bg-gradient-to-br from-teal-50 to-orange-50 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                  <div className="aspect-square flex items-center justify-center p-4 group-hover:scale-105 transition-transform duration-300">
                     {product.images && product.images.length > 0 ? (
                       <img
                         src={product.images[0].src}
                         alt={product.name}
-                        className="w-full h-full object-contain p-4"
+                        className="w-full h-full object-contain"
                         loading="lazy"
                       />
                     ) : (
-                      <div className="text-4xl text-gray-400">📦</div>
+                      <div className="text-5xl text-gray-300">📦</div>
                     )}
+                  </div>
+
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
+                    <span className="text-white font-semibold text-sm">View Product</span>
                   </div>
                 </div>
 
                 {/* Product Details */}
                 <div className="p-4">
-                  <h3 className="font-bold text-gray-800 text-sm lg:text-base mb-2 line-clamp-2 group-hover:text-teal-600 transition-colors duration-300">
+                  <h3 className="font-bold text-gray-900 text-sm lg:text-base mb-2 line-clamp-2 leading-snug group-hover:text-emerald-600 transition-colors duration-300 min-h-[40px]">
                     {product.name}
                   </h3>
 
-                  {/* Short Description */}
-                  {product.short_description && (
-                    <div 
-                      className="text-xs text-gray-600 mb-3 line-clamp-2"
-                      dangerouslySetInnerHTML={{ 
-                        __html: product.short_description.replace(/<[^>]*>/g, '').substring(0, 60) + '...'
-                      }}
-                    />
-                  )}
-
-                  {/* Price */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-end gap-2">
-                      <span className="text-lg font-bold text-teal-600">
+                  {/* Price Section */}
+                  <div className="mb-3">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-2xl font-bold text-gray-900">
                         ₹{formatPrice(product.price)}
                       </span>
                       {hasDiscount && (
-                        <span className="text-sm line-through text-gray-500">
+                        <span className="text-sm line-through text-gray-400">
                           ₹{formatPrice(product.regular_price)}
                         </span>
                       )}
                     </div>
+                    {hasDiscount && (
+                      <div className="text-xs text-emerald-600 font-semibold mt-1">
+                        Save ₹{formatPrice((regularPrice - salePrice).toString())}
+                      </div>
+                    )}
                   </div>
 
                   {/* CTA Button */}
                   <button
-                    className="w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-semibold py-2 px-4 rounded-xl text-sm transition-all duration-300 transform group-hover:scale-105 shadow-lg hover:shadow-xl"
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition-all duration-200 shadow-sm hover:shadow-md"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleProductClick(product.slug);
@@ -145,15 +145,18 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, allPr
           })}
         </div>
 
-        {/* View All Products Button
-        <div className="text-center mt-8">
-          <button
-            onClick={() => router.push('/products')}
-            className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-8 py-3 rounded-full text-sm lg:text-base transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl"
-          >
-            🛍️ View All Products
-          </button>
-        </div> */}
+        {/* Optional: View All CTA */}
+        {allProducts.length > 5 && (
+          <div className="text-center mt-8">
+            <button
+              onClick={() => router.push('/products')}
+              className="inline-flex items-center justify-center gap-2 bg-white border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white font-semibold px-8 py-3 rounded-xl text-sm lg:text-base transition-all duration-300 shadow-sm hover:shadow-md"
+            >
+              <SparklesIcon className="h-5 w-5" />
+              View All Products
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

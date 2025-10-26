@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
-import { PlayIcon, SpeakerWaveIcon } from '@heroicons/react/24/solid';
+import { PlayIcon, SpeakerWaveIcon, PhotoIcon } from '@heroicons/react/24/solid';
 
 interface MediaItem {
   id: string;
@@ -18,7 +18,7 @@ interface CustomerMediaProps {
   productSlug: string;
 }
 
-// Media Data for different products (same as before)
+// Media Data for different products
 const mediaData: Record<string, MediaItem[]> = {
   'prostate-care': [
     {
@@ -149,7 +149,6 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
     return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
   };
 
-  // YouTube embed URL without controls and muted for autoplay
   const getYouTubeEmbedAutoplayUrl = (url: string): string | null => {
     const id = extractYouTubeVideoId(url);
     return id
@@ -157,12 +156,11 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
       : null;
   };
 
-  // ✅ Updated: YouTube embed URL with controls AND AUDIO for clicked videos
   const getYouTubeEmbedClickUrl = (url: string): string | null => {
     const id = extractYouTubeVideoId(url);
     return id
       ? `https://www.youtube.com/embed/${id}?autoplay=1&controls=1&modestbranding=1&rel=0&iv_load_policy=3&fs=1&playsinline=1&mute=0`
-      : null; // ← Removed mute=1, added mute=0 to explicitly enable audio
+      : null;
   };
 
   const getMedia = (): MediaItem[] => {
@@ -175,7 +173,6 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
 
   const allMedia = getMedia();
 
-  // Auto-start YouTube videos on component mount
   useEffect(() => {
     const startAutoplay = () => {
       const newAutoplayVideos: Record<string, boolean> = {};
@@ -187,7 +184,6 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
       setAutoplayVideos(newAutoplayVideos);
     };
 
-    // Delay to ensure DOM is ready
     const timer = setTimeout(startAutoplay, 500);
     return () => clearTimeout(timer);
   }, [allMedia]);
@@ -196,10 +192,8 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
     if (media.type !== 'video') return;
 
     if (media.src.includes('youtube.com')) {
-      // ✅ For YouTube videos, switch to controls version WITH AUDIO
       setClickedVideo(media.id);
     } else {
-      // For regular videos, unmute and play with controls
       const video = videoRefs.current[media.id];
       if (video) {
         video.muted = false;
@@ -212,20 +206,23 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
   if (allMedia.length === 0) return null;
 
   return (
-    <section className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-      {/* Header with customer stories title */}
-      <div className="bg-gradient-to-r from-teal-500 to-orange-500 p-6">
-        <h2 className="text-2xl lg:text-3xl font-bold text-white text-center">
-          Customer Stories & Results
-        </h2>
-        <p className="text-teal-100 text-center mt-2">
+    <section className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      {/* Modern Header */}
+      <div className="p-6 border-b border-gray-200">
+        <div className="flex items-center justify-center gap-3 mb-2">
+          <PhotoIcon className="h-7 w-7 text-emerald-600" />
+          <h2 className="text-2xl lg:text-3xl font-bold text-gray-900">
+            Customer Stories & Results
+          </h2>
+        </div>
+        <p className="text-gray-600 text-center text-sm lg:text-base">
           Real customers sharing their experiences
         </p>
       </div>
 
       <div className="p-6">
         {/* Grid: 2 on mobile, 4 on desktop */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {allMedia.map((media) => {
             const isYouTubeVideo = media.type === 'video' && media.src.includes('youtube.com');
             const isClicked = clickedVideo === media.id;
@@ -235,18 +232,29 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
             return (
               <article
                 key={media.id}
-                className={`group rounded-2xl overflow-hidden border border-gray-200 hover:border-teal-400 transition-all duration-300 hover:shadow-2xl ${
+                className={`group rounded-xl overflow-hidden border-2 border-gray-200 hover:border-emerald-400 transition-all duration-300 hover:shadow-lg ${
                   media.type === 'video' ? 'cursor-pointer' : ''
                 } bg-white relative`}
                 onClick={() => handleCardClick(media)}
               >
-                {/* ✅ Audio indicator for clicked videos */}
+                {/* Audio indicator for clicked videos */}
                 {isClicked && isYouTubeVideo && (
-                  <div className="absolute top-2 right-2 z-10 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-lg">
+                  <div className="absolute top-2 right-2 z-10 bg-emerald-600 text-white px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1 shadow-md animate-pulse">
                     <SpeakerWaveIcon className="h-3 w-3" />
-                    Audio ON
+                    AUDIO ON
                   </div>
                 )}
+
+                {/* Type Badge */}
+                <div className="absolute top-2 left-2 z-10">
+                  <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold ${
+                    media.type === 'video' 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-purple-600 text-white'
+                  } shadow-sm`}>
+                    {media.type === 'video' ? '🎥 Video' : '📸 Photo'}
+                  </span>
+                </div>
 
                 {/* Media container with 9:16 aspect ratio */}
                 <div className="relative w-full" style={{ aspectRatio: '9 / 16' }}>
@@ -273,17 +281,17 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
                           <img
                             src={thumbnailUrl || '/placeholder-video.jpg'}
                             alt={media.title}
-                            className="w-full h-full object-cover transform-gpu group-hover:scale-[1.03] transition-transform duration-300"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             loading="lazy"
                           />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="relative">
-                              <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-white/95 shadow-lg ring-1 ring-black/5 group-hover:scale-110 transition-transform duration-200">
-                                <PlayIcon className="h-6 w-6 text-teal-600" />
-                              </span>
-                              {/* ✅ Audio hint on hover */}
-                              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-                                Click for audio
+                              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-200">
+                                <PlayIcon className="h-8 w-8 text-emerald-600 ml-1" />
+                              </div>
+                              <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-white text-gray-900 text-xs font-semibold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap shadow-lg">
+                                Tap for audio
                               </div>
                             </div>
                           </div>
@@ -306,19 +314,30 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
                           onClick={(e) => e.stopPropagation()}
                         />
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                          <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-white/95 shadow-lg ring-1 ring-black/5">
-                            <PlayIcon className="h-6 w-6 text-teal-600" />
-                          </span>
+                          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl">
+                            <PlayIcon className="h-8 w-8 text-emerald-600 ml-1" />
+                          </div>
                         </div>
                       </div>
                     )
                   ) : (
-                    <img
-                      src={media.src}
-                      alt={media.title}
-                      className="w-full h-full object-cover transform-gpu group-hover:scale-[1.03] transition-transform duration-300"
-                      loading="lazy"
-                    />
+                    <div className="relative w-full h-full">
+                      <img
+                        src={media.src}
+                        alt={media.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Customer Info Overlay */}
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
+                  <p className="text-white font-bold text-sm mb-0.5">{media.customerName}</p>
+                  {media.customerLocation && (
+                    <p className="text-white/80 text-xs">📍 {media.customerLocation}</p>
                   )}
                 </div>
               </article>
@@ -329,9 +348,11 @@ const CustomerMedia: React.FC<CustomerMediaProps> = ({ productSlug }) => {
         {/* Empty state */}
         {allMedia.length === 0 && (
           <div className="text-center py-12">
-            <div className="text-6xl mb-4">🎥</div>
-            <h3 className="text-lg font-semibold text-gray-600 mb-2">No customer stories yet</h3>
-            <p className="text-gray-500">Check back later for amazing customer experiences!</p>
+            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <PhotoIcon className="h-10 w-10 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">No customer stories yet</h3>
+            <p className="text-gray-500 text-sm">Check back later for amazing customer experiences!</p>
           </div>
         )}
       </div>
