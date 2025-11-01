@@ -7,6 +7,7 @@ import FacebookPixel from '../../components/FacebookPixel';
 import Script from 'next/script';
 import AnnouncementBar from '../../components/anouncement';
 import { Suspense } from 'react';
+import Whatsapp from '../../components/Whatsapp';
 
 export const metadata = {
   title: 'Amraj - Rooted in Tradition, Backed by Science',
@@ -68,6 +69,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Header />
             {children}
             <Footer />
+            <Whatsapp/>
             
             {/* Facebook Pixel Route Tracking */}
             <Suspense fallback={null}>

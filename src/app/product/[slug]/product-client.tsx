@@ -1,21 +1,43 @@
 // app/products/[slug]/product-client.tsx
-'use client'
+'use client';
 
-import React, { useState, useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
-import { useQuery } from '@tanstack/react-query'
-import { fetchProducts } from '../../../../lib/woocommerceApi'
-import { useCart } from '../../../../lib/cart'
-import { toast } from '../../../../hooks/use-toast'
-import { useFacebookPixel } from '../../../../hooks/useFacebookPixel'
-import ImageGallery from '../../../../components/ImageGallery'
-import { Tab } from '@headlessui/react'
-import ProductFAQ from '../../../../components/ProductFaq'
-import RelatedProducts from '../../../../components/RelatedProducts'
-import CustomerMedia from '../../../../components/CustomerMedia'
-import ProductReviews from '../../../../components/ProductReviews'
-import ProductCreatives from '../../../../components/CreativeGallery'
+import React, { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
+import { useQuery } from '@tanstack/react-query';
+import { fetchProducts } from '../../../../lib/woocommerceApi';
+import { useCart } from '../../../../lib/cart';
+import { toast } from '../../../../hooks/use-toast';
+import { useFacebookPixel } from '../../../../hooks/useFacebookPixel';
+import { Tab } from '@headlessui/react';
 
+// Dynamic imports with skeleton fallbacks
+const ImageGallery = dynamic(() => import('../../../../components/ImageGallery'), {
+  ssr: false,
+  loading: () => <SkeletonGallery />
+});
+const ProductCreatives = dynamic(() => import('../../../../components/CreativeGallery'), {
+  ssr: false,
+  loading: () => <SectionSkeleton titleWidth="w-56" items={4} />
+});
+const ProductFAQ = dynamic(() => import('../../../../components/ProductFaq'), {
+  ssr: false,
+  loading: () => <SectionSkeleton titleWidth="w-40" items={4} />
+});
+const ProductReviews = dynamic(() => import('../../../../components/ProductReviews'), {
+  ssr: false,
+  loading: () => <SectionSkeleton titleWidth="w-48" items={4} />
+});
+const CustomerMedia = dynamic(() => import('../../../../components/CustomerMedia'), {
+  ssr: false,
+  loading: () => <SectionSkeleton titleWidth="w-40" items={4} />
+});
+const RelatedProducts = dynamic(() => import('../../../../components/RelatedProducts'), {
+  ssr: false,
+  loading: () => <SectionSkeleton titleWidth="w-44" items={4} />
+});
+
+// Types
 export interface ImageData { src: string }
 export interface Attribute { option: string }
 export interface Product {
@@ -30,132 +52,171 @@ export interface Product {
   attributes?: Attribute[]
 }
 
-// ✨ Animated Counter Hook
-function useCounterAnimation(targetValue: number, duration: number = 2000, shouldStart: boolean = true) {
-  const [count, setCount] = useState(0)
-  
-  useEffect(() => {
-    if (!shouldStart) return
-    
-    let startTime: number | null = null
-    let animationFrame: number
-    
-    const animate = (currentTime: number) => {
-      if (!startTime) startTime = currentTime
-      const progress = Math.min((currentTime - startTime) / duration, 1)
-      
-      const easeOutQuart = 1 - Math.pow(1 - progress, 4)
-      setCount(Math.floor(easeOutQuart * targetValue))
-      
-      if (progress < 1) {
-        animationFrame = requestAnimationFrame(animate)
-      }
-    }
-    
-    animationFrame = requestAnimationFrame(animate)
-    return () => cancelAnimationFrame(animationFrame)
-  }, [targetValue, duration, shouldStart])
-  
-  return count
+// ---------- Fullscreen Loader ----------
+function FullscreenLoader() {
+  return (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white">
+      <div className="flex flex-col items-center">
+        <div className="animate-spin rounded-full h-14 w-14 border-4 border-teal-600 border-t-transparent mb-4"></div>
+        <p className="text-gray-700 font-semibold">Loading product...</p>
+      </div>
+    </div>
+  );
 }
 
-// ✨ Stats Component with Clean Design
-function AnimatedStatsSection() {
-  const [isVisible, setIsVisible] = useState(false)
-  const statsRef = useRef<HTMLDivElement>(null)
-  
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true)
-        }
-      },
-      { threshold: 0.3 }
-    )
-    
-    if (statsRef.current) {
-      observer.observe(statsRef.current)
-    }
-    
-    return () => {
-      if (statsRef.current) {
-        observer.unobserve(statsRef.current)
-      }
-    }
-  }, [])
-  
-  const bottlesSold = useCounterAnimation(1000, 2000, isVisible)
-  const menTreated = useCounterAnimation(20000, 2500, isVisible)
-  const rating = useCounterAnimation(45, 2000, isVisible)
-  
+// ---------- Skeletons ----------
+function SkeletonBox({ className = '' }: { className?: string }) {
+  return <div className={`animate-pulse bg-gray-200/70 rounded-lg ${className}`} />;
+}
+function SkeletonBadge() { return <SkeletonBox className="h-7 w-28 rounded-full" />; }
+function SkeletonTitle() { return <SkeletonBox className="h-8 md:h-10 w-[80%] md:w-[70%] rounded-xl" />; }
+function SkeletonPrice() {
   return (
-    <div 
-      ref={statsRef}
-      className="w-full bg-white border-y border-gray-200 py-8 md:py-12 my-8"
-    >
+    <div className="flex items-end gap-3">
+      <SkeletonBox className="h-10 md:h-12 w-40 md:w-48 rounded-xl" />
+      <SkeletonBox className="h-6 md:h-7 w-24 rounded-lg" />
+    </div>
+  );
+}
+function SkeletonParagraph({ lines = 3 }: { lines?: number }) {
+  return (
+    <div className="space-y-2">
+      {Array.from({ length: lines }).map((_, i) => (
+        <SkeletonBox key={i} className={`h-3 ${i === lines - 1 ? 'w-2/3' : 'w-full'}`} />
+      ))}
+    </div>
+  );
+}
+function SkeletonGallery() {
+  return (
+    <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white p-4">
+      <SkeletonBox className="h-[360px] sm:h-[420px] md:h-[520px] rounded-xl" />
+      <div className="mt-4 flex gap-3">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <SkeletonBox key={i} className="h-16 w-16 rounded-xl" />
+        ))}
+      </div>
+    </div>
+  );
+}
+function SkeletonTabs() {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="flex bg-gray-100 border-b-2 border-gray-200">
+        <SkeletonBox className="h-12 w-1/2 rounded-none" />
+        <SkeletonBox className="h-12 w-1/2 rounded-none" />
+      </div>
+      <div className="p-6">
+        <SkeletonParagraph lines={8} />
+      </div>
+    </div>
+  );
+}
+function SkeletonGridRow() {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <SkeletonBox key={i} className="h-28 rounded-2xl" />
+      ))}
+    </div>
+  );
+}
+function SectionSkeleton({ titleWidth = 'w-56', items = 4 }: { titleWidth?: string; items?: number }) {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+      <SkeletonBox className={`h-7 ${titleWidth} mb-4`} />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {Array.from({ length: items }).map((_, i) => (
+          <SkeletonBox key={i} className="h-64 rounded-xl" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ---------- Utilities ----------
+function useCounterAnimation(targetValue: number, duration: number = 2000, shouldStart: boolean = true) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!shouldStart) return;
+    let startTime: number | null = null;
+    let animationFrame: number;
+    const animate = (currentTime: number) => {
+      if (!startTime) startTime = currentTime;
+      const progress = Math.min((currentTime - startTime) / duration, 1);
+      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+      setCount(Math.floor(easeOutQuart * targetValue));
+      if (progress < 1) animationFrame = requestAnimationFrame(animate);
+    };
+    animationFrame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrame);
+  }, [targetValue, duration, shouldStart]);
+  return count;
+}
+function useDeferredMount(delay = 250) {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setReady(true), delay);
+    return () => clearTimeout(t);
+  }, [delay]);
+  return ready;
+}
+
+// ---------- Stats ----------
+function AnimatedStatsSection() {
+  const [isVisible, setIsVisible] = useState(false);
+  const statsRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) setIsVisible(true);
+    }, { threshold: 0.3 });
+    if (statsRef.current) observer.observe(statsRef.current);
+    return () => { if (statsRef.current) observer.unobserve(statsRef.current); };
+  }, []);
+  const bottlesSold = useCounterAnimation(1000, 2000, isVisible);
+  const menTreated = useCounterAnimation(20000, 2500, isVisible);
+  const rating = useCounterAnimation(45, 2000, isVisible);
+  return (
+    <div ref={statsRef} className="w-full bg-white border-y border-gray-200 py-8 md:py-12 my-8">
       <div className="max-w-7xl mx-auto px-4">
-        <h2 className="text-center text-2xl md:text-3xl font-bold text-gray-900 mb-8">
-          Trusted by Thousands
-        </h2>
+        <h2 className="text-center text-2xl md:text-3xl font-bold text-gray-900 mb-8">Trusted by Thousands</h2>
         <div className="grid grid-cols-3 gap-6 md:gap-12">
-          {/* Bottles Sold */}
           <div className="text-center group">
             <div className="bg-teal-50 rounded-2xl p-6 md:p-8 border-2 border-teal-100 hover:border-teal-300 transition-all duration-300 hover:shadow-lg">
               <div className="text-teal-600">
-                <div className="text-3xl md:text-5xl font-bold mb-2">
-                  {bottlesSold}+
-                </div>
-                <div className="text-sm md:text-base font-semibold text-gray-700">
-                  Bottles Sold
-                </div>
-                <div className="text-xs md:text-sm text-gray-500 mt-1">
-                  Per Month
-                </div>
+                <div className="text-3xl md:text-5xl font-bold mb-2">{bottlesSold}+</div>
+                <div className="text-sm md:text-base font-semibold text-gray-700">Bottles Sold</div>
+                <div className="text-xs md:text-sm text-gray-500 mt-1">Per Month</div>
               </div>
             </div>
           </div>
-          
-          {/* Men Treated */}
           <div className="text-center group">
             <div className="bg-orange-50 rounded-2xl p-6 md:p-8 border-2 border-orange-100 hover:border-orange-300 transition-all duration-300 hover:shadow-lg">
               <div className="text-orange-600">
-                <div className="text-3xl md:text-5xl font-bold mb-2">
-                  {(menTreated / 1000).toFixed(0)}K+
-                </div>
-                <div className="text-sm md:text-base font-semibold text-gray-700">
-                  People Treated
-                </div>
-                <div className="text-xs md:text-sm text-gray-500 mt-1">
-                  Successfully
-                </div>
+                <div className="text-3xl md:text-5xl font-bold mb-2">{(menTreated / 1000).toFixed(0)}K+</div>
+                <div className="text-sm md:text-base font-semibold text-gray-700">People Treated</div>
+                <div className="text-xs md:text-sm text-gray-500 mt-1">Successfully</div>
               </div>
             </div>
           </div>
-          
-          {/* Rating */}
           <div className="text-center group">
             <div className="bg-yellow-50 rounded-2xl p-6 md:p-8 border-2 border-yellow-100 hover:border-yellow-300 transition-all duration-300 hover:shadow-lg">
               <div className="text-yellow-600">
                 <div className="text-3xl md:text-5xl font-bold mb-2 flex items-center justify-center gap-2">
-                  {(rating / 10).toFixed(1)}
-                  <span className="text-yellow-500">★</span>
+                  {(rating / 10).toFixed(1)} <span className="text-yellow-500">★</span>
                 </div>
-                <div className="text-sm md:text-base font-semibold text-gray-700">
-                  Average Rating
-                </div>
-                <div className="text-xs md:text-sm text-gray-500 mt-1">
-                  From Reviews
-                </div>
+                <div className="text-sm md:text-base font-semibold text-gray-700">Average Rating</div>
+                <div className="text-xs md:text-sm text-gray-500 mt-1">From Reviews</div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
+// ---------- Page ----------
 export default function ProductClient({
   initialProduct,
   allProductsInitial,
@@ -165,62 +226,79 @@ export default function ProductClient({
   allProductsInitial?: Product[] | undefined
   slug: string
 }) {
-  const router = useRouter()
-  const { addToCart } = useCart()
-  const { trackViewContent, trackAddToCart, trackInitiateCheckout } = useFacebookPixel()
+  const router = useRouter();
+  const { addToCart } = useCart();
+  const { trackViewContent, trackAddToCart, trackInitiateCheckout } = useFacebookPixel();
 
   const { data: products, isLoading, error } = useQuery<Product[]>({
     queryKey: ['all-products'],
     queryFn: async () => await fetchProducts() as Product[],
     initialData: allProductsInitial,
+    placeholderData: allProductsInitial,
     staleTime: 60_000,
     enabled: Boolean(slug),
-  })
+  });
 
   const product: Product | undefined =
     initialProduct ??
-    products?.find((p) => p.slug === slug || p.id.toString() === slug)
+    products?.find((p) => p.slug === slug || p.id.toString() === slug);
 
-  const [quantity, setQuantity] = useState(1)
-  const [isAddingToCart, setIsAddingToCart] = useState(false)
-  const [isBuyingNow, setIsBuyingNow] = useState(false)
-  const [isCouponCopied, setIsCouponCopied] = useState(false)
+  const [quantity, setQuantity] = useState(1);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isBuyingNow, setIsBuyingNow] = useState(false);
+  const [isCouponCopied, setIsCouponCopied] = useState(false);
+
+  const deferBelowFold = useDeferredMount(250);
 
   useEffect(() => {
     if (product) {
-      trackViewContent({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-      })
+      trackViewContent({ id: product.id, name: product.name, price: product.price });
     }
-  }, [product, trackViewContent])
+  }, [product, trackViewContent]);
 
   const handleCopyCoupon = () => {
-    navigator.clipboard.writeText('WELCOME100')
-    setIsCouponCopied(true)
-    toast({
-      title: '🎉 Coupon Copied!',
-      description: 'WELCOME100 has been copied to clipboard. Apply it at checkout!',
-    })
-    setTimeout(() => setIsCouponCopied(false), 3000)
-  }
+    navigator.clipboard.writeText('WELCOME100');
+    setIsCouponCopied(true);
+    toast({ title: '🎉 Coupon Copied!', description: 'WELCOME100 has been copied to clipboard. Apply it at checkout!' });
+    setTimeout(() => setIsCouponCopied(false), 3000);
+  };
 
   const handleQuantityChange = (newQty: number) => {
-    if (newQty >= 1 && newQty <= 99) {
-      setQuantity(newQty)
-    }
-  }
+    if (newQty >= 1 && newQty <= 99) setQuantity(newQty);
+  };
 
+  // Full screen loader while first product fetch happens
   if (isLoading && !product) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-teal-600 border-t-transparent mx-auto mb-4"></div>
-          <p className="text-gray-700 text-base font-medium">Loading product information...</p>
+      <>
+        <FullscreenLoader />
+        {/* If you want ONLY loader, remove the skeleton block below */}
+        <div className="min-h-screen bg-gray-50">
+          <div className="max-w-7xl mx-auto mt-6 md:py-8 md:px-4 flex flex-col lg:flex-row gap-8">
+            <div className="lg:w-1/2 hidden lg:block"><SkeletonGallery /></div>
+            <div className="lg:w-1/2">
+              <div className="bg-white rounded-2xl shadow-sm p-5 md:p-7 border border-gray-200">
+                <div className="mb-4"><SkeletonBadge /></div>
+                <SkeletonTitle />
+                <div className="mt-4 block lg:hidden"><SkeletonGallery /></div>
+                <div className="mt-4"><SkeletonParagraph lines={3} /></div>
+                <div className="mt-5"><SkeletonPrice /></div>
+                <div className="mt-6 flex items-center gap-4">
+                  <SkeletonBox className="h-14 w-14 rounded-xl" />
+                  <SkeletonBox className="h-14 w-24 rounded-xl" />
+                  <SkeletonBox className="h-14 w-14 rounded-xl" />
+                </div>
+                <div className="mt-6"><SkeletonGridRow /></div>
+              </div>
+            </div>
+          </div>
+          <div className="max-w-7xl mx-auto mt-8 p-4"><SkeletonTabs /></div>
+          <div className="max-w-7xl mx-auto mt-4 p-4"><SectionSkeleton titleWidth="w-64" items={4} /></div>
+          <div className="max-w-7xl mx-auto mt-4 p-4"><SectionSkeleton titleWidth="w-44" items={4} /></div>
+          <div className="max-w-7xl mx-auto mt-4 p-4"><SectionSkeleton titleWidth="w-52" items={4} /></div>
         </div>
-      </div>
-    )
+      </>
+    );
   }
 
   if (error || (!products && !product)) {
@@ -234,7 +312,7 @@ export default function ProductClient({
           <p className="text-sm text-gray-600">Please check your connection and try again.</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!product) {
@@ -248,19 +326,21 @@ export default function ProductClient({
           <p className="text-sm text-gray-600">This product may have been removed or is unavailable.</p>
         </div>
       </div>
-    )
+    );
   }
 
-  const salePrice = parseFloat(product.price || '0')
-  const regularPrice = parseFloat(product.regular_price || product.price || '0')
-  const hasSiteSale = salePrice < regularPrice
-  const totalPrice = salePrice * quantity
-  const totalRegularPrice = regularPrice * quantity
-  const totalSave = totalRegularPrice - totalPrice
-  const discountPercent = hasSiteSale ? Math.round(((regularPrice - salePrice) / regularPrice) * 100) : 0
+  const salePrice = parseFloat(product.price || '0');
+  const regularPrice = parseFloat(product.regular_price || product.price || '0');
+  const hasSiteSale = salePrice < regularPrice;
+  const totalPrice = salePrice * quantity;
+  const totalRegularPrice = regularPrice * quantity;
+  const totalSave = totalRegularPrice - totalPrice;
+  const discountPercent = hasSiteSale ? Math.round(((regularPrice - salePrice) / regularPrice) * 100) : 0;
+
+  const { name } = product;
 
   const handleAddToCart = async () => {
-    setIsAddingToCart(true)
+    setIsAddingToCart(true);
     try {
       for (let i = 0; i < quantity; i++) {
         addToCart({
@@ -268,23 +348,20 @@ export default function ProductClient({
           name: product.name + (quantity > 1 ? ` (${i + 1} of ${quantity})` : ''),
           price: salePrice.toString(),
           images: product.images || [],
-        })
+        });
       }
-      trackAddToCart({ id: product.id, name: product.name, price: salePrice }, quantity)
-      toast({
-        title: '✓ Added to cart',
-        description: `${quantity} x ${product.name} added successfully.`,
-      })
+      trackAddToCart({ id: product.id, name: product.name, price: salePrice }, quantity);
+      toast({ title: '✓ Added to cart', description: `${quantity} x ${product.name} added successfully.` });
     } catch (error) {
-      console.error('Add to cart failed:', error)
-      toast({ title: 'Error', description: 'Failed to add item to cart', variant: 'destructive' })
+      console.error('Add to cart failed:', error);
+      toast({ title: 'Error', description: 'Failed to add item to cart', variant: 'destructive' });
     } finally {
-      setTimeout(() => setIsAddingToCart(false), 1000)
+      setTimeout(() => setIsAddingToCart(false), 1000);
     }
-  }
+  };
 
   const handleBuyNow = async () => {
-    setIsBuyingNow(true)
+    setIsBuyingNow(true);
     try {
       for (let i = 0; i < quantity; i++) {
         addToCart({
@@ -292,27 +369,23 @@ export default function ProductClient({
           name: product.name + (quantity > 1 ? ` (${i + 1} of ${quantity})` : ''),
           price: salePrice.toString(),
           images: product.images || [],
-        })
+        });
       }
-      trackAddToCart({ id: product.id, name: product.name, price: salePrice }, quantity)
-      const cartItems = [{ id: product.id, name: product.name, price: salePrice, quantity: quantity }]
-      const total = salePrice * quantity
-      trackInitiateCheckout(cartItems, total)
-      toast({
-        title: 'Proceeding to checkout',
-        description: `${quantity} x ${product.name} added to cart.`,
-        duration: 1200,
-      })
+      trackAddToCart({ id: product.id, name: product.name, price: salePrice }, quantity);
+      const cartItems = [{ id: product.id, name: product.name, price: salePrice, quantity }];
+      const total = salePrice * quantity;
+      trackInitiateCheckout(cartItems, total);
+      toast({ title: 'Proceeding to checkout', description: `${quantity} x ${product.name} added to cart.`, duration: 1200 });
       setTimeout(() => {
-        router.push('/checkout')
-        setIsBuyingNow(false)
-      }, 1200)
+        router.push('/checkout');
+        setIsBuyingNow(false);
+      }, 1200);
     } catch (error) {
-      console.error('Buy now failed:', error)
-      toast({ title: 'Error', description: 'Failed to process order', variant: 'destructive' })
-      setIsBuyingNow(false)
+      console.error('Buy now failed:', error);
+      toast({ title: 'Error', description: 'Failed to process order', variant: 'destructive' });
+      setIsBuyingNow(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -336,29 +409,23 @@ export default function ProductClient({
                 </div>
               ) : null}
 
-              <h1 className="text-2xl lg:text-4xl font-bold text-gray-900 mb-4 leading-tight">
-                {product.name}
-              </h1>
-              
+              <h1 className="text-2xl lg:text-4xl font-bold text-gray-900 mb-4 leading-tight">{name}</h1>
+
               {/* Mobile Image Gallery */}
               <div className="bg-white block lg:hidden mt-4 rounded-2xl shadow-sm border border-gray-200">
                 <ImageGallery images={product.images || []} />
               </div>
 
               {product.short_description && (
-                <div
-                  className="prose prose-sm max-w-none text-gray-700 leading-relaxed mb-3 mt-3"
-                  dangerouslySetInnerHTML={{ __html: product.short_description }}
-                />
+                <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed mb-3 mt-3"
+                     dangerouslySetInnerHTML={{ __html: product.short_description }} />
               )}
 
-              {/* Price Section - Clean & Modern */}
+              {/* Price Section */}
               <div className="bg-white border-2 border-gray-200 rounded-2xl p-6 mb-3 mt-3">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-end gap-3">
-                    <span className="text-4xl lg:text-5xl font-bold text-gray-900">
-                      ₹{totalPrice.toFixed(2)}
-                    </span>
+                    <span className="text-4xl lg:text-5xl font-bold text-gray-900">₹{totalPrice.toFixed(2)}</span>
                     {hasSiteSale && (
                       <span className="line-through text-gray-400 font-semibold text-xl lg:text-2xl mb-2">
                         ₹{totalRegularPrice.toFixed(2)}
@@ -384,7 +451,7 @@ export default function ProductClient({
                 )}
               </div>
 
-              {/* Quantity Selector - Interactive Design */}
+              {/* Quantity Selector */}
               <div className="mb-6">
                 <label className="block text-gray-900 font-bold text-base mb-4">Select Quantity</label>
                 <div className="flex items-center gap-4">
@@ -408,7 +475,7 @@ export default function ProductClient({
                 </div>
               </div>
 
-              {/* Offer Section - Eye-catching */}
+              {/* Offer Section */}
               <div className="mb-7 bg-orange-50 border-2 border-orange-400 rounded-2xl p-5 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-orange-200 rounded-full -mr-16 -mt-16 opacity-30"></div>
                 <div className="relative">
@@ -460,7 +527,7 @@ export default function ProductClient({
                 </button>
               </div>
 
-              {/* Trust Badges - Card Style */}
+              {/* Trust Badges */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
                   ['🚚', 'Fast Delivery', 'Express shipping'],
@@ -479,7 +546,7 @@ export default function ProductClient({
           </div>
         </div>
 
-        {/* ✨ ANIMATED STATS SECTION */}
+        {/* Stats */}
         <AnimatedStatsSection />
 
         {/* Description Tabs */}
@@ -506,9 +573,7 @@ export default function ProductClient({
                 </Tab.Panel>
                 <Tab.Panel>
                   <div className="prose max-w-none text-gray-700">
-                    <h3 className="font-bold text-2xl text-gray-900 mb-5">
-                      Shipping & Delivery Information
-                    </h3>
+                    <h3 className="font-bold text-2xl text-gray-900 mb-5">Shipping & Delivery Information</h3>
                     <div className="bg-teal-50 rounded-2xl p-6 border-2 border-teal-200 space-y-4">
                       <p className="text-gray-800 leading-relaxed text-base font-medium">
                         📦 Your tracking ID and order details will be sent to your WhatsApp once the order is confirmed.
@@ -523,19 +588,27 @@ export default function ProductClient({
             </Tab.Group>
           </div>
         </div>
+
+        {/* Deferred heavy sections with skeleton fallbacks */}
         <div className="max-w-7xl mx-auto mt-4 p-4 lg:p-6">
-          <ProductCreatives productSlug={slug} />
+          {deferBelowFold ? <ProductCreatives productSlug={slug} /> : <SectionSkeleton titleWidth="w-56" items={4} />}
         </div>
         <div className="max-w-7xl mx-auto mt-4 p-4 lg:p-6">
-          <ProductFAQ productSlug={slug} productName={product.name} />
+          {deferBelowFold ? <ProductFAQ productSlug={slug} productName={product.name} /> : <SectionSkeleton titleWidth="w-40" items={4} />}
         </div>
         <div className="max-w-7xl mx-auto mt-4 p-4 lg:p-6">
-          <ProductReviews productId={product.id} productName={product.name} />
+          {deferBelowFold ? <ProductReviews productId={product.id} productName={product.name} /> : <SectionSkeleton titleWidth="w-48" items={4} />}
         </div>
         <div className="max-w-7xl mx-auto mt-4 p-4 lg:p-6">
-          <CustomerMedia productSlug={slug} />
+          {deferBelowFold ? <CustomerMedia productSlug={slug} /> : <SectionSkeleton titleWidth="w-40" items={4} />}
         </div>
-        <RelatedProducts currentProduct={product} allProducts={products || []} />
+        {deferBelowFold ? (
+          <RelatedProducts currentProduct={product} allProducts={products || []} />
+        ) : (
+          <div className="max-w-7xl mx-auto mt-4 p-4">
+            <SectionSkeleton titleWidth="w-44" items={4} />
+          </div>
+        )}
       </div>
 
       {/* Mobile Fixed Bottom Buttons */}
@@ -562,5 +635,5 @@ export default function ProductClient({
         </div>
       </div>
     </div>
-  )
+  );
 }
