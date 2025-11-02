@@ -24,8 +24,17 @@ const mediaData: Record<string, MediaItem[]> = {
     {
       id: 'pc-video-1',
       type: 'video',
+      src: 'https://cms.amraj.in/wp-content/uploads/2025/08/IMG_9043.mp4',
+      customerName: 'Rajendra Singh',
+      customerLocation: 'Delhi',
+      title: 'Amazing Results in 3 Weeks!',
+      description: 'My night urination reduced significantly after using Amraj Prostate Care.'
+    },
+    {
+      id: 'pc-video-2',
+      type: 'video',
       src: 'https://youtube.com/shorts/P432UdyYQ4w?feature=share',
-      customerName: 'Deepika Sharma',
+      customerName: 'Ritika Gupta',
       customerLocation: 'Delhi',
       title: 'Amazing Results in 3 Weeks!',
       description: 'My night urination reduced significantly after using Amraj Prostate Care.'
@@ -40,14 +49,14 @@ const mediaData: Record<string, MediaItem[]> = {
       description: 'My PSA levels improved dramatically with consistent use.'
     },
     {
-      id: 'pc-video-2',
+      id: 'pc-video-3',
       type: 'video',
       src: 'https://youtube.com/shorts/aHRxvoavSGY?feature=share',
       customerName: 'Rajesh Kumar',
       customerLocation: 'Delhi',
       title: 'Amazing Results in 3 Weeks!',
       description: 'My night urination reduced significantly after using Amraj Prostate Care.'
-    }
+    },
   ],
   'weight-management': [
     {
