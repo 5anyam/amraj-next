@@ -174,7 +174,7 @@ function AnimatedStatsSection() {
     return () => { if (statsRef.current) observer.unobserve(statsRef.current); };
   }, []);
   const bottlesSold = useCounterAnimation(1000, 2000, isVisible);
-  const menTreated = useCounterAnimation(20000, 2500, isVisible);
+  const menTreated = useCounterAnimation(10000, 2500, isVisible);
   const rating = useCounterAnimation(45, 2000, isVisible);
   return (
     <div ref={statsRef} className="w-full bg-white border-y border-gray-200 py-8 md:py-12 my-8">
