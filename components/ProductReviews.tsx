@@ -53,15 +53,6 @@ const stripHtml = (html: string): string => {
   return text.replace(/\n{3,}/g, '\n\n').trim();
 };
 
-const formatDate = (dateStr?: string): string => {
-  if (!dateStr) return '';
-  try {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  } catch {
-    return '';
-  }
-};
 
 const REVIEWS_PER_PAGE = 4;
 
@@ -433,9 +424,6 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId, productName 
                           </div>
                         </div>
                       </div>
-                      {r.date_created && (
-                        <span className="text-xs text-gray-500">{formatDate(r.date_created)}</span>
-                      )}
                     </div>
 
                     <div className="mb-3">
