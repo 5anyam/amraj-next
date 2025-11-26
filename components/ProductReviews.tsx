@@ -1,17 +1,9 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { StarIcon } from '@heroicons/react/24/solid';
-import { StarIcon as StarOutlineIcon, CheckBadgeIcon, ChatBubbleLeftEllipsisIcon } from '@heroicons/react/24/outline';
+import { StarIcon as StarOutlineIcon, CheckBadgeIcon, ChatBubbleLeftEllipsisIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { toast } from '../hooks/use-toast';
-// Import Swiper React components
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Autoplay } from 'swiper/modules';
-
-// Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
 
 interface Review {
   id: number;
@@ -67,6 +59,14 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId, productName 
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [showForm, setShowForm] = useState<boolean>(false);
   const [expandedReviews, setExpandedReviews] = useState<Set<number>>(new Set());
+  
+  // ✅ Custom Slider State
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [slidesPerView, setSlidesPerView] = useState<number>(1);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [startX, setStartX] = useState<number>(0);
+  const [scrollLeft, setScrollLeft] = useState<number>(0);
+  const sliderRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState<{
     reviewer: string;
@@ -84,11 +84,39 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId, productName 
   const CONSUMER_KEY = 'ck_7610f309972822bfa8e87304ea6c47e9e93b8ff6';
   const CONSUMER_SECRET = 'cs_0f117bc7ec4611ca378adde03010f619c0af59b2';
 
+  // ✅ Responsive Slides Per View
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setSlidesPerView(3);
+      } else if (window.innerWidth >= 768) {
+        setSlidesPerView(2);
+      } else {
+        setSlidesPerView(1);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   useEffect(() => {
     if (productId) {
       void loadReviews();
     }
   }, [productId]);
+
+  // ✅ Auto-play functionality
+  useEffect(() => {
+    if (reviews.length <= slidesPerView) return;
+
+    const interval = setInterval(() => {
+      handleNext();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [currentIndex, reviews.length, slidesPerView]);
 
   const parseImageUrlsFromMeta = (meta?: ApiMetaItem[]): string[] | undefined => {
     if (!Array.isArray(meta)) return undefined;
@@ -189,6 +217,56 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId, productName 
     }
   };
 
+  // ✅ Slider Navigation Functions
+  const handlePrev = () => {
+    setCurrentIndex((prev) => {
+      const newIndex = prev - 1;
+      return newIndex < 0 ? Math.max(0, reviews.length - slidesPerView) : newIndex;
+    });
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => {
+      const maxIndex = Math.max(0, reviews.length - slidesPerView);
+      const newIndex = prev + 1;
+      return newIndex > maxIndex ? 0 : newIndex;
+    });
+  };
+
+  // ✅ Touch/Drag Handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!sliderRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - sliderRef.current.offsetLeft);
+    setScrollLeft(sliderRef.current.scrollLeft);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!sliderRef.current) return;
+    setIsDragging(true);
+    setStartX(e.touches[0].pageX - sliderRef.current.offsetLeft);
+    setScrollLeft(sliderRef.current.scrollLeft);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !sliderRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - sliderRef.current.offsetLeft;
+    const walk = (x - startX) * 2;
+    sliderRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging || !sliderRef.current) return;
+    const x = e.touches[0].pageX - sliderRef.current.offsetLeft;
+    const walk = (x - startX) * 2;
+    sliderRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
   const StarRating = ({
     rating,
     onChange,
@@ -242,6 +320,10 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId, productName 
       return newSet;
     });
   };
+
+  const maxIndex = Math.max(0, reviews.length - slidesPerView);
+  const canGoPrev = currentIndex > 0;
+  const canGoNext = currentIndex < maxIndex;
 
   return (
     <section id="reviews-section" className="bg-white rounded-2xl shadow-sm border border-gray-200">
@@ -387,84 +469,142 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId, productName 
           </div>
         ) : (
           <>
-            <Swiper
-              modules={[Navigation, Pagination, Autoplay]}
-              spaceBetween={20}
-              slidesPerView={1}
-              navigation
-              pagination={{ clickable: true }}
-              autoplay={{ delay: 5000, disableOnInteraction: false }}
-              breakpoints={{
-                640: {
-                  slidesPerView: 1,
-                },
-                768: {
-                  slidesPerView: 2,
-                },
-                1024: {
-                  slidesPerView: 3,
-                },
-              }}
-              className="reviews-swiper pb-12"
-            >
-              {reviews.map((r) => {
-                const isExpanded = expandedReviews.has(r.id);
-                const isLongReview = r.review.length > 250;
-                const displayReview = isExpanded || !isLongReview ? r.review : r.review.slice(0, 250) + '...';
+            {/* ✅ Custom Slider Container */}
+            <div className="relative">
+              {/* Navigation Buttons - Hidden on Mobile, Visible on Desktop */}
+              {reviews.length > slidesPerView && (
+                <>
+                  <button
+                    onClick={handlePrev}
+                    disabled={!canGoPrev}
+                    className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-lg transition-all ${
+                      canGoPrev 
+                        ? 'text-emerald-600 hover:bg-emerald-50 hover:scale-110' 
+                        : 'text-gray-300 cursor-not-allowed'
+                    }`}
+                    style={{ marginLeft: '-20px' }}
+                  >
+                    <ChevronLeftIcon className="w-6 h-6" />
+                  </button>
+                  
+                  <button
+                    onClick={handleNext}
+                    disabled={!canGoNext}
+                    className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-lg transition-all ${
+                      canGoNext 
+                        ? 'text-emerald-600 hover:bg-emerald-50 hover:scale-110' 
+                        : 'text-gray-300 cursor-not-allowed'
+                    }`}
+                    style={{ marginRight: '-20px' }}
+                  >
+                    <ChevronRightIcon className="w-6 h-6" />
+                  </button>
+                </>
+              )}
 
-                return (
-                  <SwiperSlide key={r.id}>
-                    <div className="p-5 rounded-xl border-2 border-gray-200 bg-white hover:border-emerald-300 hover:shadow-md transition-all duration-200 h-full flex flex-col">
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                              {(r.reviewer || 'A')[0].toUpperCase()}
-                            </div>
-                            <div>
-                              <p className="font-bold text-gray-900 text-base">{r.reviewer || 'Anonymous'}</p>
-                              <div className="flex items-center gap-2">
-                                <CheckBadgeIcon className="h-4 w-4 text-emerald-600" />
-                                <span className="text-xs font-semibold text-emerald-700">Verified Purchase</span>
+              {/* Slider Wrapper */}
+              <div 
+                className="overflow-hidden"
+                ref={sliderRef}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleDragEnd}
+                onMouseLeave={handleDragEnd}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleDragEnd}
+              >
+                <div
+                  className="flex transition-transform duration-500 ease-out gap-5"
+                  style={{
+                    transform: `translateX(-${currentIndex * (100 / slidesPerView)}%)`,
+                  }}
+                >
+                  {reviews.map((r) => {
+                    const isExpanded = expandedReviews.has(r.id);
+                    const isLongReview = r.review.length > 250;
+                    const displayReview = isExpanded || !isLongReview ? r.review : r.review.slice(0, 250) + '...';
+
+                    return (
+                      <div
+                        key={r.id}
+                        className="flex-shrink-0 p-5 rounded-xl border-2 border-gray-200 bg-white hover:border-emerald-300 hover:shadow-md transition-all duration-200"
+                        style={{
+                          width: `calc(${100 / slidesPerView}% - ${(20 * (slidesPerView - 1)) / slidesPerView}px)`,
+                          minHeight: '300px',
+                          display: 'flex',
+                          flexDirection: 'column'
+                        }}
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                                {(r.reviewer || 'A')[0].toUpperCase()}
+                              </div>
+                              <div>
+                                <p className="font-bold text-gray-900 text-base">{r.reviewer || 'Anonymous'}</p>
+                                <div className="flex items-center gap-2">
+                                  <CheckBadgeIcon className="h-4 w-4 text-emerald-600" />
+                                  <span className="text-xs font-semibold text-emerald-700">Verified Purchase</span>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
 
-                      <div className="mb-3">
-                        <StarRating rating={r.rating || 0} />
-                      </div>
-
-                      <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap flex-grow">{displayReview}</p>
-
-                      {isLongReview && (
-                        <button
-                          onClick={() => toggleExpandReview(r.id)}
-                          className="mt-2 text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors text-left"
-                        >
-                          {isExpanded ? 'Show Less' : 'Read More'}
-                        </button>
-                      )}
-
-                      {Array.isArray(r.images) && r.images.length > 0 && (
-                        <div className="mt-4 grid grid-cols-2 gap-2">
-                          {r.images.slice(0, 4).map((src, i) => (
-                            <img
-                              key={`${r.id}-${i}`}
-                              src={src}
-                              alt="Review photo"
-                              className="w-full h-20 object-cover rounded-lg border-2 border-gray-200 hover:border-emerald-400 transition-all cursor-pointer"
-                              loading="lazy"
-                            />
-                          ))}
+                        <div className="mb-3">
+                          <StarRating rating={r.rating || 0} />
                         </div>
-                      )}
-                    </div>
-                  </SwiperSlide>
-                );
-              })}
-            </Swiper>
+
+                        <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap flex-grow">{displayReview}</p>
+
+                        {isLongReview && (
+                          <button
+                            onClick={() => toggleExpandReview(r.id)}
+                            className="mt-2 text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors text-left"
+                          >
+                            {isExpanded ? 'Show Less' : 'Read More'}
+                          </button>
+                        )}
+
+                        {Array.isArray(r.images) && r.images.length > 0 && (
+                          <div className="mt-4 grid grid-cols-2 gap-2">
+                            {r.images.slice(0, 4).map((src, i) => (
+                              <img
+                                key={`${r.id}-${i}`}
+                                src={src}
+                                alt="Review photo"
+                                className="w-full h-20 object-cover rounded-lg border-2 border-gray-200 hover:border-emerald-400 transition-all cursor-pointer"
+                                loading="lazy"
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Pagination Dots */}
+              {reviews.length > slidesPerView && (
+                <div className="flex justify-center gap-2 mt-6">
+                  {Array.from({ length: maxIndex + 1 }).map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentIndex(idx)}
+                      className={`transition-all duration-300 rounded-full ${
+                        idx === currentIndex
+                          ? 'bg-emerald-600 w-6 h-2'
+                          : 'bg-gray-300 w-2 h-2 hover:bg-emerald-400'
+                      }`}
+                      aria-label={`Go to slide ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Review Counter */}
             <div className="mt-6 text-center">
@@ -475,37 +615,6 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId, productName 
           </>
         )}
       </div>
-
-      <style jsx global>{`
-        .reviews-swiper .swiper-button-next,
-        .reviews-swiper .swiper-button-prev {
-          color: #059669;
-          background: white;
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        .reviews-swiper .swiper-button-next:after,
-        .reviews-swiper .swiper-button-prev:after {
-          font-size: 18px;
-          font-weight: bold;
-        }
-        
-        .reviews-swiper .swiper-pagination-bullet {
-          background: #059669;
-          opacity: 0.3;
-          width: 10px;
-          height: 10px;
-        }
-        
-        .reviews-swiper .swiper-pagination-bullet-active {
-          opacity: 1;
-          width: 24px;
-          border-radius: 5px;
-        }
-      `}</style>
     </section>
   );
 };
