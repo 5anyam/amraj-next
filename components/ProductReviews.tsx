@@ -4,6 +4,14 @@ import React, { useEffect, useState } from 'react';
 import { StarIcon } from '@heroicons/react/24/solid';
 import { StarIcon as StarOutlineIcon, CheckBadgeIcon, ChatBubbleLeftEllipsisIcon } from '@heroicons/react/24/outline';
 import { toast } from '../hooks/use-toast';
+// Import Swiper React components
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 interface Review {
   id: number;
@@ -53,15 +61,11 @@ const stripHtml = (html: string): string => {
   return text.replace(/\n{3,}/g, '\n\n').trim();
 };
 
-
-const REVIEWS_PER_PAGE = 4;
-
 const ProductReviews: React.FC<ProductReviewsProps> = ({ productId, productName }) => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [showForm, setShowForm] = useState<boolean>(false);
-  const [visibleCount, setVisibleCount] = useState<number>(REVIEWS_PER_PAGE);
   const [expandedReviews, setExpandedReviews] = useState<Set<number>>(new Set());
 
   const [formData, setFormData] = useState<{
@@ -227,21 +231,6 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId, productName 
     percentage: reviews.length > 0 ? (reviews.filter((r) => r.rating === rating).length / reviews.length) * 100 : 0,
   }));
 
-  const visibleReviews = reviews.slice(0, visibleCount);
-  const hasMore = visibleCount < reviews.length;
-
-  const handleShowMore = () => {
-    setVisibleCount((prev) => Math.min(prev + REVIEWS_PER_PAGE, reviews.length));
-  };
-
-  const handleShowLess = () => {
-    setVisibleCount(REVIEWS_PER_PAGE);
-    const reviewsSection = document.getElementById('reviews-section');
-    if (reviewsSection) {
-      reviewsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-
   const toggleExpandReview = (reviewId: number) => {
     setExpandedReviews((prev) => {
       const newSet = new Set(prev);
@@ -376,7 +365,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId, productName 
           </div>
         )}
 
-        {/* Reviews List */}
+        {/* Reviews Slider */}
         {loading ? (
           <div className="py-12 text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-4 border-emerald-500 border-t-transparent mx-auto mb-4"></div>
@@ -398,100 +387,125 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId, productName 
           </div>
         ) : (
           <>
-            <div id="reviews-list" className="space-y-4">
-              {visibleReviews.map((r) => {
+            <Swiper
+              modules={[Navigation, Pagination, Autoplay]}
+              spaceBetween={20}
+              slidesPerView={1}
+              navigation
+              pagination={{ clickable: true }}
+              autoplay={{ delay: 5000, disableOnInteraction: false }}
+              breakpoints={{
+                640: {
+                  slidesPerView: 1,
+                },
+                768: {
+                  slidesPerView: 2,
+                },
+                1024: {
+                  slidesPerView: 3,
+                },
+              }}
+              className="reviews-swiper pb-12"
+            >
+              {reviews.map((r) => {
                 const isExpanded = expandedReviews.has(r.id);
-                const isLongReview = r.review.length > 300;
-                const displayReview = isExpanded || !isLongReview ? r.review : r.review.slice(0, 300) + '...';
+                const isLongReview = r.review.length > 250;
+                const displayReview = isExpanded || !isLongReview ? r.review : r.review.slice(0, 250) + '...';
 
                 return (
-                  <div
-                    key={r.id}
-                    className="p-5 rounded-xl border-2 border-gray-200 bg-white hover:border-emerald-300 hover:shadow-md transition-all duration-200"
-                  >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                            {(r.reviewer || 'A')[0].toUpperCase()}
-                          </div>
-                          <div>
-                            <p className="font-bold text-gray-900 text-base">{r.reviewer || 'Anonymous'}</p>
-                            <div className="flex items-center gap-2">
-                              <CheckBadgeIcon className="h-4 w-4 text-emerald-600" />
-                              <span className="text-xs font-semibold text-emerald-700">Verified Purchase</span>
+                  <SwiperSlide key={r.id}>
+                    <div className="p-5 rounded-xl border-2 border-gray-200 bg-white hover:border-emerald-300 hover:shadow-md transition-all duration-200 h-full flex flex-col">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                              {(r.reviewer || 'A')[0].toUpperCase()}
+                            </div>
+                            <div>
+                              <p className="font-bold text-gray-900 text-base">{r.reviewer || 'Anonymous'}</p>
+                              <div className="flex items-center gap-2">
+                                <CheckBadgeIcon className="h-4 w-4 text-emerald-600" />
+                                <span className="text-xs font-semibold text-emerald-700">Verified Purchase</span>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
 
-                    <div className="mb-3">
-                      <StarRating rating={r.rating || 0} />
-                    </div>
-
-                    <p className="text-gray-700 text-base leading-relaxed whitespace-pre-wrap">{displayReview}</p>
-
-                    {isLongReview && (
-                      <button
-                        onClick={() => toggleExpandReview(r.id)}
-                        className="mt-2 text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors"
-                      >
-                        {isExpanded ? 'Show Less' : 'Read More'}
-                      </button>
-                    )}
-
-                    {Array.isArray(r.images) && r.images.length > 0 && (
-                      <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                        {r.images.map((src, i) => (
-                          <img
-                            key={`${r.id}-${i}`}
-                            src={src}
-                            alt="Review photo"
-                            className="w-full h-24 sm:h-28 object-cover rounded-lg border-2 border-gray-200 hover:border-emerald-400 transition-all cursor-pointer"
-                            loading="lazy"
-                          />
-                        ))}
+                      <div className="mb-3">
+                        <StarRating rating={r.rating || 0} />
                       </div>
-                    )}
-                  </div>
+
+                      <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap flex-grow">{displayReview}</p>
+
+                      {isLongReview && (
+                        <button
+                          onClick={() => toggleExpandReview(r.id)}
+                          className="mt-2 text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors text-left"
+                        >
+                          {isExpanded ? 'Show Less' : 'Read More'}
+                        </button>
+                      )}
+
+                      {Array.isArray(r.images) && r.images.length > 0 && (
+                        <div className="mt-4 grid grid-cols-2 gap-2">
+                          {r.images.slice(0, 4).map((src, i) => (
+                            <img
+                              key={`${r.id}-${i}`}
+                              src={src}
+                              alt="Review photo"
+                              className="w-full h-20 object-cover rounded-lg border-2 border-gray-200 hover:border-emerald-400 transition-all cursor-pointer"
+                              loading="lazy"
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </SwiperSlide>
                 );
               })}
-            </div>
-
-            {/* Action Buttons */}
-            {(hasMore || visibleCount > REVIEWS_PER_PAGE) && (
-              <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-                {hasMore && (
-                  <button
-                    onClick={handleShowMore}
-                    className="w-full sm:w-auto px-8 py-3 rounded-xl text-base font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                  >
-                    Show More Reviews ({reviews.length - visibleCount} remaining)
-                  </button>
-                )}
-
-                {visibleCount > REVIEWS_PER_PAGE && (
-                  <button
-                    onClick={handleShowLess}
-                    className="w-full sm:w-auto px-8 py-3 rounded-xl text-base font-semibold text-gray-700 bg-white border-2 border-gray-300 hover:border-emerald-500 hover:text-emerald-600 transition-all duration-200"
-                  >
-                    Show Less
-                  </button>
-                )}
-              </div>
-            )}
+            </Swiper>
 
             {/* Review Counter */}
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
-                Showing <span className="font-bold text-emerald-600">{visibleReviews.length}</span> of{' '}
-                <span className="font-bold text-emerald-600">{reviews.length}</span> reviews
+                Total <span className="font-bold text-emerald-600">{reviews.length}</span> reviews
               </p>
             </div>
           </>
         )}
       </div>
+
+      <style jsx global>{`
+        .reviews-swiper .swiper-button-next,
+        .reviews-swiper .swiper-button-prev {
+          color: #059669;
+          background: white;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .reviews-swiper .swiper-button-next:after,
+        .reviews-swiper .swiper-button-prev:after {
+          font-size: 18px;
+          font-weight: bold;
+        }
+        
+        .reviews-swiper .swiper-pagination-bullet {
+          background: #059669;
+          opacity: 0.3;
+          width: 10px;
+          height: 10px;
+        }
+        
+        .reviews-swiper .swiper-pagination-bullet-active {
+          opacity: 1;
+          width: 24px;
+          border-radius: 5px;
+        }
+      `}</style>
     </section>
   );
 };

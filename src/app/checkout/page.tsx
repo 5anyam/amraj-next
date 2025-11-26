@@ -187,8 +187,6 @@ export default function Checkout(): React.ReactElement {
   const [step, setStep] = useState<"form" | "processing">("form");
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [razorpayLoaded, setRazorpayLoaded] = useState<boolean>(false);
-  const [showSuccessPopup, setShowSuccessPopup] = useState<boolean>(false);
-  const [orderDetails, setOrderDetails] = useState<{ orderId: number; paymentId: string } | null>(null);
 
   // ✅ INITIALIZATION
   useEffect(() => {
@@ -317,90 +315,11 @@ export default function Checkout(): React.ReactElement {
     }
   }
 
-  // ✅ SUCCESS POPUP COMPONENT
-  const SuccessPopup = () => {
-    if (!showSuccessPopup || !orderDetails) return null;
-
-    return (
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 animate-in fade-in zoom-in duration-300">
-          {/* Success Icon */}
-          <div className="flex justify-center mb-6">
-            <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center">
-              <svg className="w-12 h-12 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-          </div>
-
-          {/* Success Message */}
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">
-            🎉 Order Placed Successfully!
-          </h2>
-          <p className="text-gray-600 text-center mb-6">
-            Thank you for your purchase. Your payment has been confirmed.
-          </p>
-
-          {/* Order Details */}
-          <div className="bg-gradient-to-br from-emerald-50 to-blue-50 rounded-xl p-5 mb-6">
-            <div className="space-y-3">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Order ID</p>
-                <p className="text-lg font-bold text-gray-900">#{orderDetails.orderId}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Payment ID</p>
-                <p className="text-sm font-mono text-gray-700 break-all">{orderDetails.paymentId}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* WhatsApp Message */}
-          <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4 mb-6">
-            <div className="flex items-start gap-3">
-              <span className="text-2xl">📱</span>
-              <div>
-                <p className="font-semibold text-green-900 mb-1">WhatsApp Updates</p>
-                <p className="text-sm text-green-700">
-                  Order confirmation and tracking details will be sent to your WhatsApp number shortly.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="space-y-3">
-            <button
-              onClick={() => {
-                setShowSuccessPopup(false);
-                router.push('/');
-              }}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl transition-all"
-            >
-              Continue Shopping
-            </button>
-            <button
-              onClick={() => {
-                setShowSuccessPopup(false);
-                router.push(`/orders/${orderDetails.orderId}`);
-              }}
-              className="w-full bg-white border-2 border-gray-300 hover:border-emerald-600 text-gray-700 hover:text-emerald-600 font-semibold py-3 rounded-xl transition-all"
-            >
-              View Order Details
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   // ✅ PAYMENT SUCCESS HANDLER
   const handlePaymentSuccess = async (wooOrder: WooCommerceOrder, response: RazorpayHandlerResponse): Promise<void> => {
     try {
-      // Update order status to processing
       await updateWooCommerceOrderStatus(wooOrder.id, 'processing', response);
 
-      // Track purchase
       const orderItems: CartItem[] = items.map(item => ({
         id: item.id, 
         name: item.name, 
@@ -409,28 +328,15 @@ export default function Checkout(): React.ReactElement {
       }));
       trackPurchase(orderItems, finalTotal, response.razorpay_payment_id);
 
-      // ✅ Clear cart immediately
+      // ✅ Clear cart
       clear();
 
-      // ✅ Show success popup
-      setOrderDetails({
-        orderId: wooOrder.id,
-        paymentId: response.razorpay_payment_id
-      });
-      setShowSuccessPopup(true);
+      // ✅ Redirect to success page
+      router.push(`/order-confirmation/success?orderId=${wooOrder.id}&paymentId=${response.razorpay_payment_id}&total=${finalTotal.toFixed(2)}`);
 
     } catch {
-      // Even if update fails, show success since payment was captured
       clear();
-      
-      toast({
-        title: "🎉 Payment Successful!",
-        description: `Order confirmed! You'll receive WhatsApp updates shortly.`,
-      });
-
-      setTimeout(() => {
-        router.push('/');
-      }, 2000);
+      router.push(`/order-confirmation/success?orderId=${wooOrder.id}&paymentId=${response.razorpay_payment_id}&total=${finalTotal.toFixed(2)}`);
     } finally {
       setLoading(false);
       setStep("form");
@@ -446,11 +352,9 @@ export default function Checkout(): React.ReactElement {
       }
     }
 
-    toast({
-      title: "Payment Failed",
-      description: response?.error?.description || "Payment was not successful. Please try again.",
-      variant: "destructive",
-    });
+    // ✅ Redirect to failure page
+    const errorMsg = response?.error?.description || "Payment was not successful";
+    router.push(`/order-confirmation/failed?orderId=${wooOrder?.id || ''}&error=${encodeURIComponent(errorMsg)}`);
 
     setLoading(false);
     setStep("form");
@@ -475,7 +379,7 @@ export default function Checkout(): React.ReactElement {
     setStep("form");
   };
 
-  // ✅ MAIN CHECKOUT HANDLER with AUTO-CAPTURE
+  // ✅ MAIN CHECKOUT HANDLER
   async function handleCheckout(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
 
@@ -554,7 +458,7 @@ export default function Checkout(): React.ReactElement {
           { key: 'original_subtotal', value: total.toString() },
           { key: 'delivery_charges', value: deliveryCharges.toString() },
           { key: 'final_total', value: finalTotal.toString() },
-          { key: 'payment_capture', value: '1' }, // ✅ Mark for auto-capture
+          { key: 'payment_capture', value: '1' },
           ...(appliedCoupon ? [
             { key: 'coupon_code', value: appliedCoupon },
             { key: 'coupon_discount', value: couponDiscount.toString() }
@@ -564,7 +468,6 @@ export default function Checkout(): React.ReactElement {
 
       wooOrder = await createWooCommerceOrder(orderData);
 
-      // ✅ RAZORPAY OPTIONS WITH AUTO-CAPTURE
       const razorpayOptions: RazorpayOptions = {
         key: RAZORPAY_CONFIG.KEY_ID,
         amount: Math.round(finalTotal * 100),
@@ -655,9 +558,6 @@ export default function Checkout(): React.ReactElement {
           });
         }}
       />
-
-      {/* ✅ Success Popup */}
-      <SuccessPopup />
 
       <div className="min-h-screen bg-gradient-to-br from-teal-50 to-orange-50 pb-10">
         <div className="max-w-2xl mx-auto py-10 px-4">
