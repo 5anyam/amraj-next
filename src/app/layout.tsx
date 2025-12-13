@@ -8,6 +8,7 @@ import Script from 'next/script';
 import AnnouncementBar from '../../components/anouncement';
 import { Suspense } from 'react';
 import Whatsapp from '../../components/Whatsapp';
+import Loading from './loading'; // Import the new loading component
 
 export const metadata = {
   title: 'Amraj - Rooted in Tradition, Backed by Science',
@@ -62,13 +63,28 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           />
         </noscript>
       </head>
-      <body className="overflow-x-hidden overflow-y-scroll">
+      <body className="overflow-x-hidden overflow-y-scroll antialiased">
         <ReactQueryProvider>
           <CartProvider>
-            <AnnouncementBar />
-            <Header />
-            {children}
-            <Footer />
+            {/* 
+              Flex Layout Structure:
+              Ensures Footer stays at bottom and Content takes remaining space
+            */}
+            <div className="flex flex-col min-h-screen">
+              <AnnouncementBar />
+              <Header />
+              
+              {/* Main Content Area */}
+              <main className="flex-grow">
+                {/* Suspense Wrapper keeps Header/Footer visible while loading content */}
+                <Suspense fallback={<Loading />}>
+                  {children}
+                </Suspense>
+              </main>
+
+              <Footer />
+            </div>
+            
             <Whatsapp/>
             
             {/* Facebook Pixel Route Tracking */}
@@ -76,7 +92,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <FacebookPixel pixelId={1648859765778662} />
             </Suspense>
             
-            {/* Debug Component (Development Only) */}
           </CartProvider>
         </ReactQueryProvider>
       </body>
