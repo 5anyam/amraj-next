@@ -1,9 +1,8 @@
-@import "tailwindcss";
-@import 'slick-carousel/slick/slick.css';
-@import 'slick-carousel/slick/slick-theme.css';
-@import '@fontsource/fredoka';          /* Normal weight */
-@import '@fontsource/fredoka/600.css';  /* Bold weight */
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";
 
+
+@tailwind utilities;
 
 
 
