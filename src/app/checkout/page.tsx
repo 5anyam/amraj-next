@@ -2,13 +2,15 @@
 
 import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useCart } from "../../../lib/cart";
+import { useAuth } from "../../../lib/auth-context"; // ✅ ADDED
 import { toast } from "../../../hooks/use-toast";
 import { useFacebookPixel } from "../../../hooks/useFacebookPixel";
 import type { CartItem } from "../../../lib/facebook-pixel";
 import Script from "next/script";
 
-// ✅ PRODUCTION CONFIGURATION
+// ✅ PRODUCTION CONFIGURATION (SAME)
 const WOOCOMMERCE_CONFIG = {
   BASE_URL: 'https://cms.amraj.in',
   CONSUMER_KEY: 'ck_7610f309972822bfa8e87304ea6c47e9e93b8ff6',
@@ -21,7 +23,7 @@ const RAZORPAY_CONFIG = {
   THEME_COLOR: "#14b8a6"
 };
 
-// ✅ INTERFACES
+// ✅ UPDATED INTERFACES
 interface FormData {
   name: string;
   email: string;
@@ -32,6 +34,7 @@ interface FormData {
   city: string;
   state: string;
   notes: string;
+  password?: string; // ✅ ADDED
 }
 
 interface WooCommerceOrder {
@@ -89,7 +92,7 @@ declare global {
   }
 }
 
-// ✅ WOOCOMMERCE API INTEGRATION
+// ✅ WOOCOMMERCE FUNCTIONS (SAME)
 const createWooCommerceOrder = async (orderData: Record<string, unknown>): Promise<WooCommerceOrder> => {
   const apiUrl = `${WOOCOMMERCE_CONFIG.BASE_URL}/wp-json/wc/v3/orders`;
   const auth = btoa(`${WOOCOMMERCE_CONFIG.CONSUMER_KEY}:${WOOCOMMERCE_CONFIG.CONSUMER_SECRET}`);
@@ -164,6 +167,7 @@ const updateWooCommerceOrderStatus = async (orderId: number, status: string, pay
 
 export default function Checkout(): React.ReactElement {
   const { items, clear } = useCart();
+  const { user, register } = useAuth(); // ✅ ADDED
   const router = useRouter();
   const { trackInitiateCheckout, trackAddPaymentInfo, trackPurchase } = useFacebookPixel();
 
@@ -179,16 +183,18 @@ export default function Checkout(): React.ReactElement {
   const subtotalAfterCoupon = total - couponDiscount;
   const finalTotal = subtotalAfterCoupon + deliveryCharges;
 
+  // ✅ UPDATED FormData with password
   const [form, setForm] = useState<FormData>({
     name: "", email: "", phone: "", whatsapp: "", address: "", 
-    pincode: "", city: "", state: "", notes: "",
+    pincode: "", city: "", state: "", notes: "", password: ""
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [step, setStep] = useState<"form" | "processing">("form");
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [razorpayLoaded, setRazorpayLoaded] = useState<boolean>(false);
+  const [showPasswordField, setShowPasswordField] = useState<boolean>(false); // ✅ NEW
 
-  // ✅ INITIALIZATION
+  // ✅ INITIALIZATION (SAME)
   useEffect(() => {
     if (items.length > 0) {
       const cartItems: CartItem[] = items.map(item => ({
@@ -201,7 +207,7 @@ export default function Checkout(): React.ReactElement {
     }
   }, [items, finalTotal, trackInitiateCheckout]);
 
-  // ✅ COUPON VALIDATION
+  // ✅ COUPON FUNCTIONS (SAME)
   const validateCoupon = (code: string): { valid: boolean; discount: number; message: string } => {
     const upperCode = code.toUpperCase().trim();
     if (upperCode === "WELCOME100") {
@@ -257,7 +263,7 @@ export default function Checkout(): React.ReactElement {
     });
   };
 
-  // ✅ FORM VALIDATION
+  // ✅ UPDATED VALIDATION
   function validateForm(): boolean {
     const newErrors: Partial<FormData> = {};
 
@@ -273,6 +279,10 @@ export default function Checkout(): React.ReactElement {
     if (!form.whatsapp.trim()) newErrors.whatsapp = "WhatsApp number is required";
     if (!/^[0-9]{10}$/.test(form.whatsapp)) {
       newErrors.whatsapp = "Please enter a valid 10-digit WhatsApp number";
+    }
+    // ✅ PASSWORD VALIDATION (optional)
+    if (showPasswordField && form.password && form.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
     }
     if (!form.address.trim()) newErrors.address = "Address is required";
     if (!form.pincode.trim()) newErrors.pincode = "Pincode is required";
@@ -300,9 +310,9 @@ export default function Checkout(): React.ReactElement {
 
   function onChange(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>): void {
     const { name, value } = e.target;
-    setForm((f) => ({ ...f, [name]: value }));
+    setForm((f) => ({ ...f, [name as keyof FormData]: value }));
     if (errors[name as keyof FormData]) {
-      setErrors(prev => ({ ...prev, [name]: undefined }));
+      setErrors(prev => ({ ...prev, [name as keyof FormData]: undefined }));
     }
   }
 
@@ -315,7 +325,7 @@ export default function Checkout(): React.ReactElement {
     }
   }
 
-  // ✅ PAYMENT SUCCESS HANDLER
+  // ✅ PAYMENT HANDLERS (SAME)
   const handlePaymentSuccess = async (wooOrder: WooCommerceOrder, response: RazorpayHandlerResponse): Promise<void> => {
     try {
       await updateWooCommerceOrderStatus(wooOrder.id, 'processing', response);
@@ -328,12 +338,8 @@ export default function Checkout(): React.ReactElement {
       }));
       trackPurchase(orderItems, finalTotal, response.razorpay_payment_id);
 
-      // ✅ Clear cart
       clear();
-
-      // ✅ Redirect to success page
       router.push(`/order-confirmation/success?orderId=${wooOrder.id}&paymentId=${response.razorpay_payment_id}&total=${finalTotal.toFixed(2)}`);
-
     } catch {
       clear();
       router.push(`/order-confirmation/success?orderId=${wooOrder.id}&paymentId=${response.razorpay_payment_id}&total=${finalTotal.toFixed(2)}`);
@@ -352,7 +358,6 @@ export default function Checkout(): React.ReactElement {
       }
     }
 
-    // ✅ Redirect to failure page
     const errorMsg = response?.error?.description || "Payment was not successful";
     router.push(`/order-confirmation/failed?orderId=${wooOrder?.id || ''}&error=${encodeURIComponent(errorMsg)}`);
 
@@ -379,7 +384,7 @@ export default function Checkout(): React.ReactElement {
     setStep("form");
   };
 
-  // ✅ MAIN CHECKOUT HANDLER
+  // ✅ UPDATED CHECKOUT HANDLER
   async function handleCheckout(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
 
@@ -402,6 +407,20 @@ export default function Checkout(): React.ReactElement {
           variant: "destructive",
         });
         return;
+      }
+
+      // ✅ CREATE ACCOUNT (OPTIONAL)
+      if (!user && showPasswordField && form.password && form.password.length >= 6) {
+        try {
+          await register(form.email, form.password, form.name);
+          toast({
+            title: "✅ Account Created!",
+            description: "Your account has been created successfully",
+          });
+        } catch (err: unknown) {
+          console.log("Account creation skipped:", err);
+          // Account creation is optional - continue checkout
+        }
       }
 
       setLoading(true);
@@ -497,15 +516,13 @@ export default function Checkout(): React.ReactElement {
       };
 
       const rzp = new window.Razorpay(razorpayOptions);
-
       rzp.on('payment.failed', (response: RazorpayFailureResponse) => {
         handlePaymentFailure(wooOrder, response);
       });
-
       rzp.open();
       setLoading(false);
 
-    } catch (err) {
+    } catch (err: unknown) {
       if (wooOrder?.id) {
         try {
           await updateWooCommerceOrderStatus(wooOrder.id, 'cancelled');
@@ -524,7 +541,7 @@ export default function Checkout(): React.ReactElement {
     }
   }
 
-  // Empty cart check
+  // ✅ EMPTY CART CHECK (SAME)
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-teal-50 to-orange-50">
@@ -569,7 +586,7 @@ export default function Checkout(): React.ReactElement {
             <p className="text-gray-600">Complete your purchase securely</p>
           </div>
 
-          {/* Order Summary */}
+          {/* ✅ ORDER SUMMARY (SAME) */}
           <div className="bg-white shadow-xl rounded-2xl p-6 mb-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">Order Summary</h2>
             <div className="space-y-2">
@@ -618,7 +635,7 @@ export default function Checkout(): React.ReactElement {
             </div>
           </div>
 
-          {/* Coupon Section */}
+          {/* ✅ COUPON SECTION (SAME) */}
           <div className="bg-white shadow-xl rounded-2xl p-6 mb-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">Have a Coupon Code?</h2>
             <div className="flex flex-col sm:flex-row gap-3">
@@ -657,9 +674,50 @@ export default function Checkout(): React.ReactElement {
             </div>
           </div>
 
-          {/* Form */}
+          {/* ✅ FORM WITH AUTH */}
           <form onSubmit={handleCheckout} className="bg-white shadow-xl rounded-2xl p-8">
             <h2 className="text-xl font-semibold text-gray-800 mb-6">Delivery Information</h2>
+
+            {/* ✅ LOGIN STATUS BANNER */}
+            <div className={`p-4 rounded-xl mb-6 transition-all ${
+              user 
+                ? 'bg-green-50 border-2 border-green-200' 
+                : 'bg-teal-50 border-2 border-teal-200'
+            }`}>
+              {user ? (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-orange-500 rounded-full flex items-center justify-center">
+                      <span className="text-white font-bold text-sm">{user.name.charAt(0).toUpperCase()}</span>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-green-800">Welcome back, {user.name}!</p>
+                      <p className="text-sm text-green-700">Your orders will be automatically linked</p>
+                    </div>
+                  </div>
+                  <Link 
+                    href="/my-account" 
+                    className="text-green-600 hover:text-green-700 font-semibold text-sm"
+                  >
+                    View Orders →
+                  </Link>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold text-teal-800">Create Account (Optional)</p>
+                    <p className="text-sm text-teal-700">Save details & track/cancel orders later</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowPasswordField(!showPasswordField)}
+                    className="px-4 py-2 bg-gradient-to-r from-teal-500 to-orange-500 hover:from-teal-600 hover:to-orange-600 text-white text-sm font-semibold rounded-lg transition-all"
+                  >
+                    {showPasswordField ? 'Skip' : 'Create Account'}
+                  </button>
+                </div>
+              )}
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div>
@@ -696,6 +754,27 @@ export default function Checkout(): React.ReactElement {
                 />
                 {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
               </div>
+
+              {/* ✅ PASSWORD FIELD */}
+              {showPasswordField && !user && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Create Password</label>
+                  <input
+                    name="password"
+                    type="password"
+                    className={`w-full p-3 rounded-lg border-2 text-black transition-colors focus:outline-none ${
+                      errors.password 
+                        ? 'border-red-300 focus:border-red-500' 
+                        : 'border-gray-200 focus:border-teal-500'
+                    }`}
+                    placeholder="At least 6 characters (optional)"
+                    value={form.password || ''}
+                    onChange={onChange}
+                  />
+                  {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+                  <p className="text-xs text-gray-500 mt-1">Track orders & save details for future</p>
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
@@ -868,7 +947,6 @@ export default function Checkout(): React.ReactElement {
               </div>
             </div>
 
-            {/* Payment Button */}
             <button
               type="submit"
               className={`w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 ${
