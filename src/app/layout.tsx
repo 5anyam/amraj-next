@@ -9,6 +9,7 @@ import AnnouncementBar from '../../components/anouncement';
 import { Suspense } from 'react';
 import Whatsapp from '../../components/Whatsapp';
 import Loading from './loading'; // Import the new loading component
+import { AuthProvider } from '../../lib/auth-context';
 
 export const metadata = {
   title: 'Amraj - Rooted in Tradition, Backed by Science',
@@ -66,6 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="overflow-x-hidden overflow-y-scroll antialiased">
         <ReactQueryProvider>
           <CartProvider>
+            <AuthProvider>
             {/* 
               Flex Layout Structure:
               Ensures Footer stays at bottom and Content takes remaining space
@@ -91,7 +93,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Suspense fallback={null}>
               <FacebookPixel pixelId={1648859765778662} />
             </Suspense>
-            
+            </AuthProvider>
           </CartProvider>
         </ReactQueryProvider>
       </body>

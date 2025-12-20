@@ -3,6 +3,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import Link from "next/link";
 import CartIcon from "./CartIcon";
 import { useIsMobile } from "../hooks/use-mobile";
+import { useAuth } from "../lib/auth-context"; // ← ADDED
 import React, { useState, useRef, useEffect } from "react";
 import { FiSearch } from "react-icons/fi";
 import { HiOutlineMenuAlt3, HiOutlineX } from "react-icons/hi";
@@ -35,6 +36,11 @@ export default function Header() {
   const router = useRouter();
   const shopMenuRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // ← AUTH ADDED
+  const { user, logout } = useAuth();
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   const [text] = useTypewriter({
     words: ['Search products…', 'Weight loss supplements', 'Multivitamins', 'Prostate health', 'Detox products', 'Diabetes care'],
@@ -44,11 +50,14 @@ export default function Header() {
     delaySpeed: 2000,
   });
 
-  // Close submenu when clicking outside
+  // Close submenus when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (shopMenuRef.current && !shopMenuRef.current.contains(event.target as Node)) {
         setShopSubmenuOpen(false);
+      }
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
       }
     };
 
@@ -147,76 +156,153 @@ export default function Header() {
             )}
           </div>
 
-          {/* Right: Search + Cart + Hamburger */}
+          {/* Right: Search + Login + Cart + Hamburger */}
           <div className="flex items-center gap-2">
-          {/* Desktop Search */}
-          {!isMobile && (
-            <form className="flex border-2 rounded-xl items-center mr-4 relative overflow-hidden group focus-within:border-green-500 transition-all duration-300" onSubmit={handleSearch}>
-              <input
-                type="text"
-                className="px-4 py-2 text-black focus:outline-none text-base w-60 bg-gray-50 group-focus-within:bg-white transition-all duration-300"
-                placeholder={text}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-              <button
-                type="submit"
-                className="border-l-2 border-gray-200 text-black px-4 py-2 bg-gray-50 hover:bg-green-600 hover:text-white transition-all duration-300 group-focus-within:bg-green-600 group-focus-within:text-white"
-              >
-                <FiSearch className="text-lg" />
-              </button>
-            </form>
-          )}
-
-          {/* Mobile Search */}
-          {isMobile && (
-            <>
-              {!showMobileSearch ? (
+            {/* Desktop Search */}
+            {!isMobile && (
+              <form className="flex border-2 rounded-xl items-center mr-4 relative overflow-hidden group focus-within:border-green-500 transition-all duration-300" onSubmit={handleSearch}>
+                <input
+                  type="text"
+                  className="px-4 py-2 text-black focus:outline-none text-base w-60 bg-gray-50 group-focus-within:bg-white transition-all duration-300"
+                  placeholder={text}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
                 <button
-                  className="text-2xl text-black p-2 hover:bg-green-50 rounded-lg transition-colors duration-200"
-                  onClick={() => setShowMobileSearch(true)}
+                  type="submit"
+                  className="border-l-2 border-gray-200 text-black px-4 py-2 bg-gray-50 hover:bg-green-600 hover:text-white transition-all duration-300 group-focus-within:bg-green-600 group-focus-within:text-white"
                 >
-                  <FiSearch />
+                  <FiSearch className="text-lg" />
                 </button>
-              ) : (
-                <form className="flex border-2 rounded-xl items-center overflow-hidden focus-within:border-green-500 transition-all duration-300" onSubmit={handleSearch}>
-                  <input
-                    type="text"
-                    className="px-3 py-2 text-black focus:outline-none text-base w-40 bg-gray-50 focus:bg-white transition-all duration-300"
-                    placeholder={text}
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    autoFocus
-                  />
+              </form>
+            )}
+
+            {/* ← LOGIN BUTTON ADDED - Desktop */}
+            {!isMobile && (
+              <div className="relative" ref={userMenuRef}>
+                {user ? (
+                  // User logged in - Profile dropdown
+                  <>
+                    <button
+                      onClick={() => setUserMenuOpen(!userMenuOpen)}
+                      className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-green-50 hover:bg-green-100 rounded-xl transition-all duration-200"
+                    >
+                      <div className="w-8 h-8 bg-gradient-to-r from-teal-500 to-orange-500 rounded-full flex items-center justify-center">
+                        <span className="text-white font-semibold text-xs">
+                          {user.name.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      <span className="hidden sm:inline">{user.name}</span>
+                      <BiChevronDown className={`transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    {/* User Dropdown */}
+                    {userMenuOpen && (
+                      <div className="absolute top-full right-0 mt-2 w-48 bg-white shadow-lg rounded-xl border border-gray-200 py-2 z-50">
+                        <Link
+                          href="/my-account"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
+                          onClick={() => setUserMenuOpen(false)}
+                        >
+                          My Account
+                        </Link>
+                        <button
+                          onClick={() => {
+                            logout();
+                            setUserMenuOpen(false);
+                          }}
+                          className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                        >
+                          Logout
+                        </button>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  // Not logged in - Login button
+                  <Link
+                    href="/login"
+                    className="px-6 py-2 bg-gradient-to-r from-teal-500 to-orange-500 hover:from-teal-600 hover:to-orange-600 text-white font-semibold rounded-xl text-sm transition-all duration-200 shadow-lg hover:shadow-xl"
+                  >
+                    Login
+                  </Link>
+                )}
+              </div>
+            )}
+
+            <CartIcon />
+
+            {/* Mobile Search */}
+            {isMobile && (
+              <>
+                {!showMobileSearch ? (
                   <button
-                    type="submit"
-                    className="border-l-2 border-gray-200 text-black px-3 py-2 bg-gray-50 hover:bg-green-600 hover:text-white transition-all duration-300"
+                    className="text-2xl text-black p-2 hover:bg-green-50 rounded-lg transition-colors duration-200"
+                    onClick={() => setShowMobileSearch(true)}
                   >
                     <FiSearch />
                   </button>
-                </form>
-              )}
-            </>
-          )}
+                ) : (
+                  <form className="flex border-2 rounded-xl items-center overflow-hidden focus-within:border-green-500 transition-all duration-300" onSubmit={handleSearch}>
+                    <input
+                      type="text"
+                      className="px-3 py-2 text-black focus:outline-none text-base w-40 bg-gray-50 focus:bg-white transition-all duration-300"
+                      placeholder={text}
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      autoFocus
+                    />
+                    <button
+                      type="submit"
+                      className="border-l-2 border-gray-200 text-black px-3 py-2 bg-gray-50 hover:bg-green-600 hover:text-white transition-all duration-300"
+                    >
+                      <FiSearch />
+                    </button>
+                  </form>
+                )}
+              </>
+            )}
 
-          <CartIcon />
+            {/* Mobile Hamburger */}
+            {isMobile && (
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="ml-2 text-3xl text-black p-2 hover:bg-green-50 rounded-lg transition-colors duration-200"
+              >
+                {mobileMenuOpen ? <HiOutlineX /> : <HiOutlineMenuAlt3 />}
+              </button>
+            )}
+          </div>
 
-          {/* Mobile Hamburger */}
-          {isMobile && (
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="ml-2 text-3xl text-black p-2 hover:bg-green-50 rounded-lg transition-colors duration-200"
-            >
-              {mobileMenuOpen ? <HiOutlineX /> : <HiOutlineMenuAlt3 />}
-            </button>
-          )}
-        </div>
+          {/* ← MOBILE LOGIN IN MENU */}
+          {isMobile && mobileMenuOpen && (
+            <div className="absolute top-full left-0 w-full bg-white/95 shadow-lg border-t border-gray-200 z-40 backdrop-blur-md">
+              {/* Mobile Login Section */}
+              <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-teal-50 to-orange-50">
+                {user ? (
+                  <div className="flex items-center gap-3 p-3 bg-white rounded-xl shadow-sm">
+                    <div className="w-12 h-12 bg-gradient-to-r from-teal-500 to-orange-500 rounded-full flex items-center justify-center">
+                      <span className="text-white font-semibold text-lg">
+                        {user.name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">{user.name}</p>
+                      <p className="text-sm text-gray-500">{user.email}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="block w-full text-center px-6 py-3 bg-gradient-to-r from-teal-500 to-orange-500 hover:from-teal-600 hover:to-orange-600 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Login / Sign Up
+                  </Link>
+                )}
+              </div>
 
-          {/* Mobile Menu Dropdown */}
-          {isMobile && (
-            <div className={`absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-200 z-40 transition-all duration-300 ${
-              mobileMenuOpen ? 'opacity-100 visible transform translate-y-0' : 'opacity-0 invisible transform -translate-y-4'
-            }`}>
+              {/* Rest of Mobile Menu */}
               <nav className="flex flex-col p-4 space-y-2">
                 {navItems.map((item) => (
                   <div key={item.name}>
@@ -232,7 +318,6 @@ export default function Header() {
                           <BiChevronDown className={`transition-transform duration-200 ${mobileShopSubmenuOpen ? 'rotate-180' : ''}`} />
                         </button>
                         
-                        {/* Mobile Submenu */}
                         <div className={`ml-4 mt-2 space-y-1 transition-all duration-300 ${
                           mobileShopSubmenuOpen ? 'opacity-100 visible max-h-96' : 'opacity-0 invisible max-h-0'
                         }`}>
@@ -266,6 +351,17 @@ export default function Header() {
                     )}
                   </div>
                 ))}
+                
+                {/* Mobile My Account Link */}
+                {user && (
+                  <Link
+                    href="/my-account"
+                    className="font-medium text-lg px-2 py-2 rounded transition-colors duration-200 block text-green-600 bg-green-50"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    My Account
+                  </Link>
+                )}
               </nav>
             </div>
           )}
