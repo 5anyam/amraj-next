@@ -7,10 +7,8 @@ import HeroCarousel from "../../components/HeroCarousel";
 import MarqueeBanner from "../../components/MarqueeBanner";
 import AnimatedBackground from "../../components/AnimatedBackground";
 import AboutUsSection from "../../components/AboutUs";
-import CustomProductSlider from "../../components/CustomSlider";
 import HorizontalCertificatesSlider from "../../components/certificates";
 import HomeFAQ from "../../components/HomeFaq";
-
 
 export interface Product {
   id: number;
@@ -34,76 +32,87 @@ export default function Homepage() {
   });
 
   return (
-    <div className="min-h-screen bg-white pb-24 overflow-x-hidden transition-colors">
-      <HeroCarousel />
-      <MarqueeBanner/>
-      <HorizontalCertificatesSlider/>
-      <section className="relative max-w-6xl mx-auto py-14 px-4">
-        <AnimatedBackground/>
-        <div className="absolute inset-0 z-0 bg-gradient-to-br from-orange-100/10 via-teal-300/5 to-white pointer-events-none" />
+    <div className="min-h-screen bg-gray-50 pb-12 overflow-x-hidden font-sans">
       
-      {/* Bouncing Background Elements */}
-      <div 
-        className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-orange-400 to-pink-400 rounded-full blur-3xl opacity-20 animate-bounce" 
-        style={{ animationDuration: '4s', animationDelay: '0s' }} 
-      />
-      <div 
-        className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-teal-400 to-blue-400 rounded-full blur-3xl opacity-15 animate-bounce" 
-        style={{ animationDuration: '6s', animationDelay: '1s' }} 
-      />
-      <div 
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full blur-3xl opacity-10 animate-bounce" 
-        style={{ animationDuration: '5s', animationDelay: '2s' }} 
-      />
-      <div 
-        className="absolute top-40 right-1/4 w-48 h-48 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-full blur-3xl opacity-12 animate-bounce" 
-        style={{ animationDuration: '7s', animationDelay: '3s' }} 
-      />
-      <div 
-        className="absolute bottom-40 left-1/4 w-56 h-56 bg-gradient-to-r from-rose-400 to-orange-400 rounded-full blur-3xl opacity-18 animate-bounce" 
-        style={{ animationDuration: '8s', animationDelay: '0.5s' }} 
-      />
-      
-      {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-xl md:text-3xl font-playfair text-orange-500 mb-3 text-center animate-fade-in">
-          Best Sellers
-        </h2>
-        <p className="text-center text-black text-lg mb-10 max-w-xl mx-auto animate-fade-in">
-          Shop our most-loved wellness essentials trusted by thousands.
-        </p>
-        
-        {isLoading ? (
-  <div className="text-center text-orange-500 animate-pulse">
-    Loading products...
-  </div>
-) : error ? (
-  <div className="text-center text-red-600">
-    Failed to load products.
-  </div>
-) : (
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
-    {/* Only first 3 products */}
-    {data?.slice(0, 3).map((prod) => (
-      <ProductCard key={prod.id} product={prod} />
-    ))}
-
-    {/* 4th Column: Special Card with Image only */}
-    {/* <div className="flex items-center justify-center rounded-xl bg-white shadow-md p-4">
-      <img
-        src="/coming-soon.png" // <-- Yahan apni image ka path daalein
-        alt="Special Card"
-        className="w-full h-full object-contain"
-      />
-    </div> */}
-  </div>
-)}
+      {/* 1. Header Stack - No Gaps */}
+      <div className="bg-white shadow-sm relative z-20">
+        <HeroCarousel />
+        <MarqueeBanner/>
+        <div className="py-2 border-b border-gray-100">
+           <HorizontalCertificatesSlider/>
+        </div>
       </div>
-      <CustomProductSlider/>
+
+      {/* 2. Main "Best Sellers" Section - Compact & App-Like */}
+      <section className="relative w-full py-8 overflow-hidden">
+        
+        {/* --- Background (Subtle) --- */}
+        <div className="absolute inset-0 z-0 opacity-40">
+           <AnimatedBackground/>
+           <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-gray-50" />
+        </div>
+
+        {/* --- Content --- */}
+        <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
+          
+          {/* Header - Compact */}
+          <div className="flex items-end justify-between mb-6 px-1 max-w-6xl mx-auto">
+             <div>
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900 leading-tight">
+                  Best Sellers
+                </h2>
+                <p className="text-gray-500 text-xs md:text-sm mt-1">
+                  Top picks for your wellness.
+                </p>
+             </div>
+             <a href="/shop" className="text-xs font-semibold text-orange-600 uppercase tracking-wider hover:text-orange-700">
+                View All
+             </a>
+          </div>
+          
+          {/* Product Grid - Center Aligned */}
+          {isLoading ? (
+            <div className="h-40 flex items-center justify-center text-gray-400 text-sm">
+              <span className="animate-pulse">Loading products...</span>
+            </div>
+          ) : error ? (
+            <div className="p-4 bg-red-50 text-red-600 text-xs rounded-xl text-center">
+              Unable to load.
+            </div>
+          ) : (
+            // Changed: Added 'justify-center' and 'mx-auto' to ensure centering
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6 justify-center mx-auto max-w-6xl">
+              {data?.slice(0, 4).map((prod) => (
+                <div key={prod.id} className="h-full w-full max-w-[280px] mx-auto">
+                   <ProductCard product={prod} />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </section>
-      <AboutUsSection/>
-      <Testimonials />
-      <HomeFAQ/>
+
+      {/* 3. Sections Stack - Reduced Spacing */}
+      <div className="space-y-4 md:space-y-8">
+        
+        {/* About Widget */}
+        <div className="bg-white py-8 border-y border-gray-100">
+           <AboutUsSection/>
+        </div>
+
+        {/* Reviews Widget */}
+        <div className="max-w-7xl mx-auto px-3">
+           <Testimonials />
+        </div>
+
+        {/* FAQ Widget */}
+        <div className="max-w-3xl mx-auto px-3 pb-8">
+           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6">
+              <HomeFAQ/>
+           </div>
+        </div>
+
+      </div>
     </div>
   );
 }

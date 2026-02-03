@@ -1,68 +1,45 @@
-'use client'; // ✅ FIXED - Client Component banaya
+'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Loading() {
   return (
-    <div className="min-h-[60vh] flex flex-col items-center justify-center bg-gradient-to-br from-teal-50 to-orange-50 px-4">
-      <div className="relative flex flex-col items-center p-8 max-w-md mx-auto">
-        {/* Premium Animated Logo */}
-        <div className="relative w-24 h-24 mb-8 group">
-          {/* Outer Glow Ring */}
-          <div className="absolute -inset-2 bg-gradient-to-r from-teal-400/20 to-orange-400/20 rounded-3xl blur-xl animate-ping"></div>
-          
-          {/* Main Logo Ring */}
-          <div className="relative w-20 h-20 bg-gradient-to-br from-teal-500/95 to-orange-500/95 rounded-2xl shadow-2xl border-4 border-white/80 backdrop-blur-xl flex items-center justify-center">
-            
-            {/* Inner Spinning Ring */}
-            <div className="absolute inset-2 border-2 border-t-teal-400 border-r-orange-400 border-b-transparent border-l-transparent rounded-xl animate-spin" style={{animationDuration: '2s'}}></div>
-            
-            {/* Logo Icon */}
-            <div className="relative z-10 animate-bounce" style={{animationDuration: '2s'}}>
-              <div className="w-12 h-12 bg-gradient-to-r from-teal-600 to-orange-600 rounded-xl shadow-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">A</span>
-              </div>
-            </div>
-          </div>
-        </div>
+    // Fixed overlay covering the screen, but with transparent black background
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity duration-300">
+      
+      {/* Central Logo Container */}
+      <div className="relative flex flex-col items-center justify-center p-8 rounded-3xl">
         
-        {/* Brand Text */}
-        <div className="text-center space-y-4 animate-pulse" style={{animationDuration: '3s'}}>
-          <div className="space-y-2">
-            <h2 className="bg-gradient-to-r from-teal-600 via-orange-500 to-teal-600 bg-clip-text text-transparent font-bold text-2xl md:text-3xl tracking-wider drop-shadow-lg">
-              AMRAJ
-            </h2>
-            <div className="flex items-center justify-center gap-2 mx-4">
-              <div className="w-2.5 h-2.5 bg-gradient-to-r from-teal-500 to-orange-500 rounded-full animate-ping"></div>
-              <div className="w-2.5 h-2.5 bg-gradient-to-r from-orange-500 to-teal-500 rounded-full animate-ping" style={{animationDelay: '0.2s'}}></div>
-              <div className="w-2.5 h-2.5 bg-gradient-to-r from-teal-500 to-orange-500 rounded-full animate-ping" style={{animationDelay: '0.4s'}}></div>
-            </div>
-          </div>
-          
-          <div className="bg-gradient-to-r from-teal-100/70 to-orange-100/70 px-6 py-3 rounded-2xl backdrop-blur-xl border border-teal-200/50 shadow-xl">
-            <p className="text-teal-800 font-semibold text-sm md:text-base tracking-wider uppercase">
-              Loading Wellness...
-            </p>
-          </div>
+        {/* Optional: Subtle Glow behind logo to ensure readability against any background */}
+        <div className="absolute inset-0 bg-black/40 rounded-full blur-3xl" />
+
+        {/* The Logo Image */}
+        <div className="relative z-10 w-32 md:w-40 animate-pulse">
+          <Image
+            src="/amraj-dark-logo.png"
+            alt="Amraj Loading"
+            width={160}
+            height={60}
+            className="object-contain drop-shadow-xl"
+            priority
+          />
         </div>
 
-        {/* Subtle Progress Bar */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-72 max-w-xs bg-white/40 backdrop-blur-sm rounded-full p-1 border border-teal-200/50 shadow-xl overflow-hidden">
-          <div 
-            className="h-2.5 bg-gradient-to-r from-teal-500 via-orange-500 to-teal-500 rounded-full shadow-lg animate-pulse"
-            style={{animationDuration: '1.5s'}}
-          ></div>
+        {/* Minimal Loading Line */}
+        <div className="relative z-10 mt-6 w-24 h-0.5 bg-white/20 rounded-full overflow-hidden">
+          <div className="absolute inset-y-0 left-0 bg-white w-1/2 animate-[loading-bar_1s_infinite_linear]" />
         </div>
+
       </div>
 
-      {/* Skip Link for SSR */}
-      <Link 
-        href="/"
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 text-xs text-teal-600 hover:text-teal-700 font-medium transition-colors"
-      >
-        Skip to Home →
-      </Link>
+      <style jsx>{`
+        @keyframes loading-bar {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(200%); }
+        }
+      `}</style>
+
     </div>
   );
 }

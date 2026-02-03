@@ -10,57 +10,50 @@ export default function HorizontalCertificatesSlider() {
     { id: 6, name: "Lab Tested", icon: "/certificates/6.jpg" },
     { id: 7, name: "Lab Tested", icon: "/certificates/7.jpg" },
     { id: 8, name: "Lab Tested", icon: "/certificates/8.jpg" }
-
   ];
 
   return (
-    <section className="py-6 bg-white border-y border-gray-200">
+    <section className="py-8 bg-transparent">
       <div className="max-w-7xl mx-auto px-4">
-        {/* Header */}
-        <div className="text-center mb-6">
-          <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-2">
-            Certified Quality & Safety
-          </h3>
-          <p className="text-sm text-gray-600">Trusted by regulatory authorities worldwide</p>
+        
+        {/* Centered Minimal Header */}
+        <div className="flex items-center justify-center gap-4 mb-6">
+           <div className="h-[1px] w-12 bg-gray-200 hidden sm:block"></div>
+           <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider text-center">
+             Our Certifications
+           </h3>
+           <div className="h-[1px] w-12 bg-gray-200 hidden sm:block"></div>
         </div>
-        {/* Horizontal Scroll Container */}
-        <div className="overflow-x-auto scrollbar-hide">
-          <div className="flex space-x-4 md:space-x-6 pb-2 min-w-max md:justify-center">
+
+        {/* Scroll Container */}
+        <div className="relative group">
+          
+          {/* Fades for scroll indication (Mobile only) */}
+          <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent z-10 md:hidden pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent z-10 md:hidden pointer-events-none" />
+
+          {/* Flex Container - Centered on Desktop */}
+          <div className="overflow-x-auto scrollbar-hide flex gap-4 pb-2 snap-x md:justify-center">
             {certificates.map((certificate) => (
               <div
                 key={certificate.id}
-                className="flex-shrink-0 bg-gradient-to-br from-teal-50 to-orange-50 rounded-xl p-4 border border-teal-100 hover:shadow-lg transition-all duration-300 group"
-                style={{ minWidth: '120px' }}
+                className="snap-start flex-shrink-0 flex flex-col items-center gap-2"
+                title={certificate.name}
               >
-                {/* Badge */}
-
-                {/* Icon */}
-                <div className="w-12 h-12 md:w-16 md:h-16 mx-auto bg-white rounded-lg shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                {/* Modern 'App Icon' Style Container */}
+                <div className="w-20 h-20 md:w-24 md:h-24 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:border-orange-100 cursor-pointer">
                   <img
                     src={certificate.icon}
                     alt={certificate.name}
-                    className="w-8 h-8 md:w-12 md:h-12 object-contain"
+                    className="w-full h-full object-contain grayscale hover:grayscale-0 transition-all duration-500 opacity-80 hover:opacity-100"
                   />
-                  {/* Fallback */}
-                  <div className="hidden w-8 h-8 md:w-12 md:h-12 bg-gradient-to-r from-teal-500 to-orange-500 rounded flex items-center justify-center">
-                    <span className="text-white text-sm md:text-lg font-bold">✓</span>
-                  </div>
                 </div>
-
-                {/* Name */}
-                {/* <h4 className="text-xs md:text-sm font-semibold text-teal-700 text-center leading-tight">
-                  {certificate.name}
-                </h4> */}
               </div>
             ))}
           </div>
         </div>
-        {/* Scroll Hint for Mobile */}
-        <div className="md:hidden text-center mt-4">
-          <p className="text-xs text-gray-400">← Scroll to see all certificates →</p>
-        </div>
       </div>
-      {/* Custom Scrollbar Styles */}
+
       <style jsx>{`
         .scrollbar-hide {
           -ms-overflow-style: none;

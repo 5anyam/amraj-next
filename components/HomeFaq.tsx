@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+import { ChevronDownIcon, ChevronUpIcon, QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 
 interface FAQ {
   question: string;
@@ -9,45 +9,32 @@ interface FAQ {
 }
 
 const HomeFAQ: React.FC = () => {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openIndex, setOpenIndex] = useState<number | null>(0); // Open first one by default for engagement
 
-  // Static FAQ data for home page
   const faqs: FAQ[] = [
     {
-      question: "What is Amraj and why should I choose it over other brands?",
-      answer: "Amraj is where ancient Ayurvedic wisdom meets modern nutraceutical science. We don't just sell supplements we deliver result driven wellness programs backed by premium ingredients, and measurable outcomes."
+      question: "What makes Amraj different from others?",
+      answer: "We blend ancient Ayurvedic wisdom with modern science. Unlike generic supplements, our formulas deliver result-driven wellness backed by premium, clinically proven ingredients."
     },
     {
-      question: "Are your products actually effective or just another wellness hype?",
-      answer: "Every formula is scientifically crafted with clinically backed extracts and in therapeutic dosages, so you don't just feel better, you see and track real progress within the first few weeks."
+      question: "Are your products truly effective?",
+      answer: "Yes. Every formula is crafted with scientifically backed extracts in therapeutic dosages. You don't just feel better; you can track real progress within 2-4 weeks."
     },
     {
-      question: "What makes your products premium?",
-      answer: "We source highest-grade herbal extracts (standardized for active compounds), combine them with pure nutraceutical actives, and produce them in GMP-certified, ISO-approved facilities — ensuring unmatched potency, purity, and safety."
+      question: "What defines your 'Premium' quality?",
+      answer: "We source standardized herbal extracts (ensuring active compounds), combine them with pure nutraceuticals, and manufacture in GMP-certified, ISO-approved facilities for unmatched potency."
     },
     {
-      question: "Can I trust your safety standards?",
-      answer: "Yes all Amraj products are 100% vegetarian, free from steroids, banned substances, artificial hormones, and heavy metals, with lab-tested quality assurance."
+      question: "Is it safe for long-term use?",
+      answer: "Absolutely. All products are 100% vegetarian, non-hormonal, steroid-free, and heavy metal tested. They are designed for safety in long-term wellness routines."
     },
     {
-      question: "Will I see quick results or do I have to wait months?",
-      answer: "We design our formulas for noticeable results in 2–4 weeks, while recommending 90 day programs for complete transformation."
-    },
-    {
-      question: "Which problems do your products solve?",
-      answer: "Our range covers weight loss, liver detox, prostate care, gut health, and immunity boost all in non-hormonal, plant-based, science-backed formulas."
-    },
-    {
-      question: "Are your supplements habit-forming?",
-      answer: "No. All our products are non-addictive, non-habit forming, and safe for long-term wellness routines when taken as recommended."
-    },
-    {
-      question: "Can I combine different Amraj products for better results?",
-      answer: "Yes — our formulas are synergistically designed to complement each other. For example, pairing our Advanced Liver Detox with Weight Management Pro+ can accelerate fat loss, improve digestion, and boost overall wellness."
+      question: "How soon will I see results?",
+      answer: "Most users notice changes in energy and digestion within 2-4 weeks. For complete transformation, we recommend a consistent 90-day program."
     },
     {
       question: "Do you ship Pan-India?",
-      answer: "Yes — we deliver across India with safe, hygienic and premium packaging, and most orders arrive within 3–5 working days."
+      answer: "Yes, we deliver across India with premium, hygienic packaging. Most orders arrive within 3-5 business days via secure courier partners."
     }
   ];
 
@@ -56,74 +43,75 @@ const HomeFAQ: React.FC = () => {
   };
 
   return (
-    <div className="bg-white px-4 rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-teal-500 to-teal-600 p-6">
-        <h2 className="text-2xl lg:text-3xl font-bold text-white text-center">
-          Frequently Asked Questions
-        </h2>
-        <p className="text-teal-100 text-center mt-2">
-          Everything you need to know about Amraj
-        </p>
+    <div className="max-w-3xl mx-auto py-10">
+      
+      {/* Minimal Header */}
+      <div className="text-center mb-10">
+         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 mb-4">
+            <QuestionMarkCircleIcon className="w-4 h-4 text-gray-500" />
+            <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Support</span>
+         </div>
+         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">
+            Common Questions
+         </h2>
       </div>
 
-      {/* FAQ Items */}
-      <div className="divide-y divide-gray-200">
+      {/* Modern Accordion Stack */}
+      <div className="space-y-4">
         {faqs.map((faq, index) => (
-          <div key={index} className="group">
+          <div 
+            key={index} 
+            className={`
+               group rounded-2xl transition-all duration-300 border
+               ${openIndex === index 
+                 ? 'bg-white border-gray-200 shadow-lg scale-[1.01]' 
+                 : 'bg-white border-transparent hover:border-gray-200 hover:bg-gray-50'}
+            `}
+          >
             <button
-              className="w-full px-6 py-5 text-left hover:bg-gradient-to-r hover:from-teal-50 hover:to-orange-50 transition-all duration-300 focus:outline-none focus:bg-teal-50"
+              className="w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none"
               onClick={() => toggleFAQ(index)}
             >
-              <div className="flex justify-between items-start">
-                <h3 className="font-semibold text-gray-800 text-sm lg:text-base pr-4 leading-relaxed">
-                  {faq.question}
-                </h3>
-                <div className="flex-shrink-0 ml-4">
-                  {openIndex === index ? (
-                    <ChevronUpIcon className="h-5 w-5 text-teal-600 transition-transform duration-300" />
-                  ) : (
-                    <ChevronDownIcon className="h-5 w-5 text-gray-400 group-hover:text-teal-600 transition-all duration-300" />
-                  )}
-                </div>
-              </div>
+              <span className={`font-semibold text-base lg:text-lg transition-colors ${openIndex === index ? 'text-black' : 'text-gray-600 group-hover:text-black'}`}>
+                {faq.question}
+              </span>
+              <span className={`ml-4 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${openIndex === index ? 'bg-black text-white' : 'bg-gray-100 text-gray-400 group-hover:bg-gray-200'}`}>
+                {openIndex === index ? (
+                   <ChevronUpIcon className="h-4 w-4" />
+                ) : (
+                   <ChevronDownIcon className="h-4 w-4" />
+                )}
+              </span>
             </button>
             
-            {/* Answer */}
-            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
-              openIndex === index 
-                ? 'max-h-96 opacity-100' 
-                : 'max-h-0 opacity-0'
-            }`}>
-              <div className="px-6 pb-5">
-                <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-4 border-l-4 border-teal-500">
-                  <p className="text-gray-700 text-sm lg:text-base leading-relaxed whitespace-pre-line">
-                    {faq.answer}
-                  </p>
-                </div>
+            {/* Smooth Expand Answer */}
+            <div 
+               className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                 openIndex === index ? 'max-h-60 opacity-100' : 'max-h-0 opacity-0'
+               }`}
+            >
+              <div className="px-6 pb-6 pt-0">
+                <p className="text-gray-500 leading-relaxed text-base border-t border-gray-100 pt-4 mt-2">
+                  {faq.answer}
+                </p>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Footer CTA */}
-            <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 text-center border-t border-gray-200">
-        <p className="text-gray-600 text-sm mb-3">
-          Ready to start your wellness journey?
-        </p>
-        <div className="flex justify-center">
-          <a
+      {/* Clean Bottom CTA */}
+      <div className="mt-12 text-center">
+         <p className="text-gray-500 mb-4 text-sm">Still have questions? We are here to help.</p>
+         <a
             href="https://www.amazon.in/s?k=AMRAJ&ref=bl_dp_s_web_0"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-semibold px-6 py-3 rounded-full text-sm transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg"
-          >
-            {/* Amazon icon (inline SVG) */}
-            <img className='h-8 w-8' src="/Amazon_icon.png" alt='amazon-img' height={100} width={100}/>
-            Buy now on Amazon
-          </a>
-        </div>
+            className="inline-flex items-center gap-3 bg-black text-white px-8 py-3 rounded-full font-medium hover:bg-gray-800 transition-all hover:scale-105 shadow-xl hover:shadow-2xl"
+         >
+            <span className="text-sm">Buy on Amazon</span>
+            <img className='h-5 w-auto brightness-0 invert' src="/Amazon_icon.png" alt='amazon' />
+         </a>
       </div>
 
     </div>

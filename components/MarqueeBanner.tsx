@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+
 const MarqueeBanner = () => {
   const bannerItems = [
     { text: "Soy Free", icon: "🌱" },
@@ -13,67 +15,49 @@ const MarqueeBanner = () => {
   ];
 
   return (
-    <div className="overflow-hidden bg-gradient-to-r from-yellow-300 via-yellow-200 to-yellow-300 py-2 sm:py-4 text-green-700 font-bold whitespace-nowrap relative border-y-2 border-green-200">
-      {/* Animated gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
+    <div className="overflow-hidden bg-black py-3 relative select-none">
       
-      <div className="animate-marquee inline-block min-w-full text-sm sm:text-lg tracking-wide relative z-10">
-        {/* First set of items */}
-        {bannerItems.map((item, index) => (
-          <span 
-            key={`first-${index}`} 
-            className="inline-flex items-center gap-1 sm:gap-2 mx-3 sm:mx-8 bg-white/30 px-2 sm:px-4 py-1 rounded-full shadow-sm backdrop-blur-sm"
+      {/* Side Fades - Dark to Transparent */}
+      <div className="absolute top-0 left-0 w-8 sm:w-20 h-full bg-gradient-to-r from-black to-transparent z-10 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-8 sm:w-20 h-full bg-gradient-to-l from-black to-transparent z-10 pointer-events-none" />
+
+      <div className="flex animate-marquee whitespace-nowrap items-center">
+        {/* Render 3 sets for seamless looping */}
+        {[...bannerItems, ...bannerItems, ...bannerItems].map((item, index) => (
+          <div 
+            key={index} 
+            className="inline-flex items-center mx-6 sm:mx-8 text-white/90 group"
           >
-            <span className="text-base sm:text-xl" role="img" aria-label={`${item.text} icon`}>
+            {/* Icon - slightly smaller/subtle */}
+            <span className="text-base mr-2 opacity-80 group-hover:opacity-100 transition-opacity">
               {item.icon}
             </span>
-            <span className="font-semibold text-xs sm:text-base">{item.text}</span>
-          </span>
-        ))}
-        
-        {/* Duplicate set for seamless loop */}
-        {bannerItems.map((item, index) => (
-          <span 
-            key={`second-${index}`} 
-            className="inline-flex items-center gap-1 sm:gap-2 mx-3 sm:mx-8 bg-white/30 px-2 sm:px-4 py-1 rounded-full shadow-sm backdrop-blur-sm"
-          >
-            <span className="text-base sm:text-xl" role="img" aria-label={`${item.text} icon`}>
-              {item.icon}
+            
+            {/* Text - Clean, uppercase, tracking-wide */}
+            <span className="text-xs sm:text-sm font-medium tracking-[0.15em] uppercase opacity-90 group-hover:opacity-100 group-hover:text-orange-400 transition-colors">
+              {item.text}
             </span>
-            <span className="font-semibold text-xs sm:text-base">{item.text}</span>
-          </span>
+
+            {/* Separator Dot (Decoration) */}
+            <span className="ml-8 sm:ml-12 w-1 h-1 bg-white/30 rounded-full block"></span>
+          </div>
         ))}
       </div>
 
       <style jsx>{`
         @keyframes marquee {
-          0% { transform: translateX(0%); }
-          100% { transform: translateX(-50%); }
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-33.33%); } 
         }
         
         .animate-marquee {
-          animation: marquee 25s linear infinite;
+          animation: marquee 45s linear infinite; /* Slower for elegance */
+          width: fit-content;
         }
         
-        /* Slower animation on mobile for better readability */
-        @media (max-width: 640px) {
-          .animate-marquee {
-            animation: marquee 35s linear infinite;
-          }
-        }
-        
-        /* Pause on hover for desktop */
-        @media (min-width: 641px) {
-          .animate-marquee:hover {
-            animation-play-state: paused;
-          }
-        }
-        
-        /* Touch-friendly pause on mobile */
-        @media (max-width: 640px) {
-          .animate-marquee:active {
-            animation-play-state: paused;
-          }
+        .animate-marquee:hover, 
+        .animate-marquee:active {
+          animation-play-state: paused;
         }
       `}</style>
     </div>
