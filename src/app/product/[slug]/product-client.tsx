@@ -1,7 +1,7 @@
 // app/products/[slug]/product-client.tsx
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { useQuery } from '@tanstack/react-query';
@@ -10,34 +10,22 @@ import { useCart } from '../../../../lib/cart';
 import { toast } from '../../../../hooks/use-toast';
 import { useFacebookPixel } from '../../../../hooks/useFacebookPixel';
 import { Tab } from '@headlessui/react';
+import { 
+  Star, ShieldCheck, Truck, CreditCard, Check,
+  Minus, Plus
+} from 'lucide-react';
 
-// Dynamic imports with skeleton fallbacks
+// Dynamic imports with sleek skeletons
 const ImageGallery = dynamic(() => import('../../../../components/ImageGallery'), {
   ssr: false,
-  loading: () => <SkeletonGallery />
+  loading: () => <div className="animate-pulse bg-gray-100 rounded-[2rem] h-[500px] w-full" />
 });
-const ProductCreatives = dynamic(() => import('../../../../components/CreativeGallery'), {
-  ssr: false,
-  loading: () => <SectionSkeleton titleWidth="w-56" items={4} />
-});
-const ProductFAQ = dynamic(() => import('../../../../components/ProductFaq'), {
-  ssr: false,
-  loading: () => <SectionSkeleton titleWidth="w-40" items={4} />
-});
-const ProductReviews = dynamic(() => import('../../../../components/ProductReviews'), {
-  ssr: false,
-  loading: () => <SectionSkeleton titleWidth="w-48" items={4} />
-});
-const CustomerMedia = dynamic(() => import('../../../../components/CustomerMedia'), {
-  ssr: false,
-  loading: () => <SectionSkeleton titleWidth="w-40" items={4} />
-});
-const RelatedProducts = dynamic(() => import('../../../../components/RelatedProducts'), {
-  ssr: false,
-  loading: () => <SectionSkeleton titleWidth="w-44" items={4} />
-});
+const ProductCreatives = dynamic(() => import('../../../../components/CreativeGallery'), { ssr: false });
+const ProductFAQ = dynamic(() => import('../../../../components/ProductFaq'), { ssr: false });
+const ProductReviews = dynamic(() => import('../../../../components/ProductReviews'), { ssr: false });
+const CustomerMedia = dynamic(() => import('../../../../components/CustomerMedia'), { ssr: false });
+const RelatedProducts = dynamic(() => import('../../../../components/RelatedProducts'), { ssr: false });
 
-// Types
 export interface ImageData { src: string }
 export interface Attribute { option: string }
 export interface Product {
@@ -52,171 +40,27 @@ export interface Product {
   attributes?: Attribute[]
 }
 
-// ---------- Fullscreen Loader ----------
-function FullscreenLoader() {
+// ---------- Modern Skeleton ----------
+function PageSkeleton() {
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white">
-      <div className="flex flex-col items-center">
-        <div className="animate-spin rounded-full h-14 w-14 border-4 border-teal-600 border-t-transparent mb-4"></div>
-        <p className="text-gray-700 font-semibold">Loading product...</p>
-      </div>
-    </div>
-  );
-}
-
-// ---------- Skeletons ----------
-function SkeletonBox({ className = '' }: { className?: string }) {
-  return <div className={`animate-pulse bg-gray-200/70 rounded-lg ${className}`} />;
-}
-function SkeletonBadge() { return <SkeletonBox className="h-7 w-28 rounded-full" />; }
-function SkeletonTitle() { return <SkeletonBox className="h-8 md:h-10 w-[80%] md:w-[70%] rounded-xl" />; }
-function SkeletonPrice() {
-  return (
-    <div className="flex items-end gap-3">
-      <SkeletonBox className="h-10 md:h-12 w-40 md:w-48 rounded-xl" />
-      <SkeletonBox className="h-6 md:h-7 w-24 rounded-lg" />
-    </div>
-  );
-}
-function SkeletonParagraph({ lines = 3 }: { lines?: number }) {
-  return (
-    <div className="space-y-2">
-      {Array.from({ length: lines }).map((_, i) => (
-        <SkeletonBox key={i} className={`h-3 ${i === lines - 1 ? 'w-2/3' : 'w-full'}`} />
-      ))}
-    </div>
-  );
-}
-function SkeletonGallery() {
-  return (
-    <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white p-4">
-      <SkeletonBox className="h-[360px] sm:h-[420px] md:h-[520px] rounded-xl" />
-      <div className="mt-4 flex gap-3">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <SkeletonBox key={i} className="h-16 w-16 rounded-xl" />
-        ))}
-      </div>
-    </div>
-  );
-}
-function SkeletonTabs() {
-  return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-      <div className="flex bg-gray-100 border-b-2 border-gray-200">
-        <SkeletonBox className="h-12 w-1/2 rounded-none" />
-        <SkeletonBox className="h-12 w-1/2 rounded-none" />
-      </div>
-      <div className="p-6">
-        <SkeletonParagraph lines={8} />
-      </div>
-    </div>
-  );
-}
-function SkeletonGridRow() {
-  return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <SkeletonBox key={i} className="h-28 rounded-2xl" />
-      ))}
-    </div>
-  );
-}
-function SectionSkeleton({ titleWidth = 'w-56', items = 4 }: { titleWidth?: string; items?: number }) {
-  return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-      <SkeletonBox className={`h-7 ${titleWidth} mb-4`} />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {Array.from({ length: items }).map((_, i) => (
-          <SkeletonBox key={i} className="h-64 rounded-xl" />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ---------- Utilities ----------
-function useCounterAnimation(targetValue: number, duration: number = 2000, shouldStart: boolean = true) {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    if (!shouldStart) return;
-    let startTime: number | null = null;
-    let animationFrame: number;
-    const animate = (currentTime: number) => {
-      if (!startTime) startTime = currentTime;
-      const progress = Math.min((currentTime - startTime) / duration, 1);
-      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-      setCount(Math.floor(easeOutQuart * targetValue));
-      if (progress < 1) animationFrame = requestAnimationFrame(animate);
-    };
-    animationFrame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationFrame);
-  }, [targetValue, duration, shouldStart]);
-  return count;
-}
-function useDeferredMount(delay = 250) {
-  const [ready, setReady] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setReady(true), delay);
-    return () => clearTimeout(t);
-  }, [delay]);
-  return ready;
-}
-
-// ---------- Stats ----------
-function AnimatedStatsSection() {
-  const [isVisible, setIsVisible] = useState(false);
-  const statsRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) setIsVisible(true);
-    }, { threshold: 0.3 });
-    if (statsRef.current) observer.observe(statsRef.current);
-    return () => { if (statsRef.current) observer.unobserve(statsRef.current); };
-  }, []);
-  const bottlesSold = useCounterAnimation(1000, 2000, isVisible);
-  const menTreated = useCounterAnimation(10000, 2500, isVisible);
-  const rating = useCounterAnimation(45, 2000, isVisible);
-  return (
-    <div ref={statsRef} className="w-full bg-white border-y border-gray-200 py-8 md:py-12 my-8">
-      <div className="max-w-7xl mx-auto px-4">
-        <h2 className="text-center text-2xl md:text-3xl font-bold text-gray-900 mb-8">Trusted by Thousands</h2>
-        <div className="grid grid-cols-3 gap-6 md:gap-12">
-          <div className="text-center group">
-            <div className="bg-teal-50 rounded-2xl p-6 md:p-8 border-2 border-teal-100 hover:border-teal-300 transition-all duration-300 hover:shadow-lg">
-              <div className="text-teal-600">
-                <div className="text-3xl md:text-5xl font-bold mb-2">{bottlesSold}+</div>
-                <div className="text-sm md:text-base font-semibold text-gray-700">Bottles Sold</div>
-                <div className="text-xs md:text-sm text-gray-500 mt-1">Per Month</div>
-              </div>
-            </div>
-          </div>
-          <div className="text-center group">
-            <div className="bg-orange-50 rounded-2xl p-6 md:p-8 border-2 border-orange-100 hover:border-orange-300 transition-all duration-300 hover:shadow-lg">
-              <div className="text-orange-600">
-                <div className="text-3xl md:text-5xl font-bold mb-2">{(menTreated / 1000).toFixed(0)}K+</div>
-                <div className="text-sm md:text-base font-semibold text-gray-700">People Treated</div>
-                <div className="text-xs md:text-sm text-gray-500 mt-1">Successfully</div>
-              </div>
-            </div>
-          </div>
-          <div className="text-center group">
-            <div className="bg-yellow-50 rounded-2xl p-6 md:p-8 border-2 border-yellow-100 hover:border-yellow-300 transition-all duration-300 hover:shadow-lg">
-              <div className="text-yellow-600">
-                <div className="text-3xl md:text-5xl font-bold mb-2 flex items-center justify-center gap-2">
-                  {(rating / 10).toFixed(1)} <span className="text-yellow-500">★</span>
-                </div>
-                <div className="text-sm md:text-base font-semibold text-gray-700">Average Rating</div>
-                <div className="text-xs md:text-sm text-gray-500 mt-1">From Reviews</div>
-              </div>
-            </div>
-          </div>
+    <div className="max-w-7xl mx-auto px-4 py-8 md:py-12">
+      <div className="grid lg:grid-cols-2 gap-12">
+        <div className="animate-pulse bg-gray-100 rounded-[2.5rem] h-[500px] lg:h-[700px]" />
+        <div className="space-y-6 py-4">
+           <div className="h-6 w-32 bg-gray-100 rounded-full" />
+           <div className="h-12 w-3/4 bg-gray-100 rounded-xl" />
+           <div className="h-4 w-full bg-gray-100 rounded-full" />
+           <div className="h-20 w-full bg-gray-100 rounded-2xl" />
+           <div className="grid grid-cols-4 gap-4 mt-8">
+              {[1,2,3,4].map(i => <div key={i} className="h-24 bg-gray-100 rounded-2xl" />)}
+           </div>
         </div>
       </div>
     </div>
   );
 }
 
-// ---------- Page ----------
+// ---------- Page Component ----------
 export default function ProductClient({
   initialProduct,
   allProductsInitial,
@@ -246,9 +90,7 @@ export default function ProductClient({
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isBuyingNow, setIsBuyingNow] = useState(false);
-  const [isCouponCopied, setIsCouponCopied] = useState(false);
-
-  const deferBelowFold = useDeferredMount(250);
+  const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
     if (product) {
@@ -256,88 +98,14 @@ export default function ProductClient({
     }
   }, [product, trackViewContent]);
 
-  const handleCopyCoupon = () => {
-    navigator.clipboard.writeText('WELCOME100');
-    setIsCouponCopied(true);
-    toast({ title: '🎉 Coupon Copied!', description: 'WELCOME100 has been copied to clipboard. Apply it at checkout!' });
-    setTimeout(() => setIsCouponCopied(false), 3000);
-  };
-
-  const handleQuantityChange = (newQty: number) => {
-    if (newQty >= 1 && newQty <= 99) setQuantity(newQty);
-  };
-
-  // Full screen loader while first product fetch happens
-  if (isLoading && !product) {
-    return (
-      <>
-        <FullscreenLoader />
-        {/* If you want ONLY loader, remove the skeleton block below */}
-        <div className="min-h-screen bg-gray-50">
-          <div className="max-w-7xl mx-auto mt-6 md:py-8 md:px-4 flex flex-col lg:flex-row gap-8">
-            <div className="lg:w-1/2 hidden lg:block"><SkeletonGallery /></div>
-            <div className="lg:w-1/2">
-              <div className="bg-white rounded-2xl shadow-sm p-5 md:p-7 border border-gray-200">
-                <div className="mb-4"><SkeletonBadge /></div>
-                <SkeletonTitle />
-                <div className="mt-4 block lg:hidden"><SkeletonGallery /></div>
-                <div className="mt-4"><SkeletonParagraph lines={3} /></div>
-                <div className="mt-5"><SkeletonPrice /></div>
-                <div className="mt-6 flex items-center gap-4">
-                  <SkeletonBox className="h-14 w-14 rounded-xl" />
-                  <SkeletonBox className="h-14 w-24 rounded-xl" />
-                  <SkeletonBox className="h-14 w-14 rounded-xl" />
-                </div>
-                <div className="mt-6"><SkeletonGridRow /></div>
-              </div>
-            </div>
-          </div>
-          <div className="max-w-7xl mx-auto mt-8 p-4"><SkeletonTabs /></div>
-          <div className="max-w-7xl mx-auto mt-4 p-4"><SectionSkeleton titleWidth="w-64" items={4} /></div>
-          <div className="max-w-7xl mx-auto mt-4 p-4"><SectionSkeleton titleWidth="w-44" items={4} /></div>
-          <div className="max-w-7xl mx-auto mt-4 p-4"><SectionSkeleton titleWidth="w-52" items={4} /></div>
-        </div>
-      </>
-    );
-  }
-
-  if (error || (!products && !product)) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center bg-white rounded-2xl shadow-xl p-8 max-w-md border border-gray-200">
-          <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-red-600 text-2xl">⚠️</span>
-          </div>
-          <h2 className="text-xl font-bold text-gray-800 mb-2">Unable to Load Product</h2>
-          <p className="text-sm text-gray-600">Please check your connection and try again.</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!product) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center bg-white rounded-2xl shadow-xl p-8 max-w-md border border-gray-200">
-          <div className="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-orange-600 text-2xl">🔍</span>
-          </div>
-          <h2 className="text-xl font-bold text-gray-800 mb-2">Product Not Found</h2>
-          <p className="text-sm text-gray-600">This product may have been removed or is unavailable.</p>
-        </div>
-      </div>
-    );
-  }
+  if (isLoading && !product) return <PageSkeleton />;
+  if (error || (!products && !product)) return <div className="h-screen flex items-center justify-center text-gray-500">Product not found.</div>;
+  if (!product) return <div className="h-screen flex items-center justify-center text-gray-500">Product unavailable.</div>;
 
   const salePrice = parseFloat(product.price || '0');
   const regularPrice = parseFloat(product.regular_price || product.price || '0');
   const hasSiteSale = salePrice < regularPrice;
-  const totalPrice = salePrice * quantity;
-  const totalRegularPrice = regularPrice * quantity;
-  const totalSave = totalRegularPrice - totalPrice;
   const discountPercent = hasSiteSale ? Math.round(((regularPrice - salePrice) / regularPrice) * 100) : 0;
-
-  const { name } = product;
 
   const handleAddToCart = async () => {
     setIsAddingToCart(true);
@@ -345,18 +113,17 @@ export default function ProductClient({
       for (let i = 0; i < quantity; i++) {
         addToCart({
           ...product,
-          name: product.name + (quantity > 1 ? ` (${i + 1} of ${quantity})` : ''),
           price: salePrice.toString(),
           images: product.images || [],
         });
       }
       trackAddToCart({ id: product.id, name: product.name, price: salePrice }, quantity);
-      toast({ title: '✓ Added to cart', description: `${quantity} x ${product.name} added successfully.` });
+      toast({ title: 'Added to Bag', description: `${quantity} x ${product.name} in cart.` });
     } catch (error) {
-      console.error('Add to cart failed:', error);
-      toast({ title: 'Error', description: 'Failed to add item to cart', variant: 'destructive' });
+      console.error(error);
+      toast({ title: 'Error', description: 'Could not add to cart', variant: 'destructive' });
     } finally {
-      setTimeout(() => setIsAddingToCart(false), 1000);
+      setTimeout(() => setIsAddingToCart(false), 600);
     }
   };
 
@@ -366,274 +133,218 @@ export default function ProductClient({
       for (let i = 0; i < quantity; i++) {
         addToCart({
           ...product,
-          name: product.name + (quantity > 1 ? ` (${i + 1} of ${quantity})` : ''),
           price: salePrice.toString(),
           images: product.images || [],
         });
       }
-      trackAddToCart({ id: product.id, name: product.name, price: salePrice }, quantity);
       const cartItems = [{ id: product.id, name: product.name, price: salePrice, quantity }];
-      const total = salePrice * quantity;
-      trackInitiateCheckout(cartItems, total);
-      toast({ title: 'Proceeding to checkout', description: `${quantity} x ${product.name} added to cart.`, duration: 1200 });
-      setTimeout(() => {
-        router.push('/checkout');
-        setIsBuyingNow(false);
-      }, 1200);
+      trackInitiateCheckout(cartItems, salePrice * quantity);
+      router.push('/checkout');
     } catch (error) {
-      console.error('Buy now failed:', error);
-      toast({ title: 'Error', description: 'Failed to process order', variant: 'destructive' });
+      console.error(error);
       setIsBuyingNow(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="pb-24 sm:pb-0">
-        <div className="max-w-7xl mx-auto mt-6 md:py-8 md:px-4 flex flex-col lg:flex-row gap-8">
-          {/* Image Section - Desktop */}
-          <div className="lg:w-1/2 hidden lg:block">
-            <div className="bg-white rounded-2xl mx-3 shadow-sm lg:p-6 border border-gray-200 sticky top-4">
-              <ImageGallery images={product.images || []} />
+    <div className="min-h-screen bg-white font-sans text-gray-900 pb-32 lg:pb-0">
+      
+      {/* Main Product Section */}
+      <div className="max-w-7xl mx-auto px-0 lg:px-6 pt-0 lg:pt-12">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
+          
+          {/* 1. Image Gallery */}
+          <div className="lg:w-[55%] w-full">
+            <div className="sticky top-24">
+               <div className="lg:rounded-[2.5rem] overflow-hidden bg-gray-50 border border-gray-100 shadow-sm">
+                  <ImageGallery images={product.images || []} />
+               </div>
             </div>
           </div>
 
-          {/* Details Section */}
-          <div className="lg:w-1/2">
-            <div className="bg-white rounded-2xl shadow-sm p-5 md:p-7 border border-gray-200">
-              {product.attributes?.length ? (
-                <div className="mb-4 inline-block">
-                  <span className="bg-teal-600 text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider">
-                    {product.attributes[0]?.option || 'Default'}
-                  </span>
+          {/* 2. Product Details */}
+          <div className="lg:w-[45%] px-5 lg:px-0 pt-2 lg:pt-4">
+             
+             {/* Category Tag */}
+             <div className="flex items-center gap-2 mb-4">
+                <span className="px-3 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold uppercase tracking-widest rounded-full">
+                   {product.attributes?.[0]?.option || 'Wellness'}
+                </span>
+                {hasSiteSale && (
+                   <span className="px-3 py-1 bg-black text-white text-[10px] font-bold uppercase tracking-widest rounded-full animate-pulse">
+                      Sale
+                   </span>
+                )}
+             </div>
+
+             {/* ✅ FIXED: Smaller Title (Text-2xl/3xl instead of 5xl) */}
+             <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4 leading-snug">
+                {product.name}
+             </h1>
+
+             {/* Rating */}
+             <div className="flex items-center gap-4 mb-6">
+                <div className="flex gap-0.5">
+                   {[1,2,3,4,5].map(i => (
+                      <Star key={i} className="w-4 h-4 fill-black text-black" />
+                   ))}
                 </div>
-              ) : null}
+                <span className="text-sm font-medium border-b border-gray-300 pb-0.5">4.9 (1,240 Reviews)</span>
+             </div>
 
-              <h1 className="text-2xl lg:text-4xl font-bold text-gray-900 mb-4 leading-tight">{name}</h1>
-
-              {/* Mobile Image Gallery */}
-              <div className="bg-white block lg:hidden mt-4 rounded-2xl shadow-sm border border-gray-200">
-                <ImageGallery images={product.images || []} />
-              </div>
-
-              {product.short_description && (
-                <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed mb-3 mt-3"
-                     dangerouslySetInnerHTML={{ __html: product.short_description }} />
-              )}
-
-              {/* Price Section */}
-              <div className="bg-white border-2 border-gray-200 rounded-2xl p-6 mb-3 mt-3">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-end gap-3">
-                    <span className="text-4xl lg:text-5xl font-bold text-gray-900">₹{totalPrice.toFixed(2)}</span>
-                    {hasSiteSale && (
-                      <span className="line-through text-gray-400 font-semibold text-xl lg:text-2xl mb-2">
-                        ₹{totalRegularPrice.toFixed(2)}
-                      </span>
-                    )}
-                  </div>
-                  {hasSiteSale && (
-                    <div className="bg-red-600 text-white px-5 py-2 rounded-full font-bold text-base shadow-md">
-                      {discountPercent}% OFF
-                    </div>
-                  )}
-                </div>
-                {quantity > 1 && (
-                  <div className="text-sm text-gray-600 font-medium mt-2 flex items-center gap-1">
-                    <span className="text-teal-600">•</span>
-                    ₹{salePrice.toFixed(2)} per unit × {quantity} items
-                  </div>
+             {/* Price */}
+             <div className="flex items-baseline gap-4 mb-8 pb-8 border-b border-gray-100">
+                <span className="text-3xl font-bold text-black">₹{salePrice.toLocaleString()}</span>
+                {hasSiteSale && (
+                   <span className="text-lg text-gray-400 line-through decoration-gray-300">
+                      ₹{regularPrice.toLocaleString()}
+                   </span>
                 )}
                 {hasSiteSale && (
-                  <div className="text-base text-green-700 font-bold mt-3 bg-green-50 px-4 py-2 rounded-lg inline-block">
-                    💰 You save ₹{totalSave.toFixed(2)}
-                  </div>
+                   <span className="text-xs font-bold text-green-700 bg-green-50 px-2 py-1 rounded">
+                      Save {discountPercent}%
+                   </span>
                 )}
-              </div>
+             </div>
 
-              {/* Quantity Selector */}
-              <div className="mb-6">
-                <label className="block text-gray-900 font-bold text-base mb-4">Select Quantity</label>
+             {/* Short Description */}
+             <div 
+               className="prose prose-sm text-gray-600 mb-8 leading-relaxed"
+               dangerouslySetInnerHTML={{ __html: product.short_description || '' }} 
+             />
+
+             {/* Desktop Actions */}
+             <div className="hidden lg:block space-y-6">
                 <div className="flex items-center gap-4">
-                  <button
-                    onClick={() => handleQuantityChange(quantity - 1)}
-                    disabled={quantity <= 1}
-                    className="bg-white hover:bg-gray-100 disabled:bg-gray-100 disabled:cursor-not-allowed text-gray-900 font-bold w-14 h-14 rounded-xl border-2 border-gray-300 hover:border-teal-500 shadow-sm hover:shadow-md transform hover:scale-105 transition-all duration-200 text-2xl"
-                  >
-                    −
-                  </button>
-                  <div className="bg-teal-50 border-2 border-teal-500 rounded-xl px-8 py-4 min-w-[100px] text-center">
-                    <span className="text-3xl font-bold text-teal-700">{quantity}</span>
-                  </div>
-                  <button
-                    onClick={() => handleQuantityChange(quantity + 1)}
-                    disabled={quantity >= 99}
-                    className="bg-white hover:bg-gray-100 disabled:bg-gray-100 disabled:cursor-not-allowed text-gray-900 font-bold w-14 h-14 rounded-xl border-2 border-gray-300 hover:border-orange-500 shadow-sm hover:shadow-md transform hover:scale-105 transition-all duration-200 text-2xl"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-
-              {/* Offer Section */}
-              <div className="mb-7 bg-orange-50 border-2 border-orange-400 rounded-2xl p-5 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-orange-200 rounded-full -mr-16 -mt-16 opacity-30"></div>
-                <div className="relative">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="text-2xl">🎁</span>
-                        <span className="bg-orange-600 text-white px-3 py-1 rounded-full font-bold text-xs uppercase tracking-wide">Limited Time</span>
-                      </div>
-                      <h3 className="font-bold text-gray-900 text-lg mb-1">Get ₹100 OFF on your first order</h3>
-                      <p className="text-gray-700 text-sm font-medium">Use coupon code at checkout</p>
-                    </div>
-                    <div className="flex flex-col items-end gap-3 ml-4">
-                      <div className="bg-white border-2 border-orange-500 rounded-xl px-4 py-3 font-mono font-bold text-orange-600 text-lg shadow-md">
-                        WELCOME100
-                      </div>
-                      <button
-                        onClick={handleCopyCoupon}
-                        className={`px-5 py-2 rounded-lg text-sm font-bold transition-all duration-300 shadow-md ${
-                          isCouponCopied ? 'bg-green-600 text-white' : 'bg-orange-600 hover:bg-orange-700 text-white'
-                        }`}
+                   <span className="text-xs font-bold uppercase tracking-widest text-gray-400">Quantity</span>
+                   <div className="flex items-center bg-gray-100 rounded-full p-1">
+                      <button 
+                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                         className="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm hover:scale-105 transition-transform"
                       >
-                        {isCouponCopied ? '✓ Copied!' : 'Copy Code'}
+                         <Minus className="w-4 h-4" />
                       </button>
-                    </div>
-                  </div>
+                      <span className="w-12 text-center font-bold text-lg">{quantity}</span>
+                      <button 
+                         onClick={() => setQuantity(Math.min(99, quantity + 1))}
+                         className="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm hover:scale-105 transition-transform"
+                      >
+                         <Plus className="w-4 h-4" />
+                      </button>
+                   </div>
                 </div>
-              </div>
 
-              {/* Action Buttons - Desktop */}
-              <div className="hidden sm:flex flex-col sm:flex-row gap-4 mb-7">
-                <button
-                  className={`flex-1 bg-teal-600 hover:bg-teal-700 text-white font-bold px-8 py-5 rounded-xl text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 ${isAddingToCart ? 'scale-95' : ''}`}
-                  onClick={handleAddToCart}
-                  disabled={isAddingToCart}
-                >
-                  <span className="flex items-center justify-center gap-2">
-                    {isAddingToCart ? '✓ Added to Cart' : <>🛒 Add to Cart</>}
-                  </span>
-                </button>
-                <button
-                  className={`flex-1 bg-orange-600 hover:bg-orange-700 text-white font-bold px-8 py-5 rounded-xl text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 ${isBuyingNow ? 'scale-95' : ''}`}
-                  onClick={handleBuyNow}
-                  disabled={isBuyingNow}
-                >
-                  <span className="flex items-center justify-center gap-2">
-                    {isBuyingNow ? 'Processing...' : <>⚡ Buy Now</>}
-                  </span>
-                </button>
-              </div>
+                <div className="flex gap-4">
+                   <button
+                      onClick={handleAddToCart}
+                      disabled={isAddingToCart}
+                      className="flex-1 bg-gray-100 hover:bg-gray-200 text-black py-4 rounded-xl font-bold uppercase tracking-wider text-sm transition-all"
+                   >
+                      {isAddingToCart ? 'Adding...' : 'Add to Bag'}
+                   </button>
+                   <button
+                      onClick={handleBuyNow}
+                      disabled={isBuyingNow}
+                      className="flex-1 bg-black hover:bg-gray-900 text-white py-4 rounded-xl font-bold uppercase tracking-wider text-sm transition-all shadow-xl hover:shadow-2xl"
+                   >
+                      {isBuyingNow ? 'Processing...' : 'Buy Now'}
+                   </button>
+                </div>
+             </div>
 
-              {/* Trust Badges */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+             {/* Trust Factors */}
+             <div className="grid grid-cols-2 gap-4 mt-8 lg:mt-12">
                 {[
-                  ['🚚', 'Fast Delivery', 'Express shipping'],
-                  ['🛡️', 'Authentic', 'Quality assured'],
-                  ['🌿', 'Natural', 'Ayurvedic blend'],
-                  ['💳', 'Prepaid Only', 'Secure payment'],
-                ].map(([icon, label, subtitle], idx) => (
-                  <div key={idx} className="bg-white rounded-xl p-4 text-center hover:shadow-md transition-all duration-200 border-2 border-gray-200 hover:border-teal-400">
-                    <div className="text-2xl mb-2">{icon}</div>
-                    <div className="font-bold text-gray-900 text-sm mb-1">{label}</div>
-                    <div className="text-xs text-gray-600">{subtitle}</div>
-                  </div>
+                   { icon: Truck, title: "Free Shipping", sub: "On orders above ₹999" },
+                   { icon: ShieldCheck, title: "Authentic", sub: "100% Genuine Products" },
+                   { icon: CreditCard, title: "Secure Pay", sub: "Encrypted Payments" },
+                   { icon: Check, title: "Easy Returns", sub: "7 Day Policy" },
+                ].map((item, idx) => (
+                   <div key={idx} className="flex gap-3 items-start p-4 rounded-2xl bg-gray-50/50 border border-gray-100">
+                      <item.icon className="w-5 h-5 text-gray-900 shrink-0" />
+                      <div>
+                         <h4 className="font-bold text-xs uppercase tracking-wider text-black">{item.title}</h4>
+                         <p className="text-[10px] text-gray-500 mt-0.5">{item.sub}</p>
+                      </div>
+                   </div>
                 ))}
-              </div>
+             </div>
+
+             {/* Tabs */}
+             <div className="mt-12 border-t border-gray-100">
+                <Tab.Group selectedIndex={activeTab} onChange={setActiveTab}>
+                   <Tab.List className="flex gap-8 border-b border-gray-100 mb-6 overflow-x-auto">
+                      {['Description', 'Ingredients', 'Shipping'].map((t, i) => (
+                         <Tab key={i} className={({ selected }) => 
+                            `pb-4 text-sm font-bold uppercase tracking-wider outline-none border-b-2 transition-colors whitespace-nowrap ${selected ? 'border-black text-black' : 'border-transparent text-gray-400 hover:text-gray-600'}`
+                         }>
+                            {t}
+                         </Tab>
+                      ))}
+                   </Tab.List>
+                   <Tab.Panels className="min-h-[150px]">
+                      <Tab.Panel>
+                         <div className="prose prose-sm max-w-none text-gray-600 font-light" dangerouslySetInnerHTML={{ __html: product.description || '' }} />
+                      </Tab.Panel>
+                      <Tab.Panel>
+                         <p className="text-gray-600 text-sm leading-relaxed">
+                            Premium plant-based extracts including <strong>Ashwagandha, Shilajit, Gokshura</strong>, and essential minerals. No artificial fillers or preservatives.
+                         </p>
+                      </Tab.Panel>
+                      <Tab.Panel>
+                         <div className="bg-gray-50 p-4 rounded-xl space-y-2">
+                            <p className="text-sm text-gray-600"><strong>Dispatch:</strong> Within 24 hours</p>
+                            <p className="text-sm text-gray-600"><strong>Delivery:</strong> 3-5 business days</p>
+                         </div>
+                      </Tab.Panel>
+                   </Tab.Panels>
+                </Tab.Group>
+             </div>
+
+          </div>
+        </div>
+
+        {/* --- Content Sections Below --- */}
+        <div className="mt-20 lg:mt-32 space-y-20 lg:space-y-32">
+           
+           {/* ✅ FIXED: Props passed correctly */}
+           <ProductCreatives productSlug={slug} />
+           
+           <CustomerMedia productSlug={slug} />
+           
+           <ProductReviews productId={product.id} productName={product.name} />
+           
+           <ProductFAQ productSlug={slug} productName={product.name} />
+           
+           <RelatedProducts currentProduct={product} allProducts={products || []} />
+        </div>
+      </div>
+
+      {/* --- Mobile Sticky Action Bar --- */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-3 px-4 lg:hidden z-50 safe-area-bottom shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+         <div className="flex gap-3 items-center">
+            <div className="flex items-center bg-gray-100 rounded-lg px-2 h-12">
+               <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="p-2"><Minus className="w-4 h-4" /></button>
+               <span className="w-6 text-center font-bold text-sm">{quantity}</span>
+               <button onClick={() => setQuantity(Math.min(99, quantity + 1))} className="p-2"><Plus className="w-4 h-4" /></button>
             </div>
-          </div>
-        </div>
-
-        {/* Stats */}
-        <AnimatedStatsSection />
-
-        {/* Description Tabs */}
-        <div className="max-w-7xl mx-auto mt-4 p-4 lg:p-3">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-            <Tab.Group>
-              <Tab.List className="flex bg-gray-100 border-b-2 border-gray-200">
-                {['Description', 'Additional Info'].map((label, idx) => (
-                  <Tab key={idx} className={({ selected }) =>
-                    `flex-1 py-5 px-4 text-base lg:text-lg font-bold outline-none transition-all duration-200 ${
-                      selected 
-                        ? 'text-teal-600 bg-white border-b-4 border-teal-600' 
-                        : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50'
-                    }`
-                  }>
-                    {label}
-                  </Tab>
-                ))}
-              </Tab.List>
-              <Tab.Panels className="p-6 lg:p-8">
-                <Tab.Panel>
-                  <div className="prose prose-base max-w-none text-gray-700 leading-relaxed" 
-                       dangerouslySetInnerHTML={{ __html: product.description || '' }} />
-                </Tab.Panel>
-                <Tab.Panel>
-                  <div className="prose max-w-none text-gray-700">
-                    <h3 className="font-bold text-2xl text-gray-900 mb-5">Shipping & Delivery Information</h3>
-                    <div className="bg-teal-50 rounded-2xl p-6 border-2 border-teal-200 space-y-4">
-                      <p className="text-gray-800 leading-relaxed text-base font-medium">
-                        📦 Your tracking ID and order details will be sent to your WhatsApp once the order is confirmed.
-                      </p>
-                      <p className="text-gray-800 leading-relaxed text-base font-medium">
-                        <strong className="text-gray-900">Delivery Timeline:</strong> Orders are typically delivered within 2-3 business days after placement.
-                      </p>
-                    </div>
-                  </div>
-                </Tab.Panel>
-              </Tab.Panels>
-            </Tab.Group>
-          </div>
-        </div>
-
-        {/* Deferred heavy sections with skeleton fallbacks */}
-        <div className="max-w-7xl mx-auto mt-4 p-4 lg:p-6">
-          {deferBelowFold ? <ProductCreatives productSlug={slug} /> : <SectionSkeleton titleWidth="w-56" items={4} />}
-        </div>
-        <div className="max-w-7xl mx-auto mt-4 p-4 lg:p-6">
-          {deferBelowFold ? <ProductFAQ productSlug={slug} productName={product.name} /> : <SectionSkeleton titleWidth="w-40" items={4} />}
-        </div>
-        <div className="max-w-7xl mx-auto mt-4 p-4 lg:p-6">
-          {deferBelowFold ? <ProductReviews productId={product.id} productName={product.name} /> : <SectionSkeleton titleWidth="w-48" items={4} />}
-        </div>
-        <div className="max-w-7xl mx-auto mt-4 p-4 lg:p-6">
-          {deferBelowFold ? <CustomerMedia productSlug={slug} /> : <SectionSkeleton titleWidth="w-40" items={4} />}
-        </div>
-        {deferBelowFold ? (
-          <RelatedProducts currentProduct={product} allProducts={products || []} />
-        ) : (
-          <div className="max-w-7xl mx-auto mt-4 p-4">
-            <SectionSkeleton titleWidth="w-44" items={4} />
-          </div>
-        )}
+            
+            <button
+               onClick={handleBuyNow}
+               disabled={isBuyingNow}
+               className="flex-1 bg-black text-white h-12 rounded-lg font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2 shadow-lg"
+            >
+               {isBuyingNow ? 'Processing...' : (
+                  <>
+                     <span>Buy Now</span>
+                     <span className="w-1 h-1 bg-white/50 rounded-full mx-1" />
+                     <span>₹{(salePrice * quantity).toLocaleString()}</span>
+                  </>
+               )}
+            </button>
+         </div>
       </div>
 
-      {/* Mobile Fixed Bottom Buttons */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 p-4 shadow-2xl z-50 sm:hidden">
-        <div className="flex gap-3">
-          <button
-            className={`flex-1 bg-teal-600 text-white font-bold px-4 py-4 rounded-xl text-base shadow-lg transition-all duration-200 ${isAddingToCart ? 'scale-95' : ''}`}
-            onClick={handleAddToCart}
-            disabled={isAddingToCart}
-          >
-            <span className="flex items-center justify-center gap-2">
-              {isAddingToCart ? '✓ Added' : <>🛒 Add to Cart</>}
-            </span>
-          </button>
-          <button
-            className={`flex-1 bg-orange-600 text-white font-bold px-4 py-4 rounded-xl text-base shadow-lg transition-all duration-200 ${isBuyingNow ? 'scale-95' : ''}`}
-            onClick={handleBuyNow}
-            disabled={isBuyingNow}
-          >
-            <span className="flex items-center justify-center gap-2">
-              {isBuyingNow ? 'Processing...' : <>⚡ Buy Now</>}
-            </span>
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
