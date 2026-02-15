@@ -1,8 +1,8 @@
-'use client';
+// components/ProductCard.tsx (Server Component)
 
 import Link from "next/link";
+import Image from "next/image";
 import { productToSlug } from "../lib/slug";
-import { ShoppingBagIcon } from "@heroicons/react/24/outline";
 import { StarIcon as StarIconSolid } from "@heroicons/react/24/solid";
 
 interface Product {
@@ -19,105 +19,93 @@ interface Product {
   badge?: "New" | "Sale";
 }
 
-// Stable bought count helper
-function getStableBoughtCount(product: Product): string {
-  if (typeof window === "undefined") return "";
-  const key = `boughtCount:${product.id || product.slug}`;
-  const stored = window.localStorage.getItem(key);
-  if (stored) return `${stored}`;
-  const anchors = ["1.2k", "850", "2.5k", "500+"];
-  const pick = anchors[Math.floor(Math.random() * anchors.length)];
-  window.localStorage.setItem(key, pick);
-  return pick;
-}
-
 export default function ProductCard({ product }: { product: Product }) {
   const productUrl = `/product/${productToSlug(product)}`;
-  const rating = Number(product.average_rating);
+  const rating = Number(product.average_rating) || 4.5;
   const salePrice = Number(product.price);
   const originalPrice = Number(product.regular_price);
   const isOnSale = originalPrice > salePrice;
+  const reviewCount = product.rating_count || 42;
 
   const discountPercentage = isOnSale
     ? Math.round(((originalPrice - salePrice) / originalPrice) * 100)
     : 0;
 
-  const boughtCount = getStableBoughtCount(product);
-
   return (
     <div className="group relative w-full h-full flex flex-col">
-      <Link href={productUrl} className="block relative overflow-hidden rounded-[2rem] bg-gray-100 aspect-[0.85]">
+      <Link 
+        href={productUrl} 
+        className="block relative overflow-hidden rounded-2xl lg:rounded-[2rem] bg-gray-50 aspect-[0.85] border border-gray-100 hover:shadow-lg transition-shadow"
+      >
         
-        {/* Product Image */}
-        <img
+        {/* Optimized Image */}
+        <Image
           src={product.images?.[0]?.src || "/placeholder.png"}
           alt={product.name}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110 mix-blend-multiply"
+          fill
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-105 mix-blend-multiply"
+          quality={75}
+          loading="lazy"
         />
 
-        {/* Unique Gradient Overlay (Only visible on hover) */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        {/* Hover Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
-        {/* Floating Badges */}
-        <div className="absolute top-4 left-4 flex flex-col gap-2">
+        {/* Badges */}
+        <div className="absolute top-3 left-3 flex flex-col gap-2">
            {isOnSale && (
-             <span className="backdrop-blur-md bg-white/90 text-black text-[10px] font-bold px-3 py-1 rounded-full shadow-sm uppercase tracking-wider">
+             <span className="bg-black text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-sm uppercase tracking-wider">
                -{discountPercentage}%
              </span>
            )}
            {product.badge === "New" && (
-             <span className="backdrop-blur-md bg-black/80 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-sm uppercase tracking-wider">
-               New Drop
+             <span className="bg-white text-black text-[10px] font-bold px-3 py-1 rounded-full shadow-sm uppercase tracking-wider">
+               New
              </span>
            )}
-        </div>
-
-        {/* UNIQUE INTERACTION: The Floating 'Add' Pill */}
-        <div className="absolute bottom-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-10">
-           <button className="flex items-center gap-2 bg-white text-black px-4 py-3 rounded-full shadow-xl hover:bg-black hover:text-white transition-colors">
-              <ShoppingBagIcon className="w-4 h-4" />
-              <span className="text-xs font-bold uppercase tracking-wider pr-1">Add</span>
-           </button>
         </div>
 
       </Link>
 
-      {/* Minimalist Info Section */}
-      <div className="pt-4 px-1 flex flex-col gap-1">
+      {/* Product Info */}
+      <div className="pt-3 px-1 flex flex-col gap-2">
         
-        {/* Top Row: Rating & Bought Count (Social Proof) */}
-        <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-           <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-md">
-              <StarIconSolid className="w-3 h-3 text-orange-400" />
-              <span className="font-medium text-gray-900">{rating.toFixed(1)}</span>
-              <span className="text-gray-300">/</span>
-              <span>{product.rating_count || 42} reviews</span>
+        {/* Rating */}
+        <div className="flex items-center gap-1.5 text-xs">
+           <div className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-md">
+              <StarIconSolid className="w-3 h-3 text-yellow-400" />
+              <span className="font-semibold text-gray-900">{rating.toFixed(1)}</span>
            </div>
-           {boughtCount && (
-             <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
-               {boughtCount} Sold
-             </span>
-           )}
+           <span className="text-gray-400">({reviewCount})</span>
         </div>
 
         {/* Product Name */}
-        <Link href={productUrl} className="group-hover:text-orange-600 transition-colors">
-           <h3 className="font-serif text-lg text-gray-900 leading-tight line-clamp-2">
+        <Link href={productUrl} className="hover:text-gray-600 transition-colors">
+           <h3 className="font-semibold text-sm lg:text-base text-gray-900 leading-snug line-clamp-2">
              {product.name}
            </h3>
         </Link>
 
-        {/* Price Row */}
-        <div className="flex items-baseline gap-2 mt-1">
-           <span className="text-base font-bold text-black">
+        {/* Price */}
+        <div className="flex items-baseline gap-2 mb-2">
+           <span className="text-lg font-bold text-black">
              ₹{salePrice.toLocaleString()}
            </span>
            {isOnSale && (
-             <span className="text-sm text-gray-400 line-through decoration-gray-300 font-light">
+             <span className="text-sm text-gray-400 line-through">
                ₹{originalPrice.toLocaleString()}
              </span>
            )}
         </div>
+
+        {/* Buy Now Button with Link */}
+        <Link 
+           href={productUrl}
+           className="w-full bg-black hover:bg-gray-900 text-white py-2.5 rounded-xl text-sm font-bold uppercase tracking-wider transition-all text-center block"
+        >
+           Buy Now
+        </Link>
 
       </div>
     </div>

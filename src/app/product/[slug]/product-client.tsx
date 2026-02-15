@@ -1,7 +1,7 @@
 // app/products/[slug]/product-client.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { useQuery } from '@tanstack/react-query';
@@ -38,6 +38,8 @@ export interface Product {
   short_description?: string
   images: ImageData[]
   attributes?: Attribute[]
+  average_rating?: string
+  rating_count?: number
 }
 
 // ---------- Modern Skeleton ----------
@@ -73,6 +75,9 @@ export default function ProductClient({
   const router = useRouter();
   const { addToCart } = useCart();
   const { trackViewContent, trackAddToCart, trackInitiateCheckout } = useFacebookPixel();
+  
+  // ✅ Add ref for reviews section
+  const reviewsRef = useRef<HTMLDivElement>(null);
 
   const { data: products, isLoading, error } = useQuery<Product[]>({
     queryKey: ['all-products'],
@@ -106,6 +111,20 @@ export default function ProductClient({
   const regularPrice = parseFloat(product.regular_price || product.price || '0');
   const hasSiteSale = salePrice < regularPrice;
   const discountPercent = hasSiteSale ? Math.round(((regularPrice - salePrice) / regularPrice) * 100) : 0;
+
+  // ✅ Get real review data from product
+  const averageRating = parseFloat(product.average_rating || '0');
+  const ratingCount = product.rating_count || 0;
+  const displayRating = averageRating > 0 ? averageRating : 4.9; // Fallback if no rating
+  const displayCount = ratingCount > 0 ? ratingCount : 0;
+
+  // ✅ Scroll to reviews function
+  const scrollToReviews = () => {
+    reviewsRef.current?.scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'start' 
+    });
+  };
 
   const handleAddToCart = async () => {
     setIsAddingToCart(true);
@@ -177,20 +196,31 @@ export default function ProductClient({
                 )}
              </div>
 
-             {/* ✅ FIXED: Smaller Title (Text-2xl/3xl instead of 5xl) */}
              <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4 leading-snug">
                 {product.name}
              </h1>
 
-             {/* Rating */}
-             <div className="flex items-center gap-4 mb-6">
+             {/* ✅ Real Rating - Clickable to scroll to reviews */}
+             <button 
+                onClick={scrollToReviews}
+                className="flex items-center gap-4 mb-6 hover:opacity-70 transition-opacity group"
+             >
                 <div className="flex gap-0.5">
                    {[1,2,3,4,5].map(i => (
-                      <Star key={i} className="w-4 h-4 fill-black text-black" />
+                      <Star 
+                        key={i} 
+                        className={`w-4 h-4 transition-colors ${
+                          i <= Math.round(displayRating) 
+                            ? 'fill-yellow-400 text-yellow-400' 
+                            : 'fill-gray-200 text-gray-200'
+                        }`} 
+                      />
                    ))}
                 </div>
-                <span className="text-sm font-medium border-b border-gray-300 pb-0.5">4.9 (1,240 Reviews)</span>
-             </div>
+                <span className="text-sm font-medium border-b border-gray-300 pb-0.5 group-hover:border-gray-900">
+                  {displayRating.toFixed(1)} {displayCount > 0 ? `(${displayCount} Reviews)` : ''}
+                </span>
+             </button>
 
              {/* Price */}
              <div className="flex items-baseline gap-4 mb-8 pb-8 border-b border-gray-100">
@@ -307,12 +337,14 @@ export default function ProductClient({
         {/* --- Content Sections Below --- */}
         <div className="mt-20 lg:mt-32 space-y-20 lg:space-y-32">
            
-           {/* ✅ FIXED: Props passed correctly */}
            <ProductCreatives productSlug={slug} />
            
            <CustomerMedia productSlug={slug} />
            
-           <ProductReviews productId={product.id} productName={product.name} />
+           {/* ✅ Add ref to reviews section */}
+           <div ref={reviewsRef} className="scroll-mt-24">
+              <ProductReviews productId={product.id} productName={product.name} />
+           </div>
            
            <ProductFAQ productSlug={slug} productName={product.name} />
            
