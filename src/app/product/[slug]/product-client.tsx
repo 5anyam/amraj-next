@@ -285,10 +285,10 @@ export default function ProductClient({
              {/* Trust Factors */}
              <div className="grid grid-cols-2 gap-4 mt-8 lg:mt-12">
                 {[
-                   { icon: Truck, title: "Free Shipping", sub: "On orders above ₹999" },
+                   { icon: Truck, title: "Free Shipping", sub: "On all orders" },
                    { icon: ShieldCheck, title: "Authentic", sub: "100% Genuine Products" },
                    { icon: CreditCard, title: "Secure Pay", sub: "Encrypted Payments" },
-                   { icon: Check, title: "Fast delivery", sub: "3 Day Delivery" },
+                   { icon: Check, title: "Fast delivery", sub: "On Time Delivery" },
                 ].map((item, idx) => (
                    <div key={idx} className="flex gap-3 items-start p-4 rounded-2xl bg-gray-50/50 border border-gray-100">
                       <item.icon className="w-5 h-5 text-gray-900 shrink-0" />
