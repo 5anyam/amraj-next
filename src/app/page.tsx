@@ -327,7 +327,7 @@ export default function Homepage() {
       <section style={{ padding: '80px 0', background: '#faf7f2' }} id="products">
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 32px' }}>
 
-          <div className="reveal" ref={productsRef} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingBottom: 40, marginBottom: 0, borderBottom: '3px solid #0f1117', marginBottom: 0 }}>
+          <div className="reveal" ref={productsRef} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingBottom: 40, marginBottom: 0, borderBottom: '3px solid #0f1117' }}>
             <div>
               <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#F07B32', fontWeight: 600, display: 'block', marginBottom: 10 }}>◆ Our Bestsellers</span>
               <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px,6vw,88px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.9 }}>
