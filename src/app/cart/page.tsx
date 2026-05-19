@@ -16,18 +16,18 @@ export default function CartPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#faf7f2' }}>
-      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '40px 32px' }}>
+      <div className="cart-container" style={{ maxWidth: 1280, margin: '0 auto', padding: '40px 32px' }}>
 
         {/* Header */}
         <div style={{ marginBottom: 36 }}>
           <Link href="/shop" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(15,17,23,0.5)', textDecoration: 'none', marginBottom: 20 }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#F07B32')}
+            onMouseEnter={e => (e.currentTarget.style.color = '#0D9488')}
             onMouseLeave={e => (e.currentTarget.style.color = 'rgba(15,17,23,0.5)')}
           >
             <ArrowLeft size={14} /> CONTINUE SHOPPING
           </Link>
           <h1 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(52px,7vw,88px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.9 }}>
-            SHOPPING<br /><span style={{ color: '#F07B32' }}>CART.</span>
+            SHOPPING<br /><span style={{ color: '#0D9488' }}>CART.</span>
           </h1>
           {items.length > 0 && (
             <p style={{ fontSize: 12, color: 'rgba(15,17,23,0.5)', marginTop: 8, letterSpacing: '0.08em' }}>
@@ -44,17 +44,17 @@ export default function CartPage() {
             </div>
             <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 36, color: '#0f1117', marginBottom: 10, letterSpacing: '0.04em' }}>YOUR CART IS EMPTY</h2>
             <p style={{ fontSize: 13, color: 'rgba(15,17,23,0.5)', marginBottom: 28, lineHeight: 1.6 }}>Looks like you haven&apos;t added any items yet.</p>
-            <Link href="/shop" style={{ display: 'inline-block', background: '#F07B32', color: '#fff', padding: '13px 28px', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none' }}>
+            <Link href="/shop" style={{ display: 'inline-block', background: '#0D9488', color: '#fff', padding: '13px 28px', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none' }}>
               SHOP NOW →
             </Link>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 32, alignItems: 'start' }}>
+          <div className="cart-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 32, alignItems: 'start' }}>
 
             {/* Cart Items */}
             <div style={{ border: '3px solid #0f1117', background: '#fff', boxShadow: '4px 4px 0 #0f1117', overflow: 'hidden' }}>
               <div style={{ padding: '18px 24px', borderBottom: '3px solid #0f1117', background: '#0f1117' }}>
-                <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 20, color: '#F07B32', letterSpacing: '0.08em' }}>CART ITEMS</h2>
+                <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 20, color: '#0D9488', letterSpacing: '0.08em' }}>CART ITEMS</h2>
               </div>
 
               {items.map((item, idx) => {
@@ -90,8 +90,8 @@ export default function CartPage() {
 
                         {/* Item total + remove */}
                         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                          <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 22, color: '#F07B32' }}>₹{(parseFloat(item.price) * item.quantity).toLocaleString()}</span>
-                          <button onClick={() => removeFromCart(item.id)} style={{ width: 32, height: 32, background: 'none', border: '2px solid rgba(15,17,23,0.2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(15,17,23,0.4)', transition: 'border-color 0.2s, color 0.2s, background 0.2s' }} onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = '#F07B32'; el.style.color = '#F07B32'; el.style.background = '#fff5f0'; }} onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = 'rgba(15,17,23,0.2)'; el.style.color = 'rgba(15,17,23,0.4)'; el.style.background = 'none'; }}>
+                          <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 22, color: '#0D9488' }}>₹{(parseFloat(item.price) * item.quantity).toLocaleString()}</span>
+                          <button onClick={() => removeFromCart(item.id)} style={{ width: 32, height: 32, background: 'none', border: '2px solid rgba(15,17,23,0.2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(15,17,23,0.4)', transition: 'border-color 0.2s, color 0.2s, background 0.2s' }} onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = '#0D9488'; el.style.color = '#0D9488'; el.style.background = '#f0fdf9'; }} onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = 'rgba(15,17,23,0.2)'; el.style.color = 'rgba(15,17,23,0.4)'; el.style.background = 'none'; }}>
                             <Trash2 size={14} />
                           </button>
                         </div>
@@ -103,10 +103,10 @@ export default function CartPage() {
             </div>
 
             {/* Order Summary */}
-            <div style={{ position: 'sticky', top: 24 }}>
+            <div className="cart-summary" style={{ position: 'sticky', top: 24 }}>
               <div style={{ border: '3px solid #0f1117', background: '#fff', boxShadow: '4px 4px 0 #0f1117', overflow: 'hidden' }}>
                 <div style={{ padding: '18px 24px', borderBottom: '3px solid #0f1117', background: '#0f1117' }}>
-                  <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 20, color: '#F07B32', letterSpacing: '0.08em' }}>ORDER SUMMARY</h2>
+                  <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 20, color: '#0D9488', letterSpacing: '0.08em' }}>ORDER SUMMARY</h2>
                 </div>
                 <div style={{ padding: 24 }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
@@ -138,12 +138,12 @@ export default function CartPage() {
                   <div style={{ borderTop: '3px solid #0f1117', paddingTop: 16, marginBottom: 20 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                       <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#0f1117' }}>Total</span>
-                      <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 32, color: '#F07B32', letterSpacing: '0.02em' }}>₹{(total + delivery).toLocaleString()}</span>
+                      <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 32, color: '#0D9488', letterSpacing: '0.02em' }}>₹{(total + delivery).toLocaleString()}</span>
                     </div>
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    <Link href="/checkout" style={{ display: 'block', background: '#F07B32', color: '#fff', padding: '14px 20px', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none', textAlign: 'center', transition: 'transform 0.15s, box-shadow 0.15s' }}
+                    <Link href="/checkout" style={{ display: 'block', background: '#0D9488', color: '#fff', padding: '14px 20px', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none', textAlign: 'center', transition: 'transform 0.15s, box-shadow 0.15s' }}
                       onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translate(-2px,-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '6px 6px 0 #0f1117'; }}
                       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = '4px 4px 0 #0f1117'; }}
                     >
@@ -174,8 +174,13 @@ export default function CartPage() {
 
       <style>{`
         @media (max-width: 900px) {
-          div[style*='grid-template-columns: 1fr 380px'] { grid-template-columns: 1fr !important; }
-          div[style*='position: sticky'][style*='top: 24'] { position: relative !important; top: auto !important; }
+          .cart-container { padding: 24px 16px !important; }
+          .cart-grid { grid-template-columns: 1fr !important; }
+          .cart-summary { position: relative !important; top: auto !important; }
+        }
+        @media (max-width: 500px) {
+          .cart-item-row { flex-direction: column !important; }
+          .cart-item-image { width: 100% !important; height: 200px !important; }
         }
       `}</style>
     </div>

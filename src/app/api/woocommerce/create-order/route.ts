@@ -3,9 +3,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const WOOCOMMERCE_CONFIG = {
-  BASE_URL: process.env.API_BASE || 'https://yourstore.com',
-  CONSUMER_KEY: process.env.CONSUMER_KEY || '',
-  CONSUMER_SECRET: process.env.CONSUMER_SECRET || '',
+  BASE_URL: process.env.API_BASE || 'https://cms.amraj.in',
+  CONSUMER_KEY: process.env.CONSUMER_KEY || 'ck_7610f309972822bfa8e87304ea6c47e9e93b8ff6',
+  CONSUMER_SECRET: process.env.CONSUMER_SECRET || 'cs_0f117bc7ec4611ca378adde03010f619c0af59b2',
 };
 
 export async function POST(request: NextRequest) {

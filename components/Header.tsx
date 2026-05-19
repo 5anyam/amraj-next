@@ -111,9 +111,9 @@ export default function Header() {
                             display: 'flex', alignItems: 'center', gap: 4,
                             padding: '6px 14px', fontSize: 11, fontWeight: 600,
                             letterSpacing: '0.1em', textTransform: 'uppercase',
-                            color: location.startsWith(item.to) ? '#F07B32' : '#0f1117',
+                            color: location.startsWith(item.to) ? '#0D9488' : '#0f1117',
                             background: 'transparent', border: 'none', cursor: 'pointer',
-                            borderBottom: location.startsWith(item.to) ? '2px solid #F07B32' : '2px solid transparent',
+                            borderBottom: location.startsWith(item.to) ? '2px solid #0D9488' : '2px solid transparent',
                             transition: 'color 0.2s, border-color 0.2s',
                           }}
                         >
@@ -136,7 +136,7 @@ export default function Header() {
                                   style={{
                                     display: 'block', padding: '10px 16px', fontSize: 11,
                                     fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase',
-                                    color: location === sub.to ? '#F07B32' : '#0f1117',
+                                    color: location === sub.to ? '#0D9488' : '#0f1117',
                                     textDecoration: 'none',
                                     borderBottom: '1px solid rgba(15,17,23,0.08)',
                                     transition: 'background 0.15s',
@@ -157,8 +157,8 @@ export default function Header() {
                         style={{
                           display: 'block', padding: '6px 14px', fontSize: 11, fontWeight: 600,
                           letterSpacing: '0.1em', textTransform: 'uppercase', textDecoration: 'none',
-                          color: location === item.to ? '#F07B32' : '#0f1117',
-                          borderBottom: location === item.to ? '2px solid #F07B32' : '2px solid transparent',
+                          color: location === item.to ? '#0D9488' : '#0f1117',
+                          borderBottom: location === item.to ? '2px solid #0D9488' : '2px solid transparent',
                           transition: 'color 0.2s, border-color 0.2s',
                         }}
                       >
@@ -205,7 +205,7 @@ export default function Header() {
                       <button
                         onClick={() => setUserMenuOpen(!userMenuOpen)}
                         style={{
-                          width: 36, height: 36, background: '#0f1117', color: '#F07B32',
+                          width: 36, height: 36, background: '#0f1117', color: '#0D9488',
                           border: '2px solid #0f1117', boxShadow: '2px 2px 0 #0f1117',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontSize: 13, fontWeight: 800, cursor: 'pointer',
@@ -236,7 +236,7 @@ export default function Header() {
                           <button
                             onClick={() => { logout(); setUserMenuOpen(false); }}
                             style={{ display: 'block', width: '100%', padding: '10px 14px', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#d95f1a', background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left' }}
-                            onMouseEnter={e => (e.currentTarget.style.background = '#fff5f0')}
+                            onMouseEnter={e => (e.currentTarget.style.background = '#f0fdf9')}
                             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                           >
                             Sign Out
@@ -269,7 +269,7 @@ export default function Header() {
                 <button
                   onClick={() => setMobileMenuOpen(true)}
                   style={{
-                    background: '#0f1117', color: '#F07B32', border: '2px solid #0f1117',
+                    background: '#0f1117', color: '#0D9488', border: '2px solid #0f1117',
                     boxShadow: '2px 2px 0 rgba(15,17,23,0.3)', padding: '6px 8px', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}
@@ -328,7 +328,7 @@ export default function Header() {
             {/* Drawer header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '3px solid #0f1117', background: '#0f1117' }}>
               <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 22, color: '#fff', letterSpacing: '0.06em' }}>AMRAJ MENU</span>
-              <button onClick={() => setMobileMenuOpen(false)} style={{ background: '#F07B32', border: '2px solid #fff', color: '#fff', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '2px 2px 0 rgba(255,255,255,0.3)' }}>
+              <button onClick={() => setMobileMenuOpen(false)} style={{ background: '#0D9488', border: '2px solid #fff', color: '#fff', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '2px 2px 0 rgba(255,255,255,0.3)' }}>
                 <FiX size={18} />
               </button>
             </div>
@@ -357,7 +357,7 @@ export default function Header() {
                               key={sub.name}
                               href={sub.to}
                               onClick={() => setMobileMenuOpen(false)}
-                              style={{ display: 'block', padding: '8px 16px', fontSize: 11, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: location === sub.to ? '#F07B32' : '#555', textDecoration: 'none', borderLeft: '2px solid #0f1117', marginBottom: 4 }}
+                              style={{ display: 'block', padding: '8px 16px', fontSize: 11, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: location === sub.to ? '#0D9488' : '#555', textDecoration: 'none', borderLeft: '2px solid #0f1117', marginBottom: 4 }}
                             >
                               {sub.name}
                             </Link>
@@ -372,9 +372,9 @@ export default function Header() {
                       style={{
                         display: 'block', padding: '14px 20px',
                         fontFamily: 'Bebas Neue, sans-serif', fontSize: 20,
-                        letterSpacing: '0.06em', color: location === item.to ? '#F07B32' : '#0f1117',
+                        letterSpacing: '0.06em', color: location === item.to ? '#0D9488' : '#0f1117',
                         textDecoration: 'none', borderBottom: '2px solid rgba(15,17,23,0.08)',
-                        borderLeft: location === item.to ? '3px solid #F07B32' : '3px solid transparent',
+                        borderLeft: location === item.to ? '3px solid #0D9488' : '3px solid transparent',
                       }}
                     >
                       {item.name}
@@ -389,7 +389,7 @@ export default function Header() {
               {user ? (
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, padding: '10px 14px', background: '#faf7f2', border: '2px solid #0f1117' }}>
-                    <div style={{ width: 36, height: 36, background: '#0f1117', color: '#F07B32', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Bebas Neue, sans-serif', fontSize: 18, flexShrink: 0, border: '2px solid #F07B32' }}>
+                    <div style={{ width: 36, height: 36, background: '#0f1117', color: '#0D9488', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Bebas Neue, sans-serif', fontSize: 18, flexShrink: 0, border: '2px solid #0D9488' }}>
                       {user.name.charAt(0)}
                     </div>
                     <div>
@@ -400,12 +400,12 @@ export default function Header() {
                   <Link href="/my-account" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', padding: '12px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#0f1117', textDecoration: 'none', border: '2.5px solid #0f1117', boxShadow: '3px 3px 0 #0f1117', marginBottom: 10, background: '#faf7f2' }}>
                     My Account
                   </Link>
-                  <button onClick={() => { logout(); setMobileMenuOpen(false); }} style={{ width: '100%', padding: '12px 16px', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#fff', background: '#0f1117', border: '2.5px solid #0f1117', boxShadow: '3px 3px 0 #F07B32', cursor: 'pointer' }}>
+                  <button onClick={() => { logout(); setMobileMenuOpen(false); }} style={{ width: '100%', padding: '12px 16px', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#fff', background: '#0f1117', border: '2.5px solid #0f1117', boxShadow: '3px 3px 0 #0D9488', cursor: 'pointer' }}>
                     Sign Out
                   </button>
                 </div>
               ) : (
-                <Link href="/login" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', padding: '14px 16px', textAlign: 'center', fontFamily: 'Bebas Neue, sans-serif', fontSize: 18, letterSpacing: '0.08em', color: '#fff', textDecoration: 'none', background: '#0f1117', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #F07B32' }}>
+                <Link href="/login" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', padding: '14px 16px', textAlign: 'center', fontFamily: 'Bebas Neue, sans-serif', fontSize: 18, letterSpacing: '0.08em', color: '#fff', textDecoration: 'none', background: '#0f1117', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0D9488' }}>
                   LOG IN / SIGN UP →
                 </Link>
               )}

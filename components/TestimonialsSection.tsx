@@ -2,7 +2,7 @@
 
 import Slider from 'react-slick';
 import Image from 'next/image';
-import { Star, CheckCircle, Quote } from 'lucide-react'; // Assuming you have lucide-react, or we can use SVG
+import { Star, CheckCircle, Quote } from 'lucide-react';
 
 const testimonials = [
   {
@@ -74,7 +74,7 @@ const TestimonialsCarousel = () => {
       
       {/* Background Decor */}
       <div className="absolute top-0 left-0 w-full h-full opacity-40 pointer-events-none">
-        <div className="absolute top-20 right-0 w-96 h-96 bg-orange-100 rounded-full blur-3xl opacity-50" />
+        <div className="absolute top-20 right-0 w-96 h-96 bg-teal-50 rounded-full blur-3xl opacity-50" />
         <div className="absolute bottom-20 left-0 w-72 h-72 bg-teal-50 rounded-full blur-3xl opacity-50" />
       </div>
 
@@ -94,8 +94,10 @@ const TestimonialsCarousel = () => {
           {/* Trust Badge */}
           <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100">
              <div className="flex -space-x-2">
-                {[1,2,3].map(i => (
-                   <div key={i} className="w-6 h-6 rounded-full bg-gray-200 border-2 border-white" />
+                {['/users/vanshika.jpeg','/users/ankit.jpeg','/users/parul.avif'].map((src, i) => (
+                   <div key={i} className="relative w-6 h-6 rounded-full border-2 border-white overflow-hidden">
+                     <Image src={src} alt="Customer" fill style={{ objectFit: 'cover' }} sizes="24px" />
+                   </div>
                 ))}
              </div>
              <div className="text-sm font-semibold text-gray-700">
@@ -186,8 +188,8 @@ const TestimonialsCarousel = () => {
           transition: all 0.3s ease;
         }
         .testimonials-slider .custom-dots li.slick-active button {
-          background: #f97316; /* Orange-500 */
-          width: 24px; /* Pill shape for active state */
+          background: #0D9488;
+          width: 24px;
         }
         .testimonials-slider .custom-dots li button:before {
           display: none;

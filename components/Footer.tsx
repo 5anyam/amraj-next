@@ -4,7 +4,7 @@ import { FaFacebookF, FaTwitter, FaInstagram, FaYoutube } from 'react-icons/fa';
 
 export default function Footer() {
   return (
-    <footer style={{ background: '#0f1117', borderTop: '4px solid #F07B32' }}>
+    <footer style={{ background: '#0f1117', borderTop: '4px solid #0D9488' }}>
 
       {/* ── Manifesto belt ── */}
       <div style={{ overflow: 'hidden', borderBottom: '3px solid rgba(255,255,255,0.08)', padding: '14px 0' }}>
@@ -14,7 +14,7 @@ export default function Footer() {
               {['ROOTED IN TRADITION', 'BACKED BY SCIENCE', 'FEEL THE DIFFERENCE', 'PURE. POTENT. PROVEN.'].map((t) => (
                 <span key={t} style={{ display: 'inline-flex', alignItems: 'center', gap: 16, padding: '0 24px', fontSize: 11, fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>
                   {t}
-                  <span style={{ color: '#F07B32', fontSize: 6 }}>◆</span>
+                  <span style={{ color: '#0D9488', fontSize: 6 }}>◆</span>
                 </span>
               ))}
             </span>
@@ -24,13 +24,13 @@ export default function Footer() {
 
       {/* ── Main content ── */}
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '56px 32px 40px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '40px 32px' }}>
+        <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '40px 32px' }}>
 
           {/* Brand */}
           <div>
             <Link href="/" style={{ textDecoration: 'none' }}>
               <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 44, lineHeight: 1, letterSpacing: '0.04em', color: '#fff', marginBottom: 4 }}>
-                AMRAJ <span style={{ color: '#F07B32' }}>·</span>
+                AMRAJ <span style={{ color: '#0D9488' }}>·</span>
               </div>
             </Link>
             <p style={{ fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 20 }}>
@@ -57,7 +57,7 @@ export default function Footer() {
                     color: 'rgba(255,255,255,0.45)', textDecoration: 'none',
                     transition: 'border-color 0.2s, color 0.2s, background 0.2s',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#F07B32'; e.currentTarget.style.color = '#F07B32'; }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#0D9488'; e.currentTarget.style.color = '#0D9488'; }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.color = 'rgba(255,255,255,0.45)'; }}
                 >
                   {icon}
@@ -68,7 +68,7 @@ export default function Footer() {
 
           {/* Shop Links */}
           <div>
-            <h4 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 16, letterSpacing: '0.12em', color: '#F07B32', marginBottom: 20 }}>SHOP</h4>
+            <h4 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 16, letterSpacing: '0.12em', color: '#0D9488', marginBottom: 20 }}>SHOP</h4>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
               {[
                 { name: 'Prostate Care', to: '/product/advanced-prostate-care' },
@@ -78,7 +78,7 @@ export default function Footer() {
               ].map(({ name, to }) => (
                 <li key={name}>
                   <Link href={to} style={{ fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', letterSpacing: '0.04em', transition: 'color 0.2s' }}
-                    onMouseEnter={e => (e.currentTarget.style.color = '#F07B32')}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#0D9488')}
                     onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}
                   >
                     {name}
@@ -90,7 +90,7 @@ export default function Footer() {
 
           {/* Legal */}
           <div>
-            <h4 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 16, letterSpacing: '0.12em', color: '#F07B32', marginBottom: 20 }}>LEGAL</h4>
+            <h4 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 16, letterSpacing: '0.12em', color: '#0D9488', marginBottom: 20 }}>LEGAL</h4>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
               {[
                 { name: 'Privacy Policy', to: '/privacy-policy' },
@@ -100,7 +100,7 @@ export default function Footer() {
               ].map(({ name, to }) => (
                 <li key={name}>
                   <Link href={to} style={{ fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', letterSpacing: '0.04em', transition: 'color 0.2s' }}
-                    onMouseEnter={e => (e.currentTarget.style.color = '#F07B32')}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#0D9488')}
                     onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}
                   >
                     {name}
@@ -112,7 +112,7 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 16, letterSpacing: '0.12em', color: '#F07B32', marginBottom: 20 }}>CONTACT</h4>
+            <h4 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 16, letterSpacing: '0.12em', color: '#0D9488', marginBottom: 20 }}>CONTACT</h4>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
               {[
                 'care@amraj.in',
@@ -134,13 +134,19 @@ export default function Footer() {
           © {new Date().getFullYear()} Amraj Wellness LLP. All rights reserved.
         </p>
         <img src="/badges.png" alt="Payment badges" style={{ height: 36, opacity: 0.6 }} />
-        <p style={{ fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(240,123,50,0.4)' }}>
+        <p style={{ fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(13,148,136,0.4)' }}>
           SCIENCE-BACKED. INDIA-MADE. ◆
         </p>
       </div>
 
       <style>{`
         @keyframes mq-fwd { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @media (max-width: 900px) {
+          .footer-grid { grid-template-columns: 1fr 1fr !important; }
+        }
+        @media (max-width: 560px) {
+          .footer-grid { grid-template-columns: 1fr !important; }
+        }
       `}</style>
     </footer>
   );

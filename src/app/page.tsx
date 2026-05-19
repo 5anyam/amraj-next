@@ -26,7 +26,7 @@ function StarRating({ rating }: { rating: number }) {
   return (
     <div style={{ display: 'flex', gap: 2 }}>
       {[1,2,3,4,5].map((i) => (
-        <Star key={i} style={{ width: 14, height: 14, fill: i <= Math.round(rating) ? '#F07B32' : '#e2d9d0', color: i <= Math.round(rating) ? '#F07B32' : '#e2d9d0' }} />
+        <Star key={i} style={{ width: 14, height: 14, fill: i <= Math.round(rating) ? '#0D9488' : '#e2d9d0', color: i <= Math.round(rating) ? '#0D9488' : '#e2d9d0' }} />
       ))}
     </div>
   );
@@ -46,12 +46,12 @@ function ProductCard({ product }: { product: StaticProduct }) {
       <div style={{ position: 'relative', aspectRatio: '1', background: '#f3ede4', overflow: 'hidden', borderBottom: '2.5px solid #0f1117' }}>
         <Image src={product.images[0]} alt={product.name} fill style={{ objectFit: 'cover', transition: 'transform 0.5s' }} sizes="(max-width: 768px) 100vw, 33vw" />
         {product.badge && (
-          <span style={{ position: 'absolute', top: 12, left: 12, background: '#0f1117', color: '#F07B32', fontSize: 9, fontFamily: 'Bebas Neue, sans-serif', letterSpacing: '0.2em', padding: '4px 10px', border: '2px solid #F07B32' }}>
+          <span style={{ position: 'absolute', top: 12, left: 12, background: '#0f1117', color: '#0D9488', fontSize: 9, fontFamily: 'Bebas Neue, sans-serif', letterSpacing: '0.2em', padding: '4px 10px', border: '2px solid #0D9488' }}>
             {product.badge}
           </span>
         )}
         {discount > 0 && (
-          <span style={{ position: 'absolute', top: 12, right: 12, background: '#F07B32', color: '#fff', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', padding: '4px 8px', border: '2px solid #0f1117', boxShadow: '2px 2px 0 #0f1117' }}>
+          <span style={{ position: 'absolute', top: 12, right: 12, background: '#0D9488', color: '#fff', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', padding: '4px 8px', border: '2px solid #0f1117', boxShadow: '2px 2px 0 #0f1117' }}>
             {discount}% OFF
           </span>
         )}
@@ -59,7 +59,7 @@ function ProductCard({ product }: { product: StaticProduct }) {
 
       {/* Info */}
       <div style={{ padding: '18px 20px 20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <p style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#F07B32', marginBottom: 6, fontWeight: 600 }}>{product.category}</p>
+        <p style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#0D9488', marginBottom: 6, fontWeight: 600 }}>{product.category}</p>
         <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 22, letterSpacing: '0.03em', color: '#0f1117', marginBottom: 6, lineHeight: 1.1 }}>{product.name}</h3>
         <p style={{ fontSize: 12, color: 'rgba(15,17,23,0.5)', marginBottom: 12, lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{product.tagline}</p>
 
@@ -74,7 +74,7 @@ function ProductCard({ product }: { product: StaticProduct }) {
             <span style={{ fontSize: 13, color: 'rgba(15,17,23,0.35)', textDecoration: 'line-through' }}>₹{product.regularPrice.toLocaleString()}</span>
           </div>
           <div style={{ background: '#0f1117', color: '#fff', textAlign: 'center', padding: '11px 16px', fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', border: '2px solid #0f1117', transition: 'background 0.2s' }}
-            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = '#F07B32')}
+            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = '#0D9488')}
             onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = '#0f1117')}
           >
             SHOP NOW →
@@ -96,21 +96,21 @@ function HeroSection() {
   }, [images.length]);
 
   return (
-    <section style={{ background: '#0f1117', position: 'relative', overflow: 'hidden', borderBottom: '4px solid #F07B32' }}>
+    <section style={{ background: '#0f1117', position: 'relative', overflow: 'hidden', borderBottom: '4px solid #0D9488' }}>
       {/* stripe bg */}
-      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(240,123,50,0.03) 40px, rgba(240,123,50,0.03) 41px)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(13,148,136,0.03) 40px, rgba(13,148,136,0.03) 41px)', pointerEvents: 'none' }} />
 
-      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '60px 32px 70px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center' }}>
+      <div className="hero-grid" style={{ maxWidth: 1280, margin: '0 auto', padding: '60px 32px 70px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center' }}>
         {/* Left */}
         <div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(240,123,50,0.12)', border: '2px solid rgba(240,123,50,0.4)', color: '#F07B32', fontSize: 9, fontWeight: 600, letterSpacing: '0.24em', textTransform: 'uppercase', padding: '5px 14px', marginBottom: 28 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(13,148,136,0.12)', border: '2px solid rgba(13,148,136,0.4)', color: '#0D9488', fontSize: 9, fontWeight: 600, letterSpacing: '0.24em', textTransform: 'uppercase', padding: '5px 14px', marginBottom: 28 }}>
             ◆ New Season Drop 2026 ◆
           </div>
 
           <h1 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(72px, 10vw, 140px)', lineHeight: 0.88, letterSpacing: '0.01em', marginBottom: 8 }}>
             <span style={{ display: 'block', color: '#fff' }}>SCIENCE</span>
-            <span style={{ display: 'block', color: 'transparent', WebkitTextStroke: '3px #F07B32' }}>BACKED.</span>
-            <span style={{ display: 'block', color: '#F07B32', textShadow: '4px 4px 0 rgba(240,123,50,0.3)' }}>RESULTS</span>
+            <span style={{ display: 'block', color: 'transparent', WebkitTextStroke: '3px #0D9488' }}>BACKED.</span>
+            <span style={{ display: 'block', color: '#0D9488', textShadow: '4px 4px 0 rgba(13,148,136,0.3)' }}>RESULTS</span>
           </h1>
           <h1 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px, 7vw, 100px)', lineHeight: 0.88, letterSpacing: '0.01em', marginBottom: 24 }}>
             <span style={{ display: 'block', color: '#fff', opacity: 0.85, fontSize: '0.55em', letterSpacing: '0.03em' }}>YOU CAN FEEL.</span>
@@ -121,7 +121,7 @@ function HeroSection() {
           </p>
 
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 36 }}>
-            <Link href="/shop" style={{ background: '#F07B32', color: '#fff', padding: '13px 28px', border: '2.5px solid #F07B32', boxShadow: '4px 4px 0 rgba(240,123,50,0.4)', fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <Link href="/shop" style={{ background: '#0D9488', color: '#fff', padding: '13px 28px', border: '2.5px solid #0D9488', boxShadow: '4px 4px 0 rgba(13,148,136,0.4)', fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
               SHOP NOW <ChevronRight size={14} />
             </Link>
             <Link href="/about" style={{ color: '#fff', padding: '13px 28px', border: '2.5px solid rgba(255,255,255,0.25)', fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none' }}>
@@ -132,28 +132,28 @@ function HeroSection() {
           {/* Social proof */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <div style={{ display: 'flex' }}>
-              {['👨','👩','👴','👱'].map((e, i) => (
-                <div key={i} style={{ width: 32, height: 32, background: 'rgba(240,123,50,0.15)', border: '2px solid rgba(240,123,50,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, marginLeft: i > 0 ? -8 : 0 }}>
-                  {e}
+              {['/users/vanshika.jpeg','/users/dr-abhinav-rana.jpeg','/users/savita.webp','/users/anil-tyagi.jpeg'].map((src, i) => (
+                <div key={i} style={{ width: 36, height: 36, borderRadius: '50%', border: '2px solid rgba(13,148,136,0.5)', overflow: 'hidden', marginLeft: i > 0 ? -10 : 0, flexShrink: 0, position: 'relative' }}>
+                  <Image src={src} alt="Customer" fill style={{ objectFit: 'cover' }} sizes="36px" />
                 </div>
               ))}
             </div>
             <div>
               <div style={{ display: 'flex', gap: 2 }}>
-                {[1,2,3,4,5].map(i => <Star key={i} style={{ width: 12, height: 12, fill: '#F07B32', color: '#F07B32' }} />)}
+                {[1,2,3,4,5].map(i => <Star key={i} style={{ width: 12, height: 12, fill: '#0D9488', color: '#0D9488' }} />)}
               </div>
               <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 2, letterSpacing: '0.05em' }}>
-                Trusted by <strong style={{ color: '#F07B32' }}>10,000+</strong> customers
+                Trusted by <strong style={{ color: '#0D9488' }}>10,000+</strong> customers
               </p>
             </div>
           </div>
         </div>
 
         {/* Right — Product Image Stack */}
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <div style={{ position: 'relative', width: 320, height: 380 }}>
+        <div className="hero-img-col" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div className="hero-img-wrap" style={{ position: 'relative', width: 320, height: 380 }}>
             {/* Offset shadow layer */}
-            <div style={{ position: 'absolute', inset: 0, border: '3px solid #F07B32', transform: 'translate(8px, 8px)', opacity: 0.4 }} />
+            <div style={{ position: 'absolute', inset: 0, border: '3px solid #0D9488', transform: 'translate(8px, 8px)', opacity: 0.4 }} />
             <div style={{ position: 'relative', width: '100%', height: '100%', border: '3px solid rgba(255,255,255,0.15)', overflow: 'hidden' }}>
               {images.map((src, i) => (
                 <div
@@ -178,7 +178,7 @@ function HeroSection() {
                 <button
                   key={i}
                   onClick={() => setActive(i)}
-                  style={{ width: i === active ? 24 : 8, height: 8, background: i === active ? '#F07B32' : 'rgba(255,255,255,0.3)', border: 'none', cursor: 'pointer', transition: 'all 0.3s', padding: 0 }}
+                  style={{ width: i === active ? 24 : 8, height: 8, background: i === active ? '#0D9488' : 'rgba(255,255,255,0.3)', border: 'none', cursor: 'pointer', transition: 'all 0.3s', padding: 0 }}
                 />
               ))}
             </div>
@@ -204,7 +204,7 @@ function MarqueeBelt() {
   return (
     <div style={{ borderTop: '3px solid #0f1117', borderBottom: '3px solid #0f1117' }}>
       {/* Row 1 */}
-      <div style={{ overflow: 'hidden', borderBottom: '2px solid #0f1117', background: '#F07B32', padding: '10px 0' }}>
+      <div style={{ overflow: 'hidden', borderBottom: '2px solid #0f1117', background: '#0D9488', padding: '10px 0' }}>
         <div style={{ display: 'inline-flex', whiteSpace: 'nowrap', animation: 'mq-fwd 18s linear infinite' }}>
           {[...Array(2)].map((_, r) => (
             <span key={r} style={{ display: 'inline-flex' }}>
@@ -223,7 +223,7 @@ function MarqueeBelt() {
           {[...Array(2)].map((_, r) => (
             <span key={r} style={{ display: 'inline-flex' }}>
               {row2.map((t) => (
-                <span key={t} style={{ display: 'inline-flex', alignItems: 'center', gap: 14, padding: '0 20px', fontFamily: 'Bebas Neue, sans-serif', fontSize: 15, letterSpacing: '0.2em', color: '#F07B32' }}>
+                <span key={t} style={{ display: 'inline-flex', alignItems: 'center', gap: 14, padding: '0 20px', fontFamily: 'Bebas Neue, sans-serif', fontSize: 15, letterSpacing: '0.2em', color: '#0D9488' }}>
                   {t} <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>▶</span>
                 </span>
               ))}
@@ -315,7 +315,7 @@ export default function Homepage() {
               { icon: Truck, label: 'Free Delivery' },
             ].map((item, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#0f1117' }}>
-                {item.emoji ? <span style={{ fontSize: 16 }}>{item.emoji}</span> : item.icon && <item.icon style={{ width: 14, height: 14, color: '#F07B32' }} />}
+                {item.emoji ? <span style={{ fontSize: 16 }}>{item.emoji}</span> : item.icon && <item.icon style={{ width: 14, height: 14, color: '#0D9488' }} />}
                 {item.label}
               </div>
             ))}
@@ -324,19 +324,19 @@ export default function Homepage() {
       </section>
 
       {/* ── PRODUCTS ── */}
-      <section style={{ padding: '80px 0', background: '#faf7f2' }} id="products">
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 32px' }}>
+      <section className="section-products" style={{ padding: '80px 0', background: '#faf7f2' }} id="products">
+        <div className="section-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '0 32px' }}>
 
-          <div className="reveal" ref={productsRef} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingBottom: 40, marginBottom: 0, borderBottom: '3px solid #0f1117' }}>
+          <div className="reveal products-header" ref={productsRef} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingBottom: 40, marginBottom: 0, borderBottom: '3px solid #0f1117' }}>
             <div>
-              <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#F07B32', fontWeight: 600, display: 'block', marginBottom: 10 }}>◆ Our Bestsellers</span>
+              <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#0D9488', fontWeight: 600, display: 'block', marginBottom: 10 }}>◆ Our Bestsellers</span>
               <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px,6vw,88px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.9 }}>
-                TARGETED<br /><span style={{ color: '#F07B32' }}>HEALTH SOLUTIONS.</span>
+                TARGETED<br /><span style={{ color: '#0D9488' }}>HEALTH SOLUTIONS.</span>
               </h2>
             </div>
             <Link
               href="/shop"
-              style={{ background: '#F07B32', color: '#fff', padding: '12px 24px', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'transform 0.15s, box-shadow 0.15s' }}
+              style={{ background: '#0D9488', color: '#fff', padding: '12px 24px', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'transform 0.15s, box-shadow 0.15s' }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translate(-2px,-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '6px 6px 0 #0f1117'; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = '4px 4px 0 #0f1117'; }}
             >
@@ -344,7 +344,7 @@ export default function Homepage() {
             </Link>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0, borderLeft: '3px solid #0f1117' }}>
+          <div className="products-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0, borderLeft: '3px solid #0f1117' }}>
             {PRODUCTS.map((product) => (
               <div key={product.id} style={{ borderRight: '3px solid #0f1117', borderBottom: '3px solid #0f1117', borderTop: '3px solid #0f1117' }}>
                 <div style={{ margin: 0 }}>
@@ -361,16 +361,16 @@ export default function Homepage() {
       {/* ── MANIFESTO ── */}
       <section
         ref={manifestoRef}
-        style={{ background: '#0f1117', padding: '100px 48px', borderTop: '4px solid #F07B32', borderBottom: '4px solid #F07B32', position: 'relative', overflow: 'hidden' }}
+        style={{ background: '#0f1117', padding: '100px 48px', borderTop: '4px solid #0D9488', borderBottom: '4px solid #0D9488', position: 'relative', overflow: 'hidden' }}
       >
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(240,123,50,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(240,123,50,0.05) 1px, transparent 1px)', backgroundSize: '40px 40px', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(13,148,136,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(13,148,136,0.05) 1px, transparent 1px)', backgroundSize: '40px 40px', pointerEvents: 'none' }} />
         <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative', zIndex: 2 }}>
           <div className="manifesto-line"><span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px,8vw,120px)', lineHeight: 0.9, color: '#fff' }}>WE DON&apos;T MAKE</span></div>
-          <div className="manifesto-line"><span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px,8vw,120px)', lineHeight: 0.9, color: '#F07B32' }}>PRODUCTS. WE MAKE</span></div>
+          <div className="manifesto-line"><span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px,8vw,120px)', lineHeight: 0.9, color: '#0D9488' }}>PRODUCTS. WE MAKE</span></div>
           <div className="manifesto-line"><span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px,8vw,120px)', lineHeight: 0.9, color: '#ccff00' }}>THE DIFFERENCE</span></div>
           <div className="manifesto-line"><span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px,8vw,120px)', lineHeight: 0.9, color: 'rgba(255,255,255,0.7)' }}>BETWEEN DAYS.</span></div>
           <div style={{ marginTop: 56, display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-            <Link href="/shop" style={{ background: '#F07B32', color: '#fff', padding: '13px 28px', border: '2.5px solid #F07B32', boxShadow: '4px 4px 0 rgba(240,123,50,0.4)', fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none' }}>
+            <Link href="/shop" style={{ background: '#0D9488', color: '#fff', padding: '13px 28px', border: '2.5px solid #0D9488', boxShadow: '4px 4px 0 rgba(13,148,136,0.4)', fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none' }}>
               OWN IT NOW →
             </Link>
             <Link href="/about" style={{ color: '#fff', padding: '13px 28px', border: '2.5px solid rgba(255,255,255,0.25)', fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none' }}>
@@ -382,18 +382,18 @@ export default function Homepage() {
 
       {/* ── WHY AMRAJ ── */}
       <section style={{ background: '#fff', borderBottom: '4px solid #0f1117' }} id="why">
-        <div style={{ borderBottom: '3px solid #0f1117', padding: '48px 40px', background: 'linear-gradient(135deg,#fff5f0,#faf7f2)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 20 }}>
+        <div style={{ borderBottom: '3px solid #0f1117', padding: '48px 40px', background: 'linear-gradient(135deg,#f0fdf9,#faf7f2)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 20 }}>
           <div>
-            <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#F07B32', fontWeight: 600, display: 'block', marginBottom: 10 }}>◆ The Amraj Difference</span>
+            <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#0D9488', fontWeight: 600, display: 'block', marginBottom: 10 }}>◆ The Amraj Difference</span>
             <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px,6vw,88px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.9 }}>
-              BETTER MADE.<br /><span style={{ color: '#F07B32' }}>BETTER LIVED.</span>
+              BETTER MADE.<br /><span style={{ color: '#0D9488' }}>BETTER LIVED.</span>
             </h2>
           </div>
           <Link href="/shop" style={{ background: '#0f1117', color: '#fff', padding: '13px 28px', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 rgba(15,17,23,0.3)', fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none' }}>
             SHOP NOW →
           </Link>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)' }}>
+        <div className="why-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)' }}>
           {whyItems.map((item, i) => (
             <div
               key={i}
@@ -406,9 +406,9 @@ export default function Homepage() {
               onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = '#faf7f2')}
               onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = '#fff')}
             >
-              <span style={{ position: 'absolute', top: -10, right: 16, fontFamily: 'Bebas Neue, sans-serif', fontSize: 80, color: 'rgba(240,123,50,0.06)', lineHeight: 1, pointerEvents: 'none' }}>{item.num}</span>
-              <div style={{ width: 44, height: 44, background: 'rgba(240,123,50,0.1)', border: '2px solid rgba(240,123,50,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 18 }}>
-                <item.icon style={{ width: 20, height: 20, color: '#F07B32' }} />
+              <span style={{ position: 'absolute', top: -10, right: 16, fontFamily: 'Bebas Neue, sans-serif', fontSize: 80, color: 'rgba(13,148,136,0.06)', lineHeight: 1, pointerEvents: 'none' }}>{item.num}</span>
+              <div style={{ width: 44, height: 44, background: 'rgba(13,148,136,0.1)', border: '2px solid rgba(13,148,136,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 18 }}>
+                <item.icon style={{ width: 20, height: 20, color: '#0D9488' }} />
               </div>
               <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 22, letterSpacing: '0.04em', color: '#0f1117', marginBottom: 10 }}>{item.title}</h3>
               <p style={{ fontSize: 13, fontWeight: 300, color: 'rgba(15,17,23,0.55)', lineHeight: 1.85 }}>{item.desc}</p>
@@ -418,15 +418,15 @@ export default function Homepage() {
       </section>
 
       {/* ── HOW IT WORKS ── */}
-      <section style={{ padding: '80px 48px', background: '#faf7f2', borderBottom: '3px solid #0f1117' }}>
+      <section className="how-section" style={{ padding: '80px 48px', background: '#faf7f2', borderBottom: '3px solid #0f1117' }}>
         <div style={{ maxWidth: 960, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#F07B32', fontWeight: 600, display: 'block', marginBottom: 12 }}>◆ Simple Process</span>
+            <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#0D9488', fontWeight: 600, display: 'block', marginBottom: 12 }}>◆ Simple Process</span>
             <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(44px,5vw,80px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.9 }}>
-              YOUR WELLNESS<br /><span style={{ color: '#F07B32' }}>JOURNEY STARTS HERE.</span>
+              YOUR WELLNESS<br /><span style={{ color: '#0D9488' }}>JOURNEY STARTS HERE.</span>
             </h2>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, border: '3px solid #0f1117' }}>
+          <div className="how-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, border: '3px solid #0f1117' }}>
             {[
               { step: '01', title: 'Choose Your Formula', desc: 'Pick the supplement that targets your specific health goal.' },
               { step: '02', title: 'Order in 60 Seconds', desc: 'Simple checkout — name, phone & address. Done.' },
@@ -434,8 +434,8 @@ export default function Homepage() {
               { step: '04', title: 'Feel the Results', desc: '4–6 weeks of consistent use delivers real, measurable results.' },
             ].map((item, i) => (
               <div key={i} style={{ padding: '32px 24px', textAlign: 'center', borderRight: i < 3 ? '3px solid #0f1117' : 'none', background: i % 2 === 0 ? '#fff' : '#faf7f2' }}>
-                <div style={{ width: 48, height: 48, background: '#0f1117', border: '2px solid #0f1117', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', boxShadow: '3px 3px 0 #F07B32' }}>
-                  <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 20, color: '#F07B32', letterSpacing: '0.05em' }}>{item.step}</span>
+                <div style={{ width: 48, height: 48, background: '#0f1117', border: '2px solid #0f1117', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', boxShadow: '3px 3px 0 #0D9488' }}>
+                  <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 20, color: '#0D9488', letterSpacing: '0.05em' }}>{item.step}</span>
                 </div>
                 <h4 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 18, letterSpacing: '0.04em', color: '#0f1117', marginBottom: 10 }}>{item.title}</h4>
                 <p style={{ fontSize: 12, color: 'rgba(15,17,23,0.55)', lineHeight: 1.7 }}>{item.desc}</p>
@@ -449,9 +449,9 @@ export default function Homepage() {
       <section style={{ background: '#fff', borderBottom: '3px solid #0f1117', padding: '80px 32px' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#F07B32', fontWeight: 600, display: 'block', marginBottom: 12 }}>◆ Real Results</span>
+            <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#0D9488', fontWeight: 600, display: 'block', marginBottom: 12 }}>◆ Real Results</span>
             <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(44px,5vw,80px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.9 }}>
-              WHAT OUR<br /><span style={{ color: '#F07B32' }}>CUSTOMERS SAY.</span>
+              WHAT OUR<br /><span style={{ color: '#0D9488' }}>CUSTOMERS SAY.</span>
             </h2>
           </div>
           <Testimonials />
@@ -462,9 +462,9 @@ export default function Homepage() {
       <section style={{ padding: '80px 32px', background: '#faf7f2', borderBottom: '3px solid #0f1117' }}>
         <div style={{ maxWidth: 720, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#F07B32', fontWeight: 600, display: 'block', marginBottom: 12 }}>◆ Got Questions?</span>
+            <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#0D9488', fontWeight: 600, display: 'block', marginBottom: 12 }}>◆ Got Questions?</span>
             <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(44px,5vw,80px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.9 }}>
-              FREQUENTLY ASKED<br /><span style={{ color: '#F07B32' }}>QUESTIONS.</span>
+              FREQUENTLY ASKED<br /><span style={{ color: '#0D9488' }}>QUESTIONS.</span>
             </h2>
           </div>
           <HomeFAQ />
@@ -473,16 +473,16 @@ export default function Homepage() {
 
       {/* ── BOTTOM CTA ── */}
       <section style={{ background: '#0f1117', padding: '80px 32px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 12px, rgba(240,123,50,0.04) 12px, rgba(240,123,50,0.04) 13px)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 12px, rgba(13,148,136,0.04) 12px, rgba(13,148,136,0.04) 13px)', pointerEvents: 'none' }} />
         <div style={{ maxWidth: 640, margin: '0 auto', position: 'relative', zIndex: 2 }}>
           <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(52px,7vw,100px)', color: '#fff', lineHeight: 0.9, marginBottom: 16 }}>
-            READY TO<br /><span style={{ color: '#F07B32' }}>TRANSFORM</span><br />YOUR HEALTH?
+            READY TO<br /><span style={{ color: '#0D9488' }}>TRANSFORM</span><br />YOUR HEALTH?
           </h2>
           <p style={{ fontSize: 14, fontWeight: 300, color: 'rgba(255,255,255,0.5)', marginBottom: 40, lineHeight: 1.7 }}>
             Join thousands of Indians who have taken charge of their wellness with Amraj.
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'center', marginBottom: 36 }}>
-            <Link href="/shop" style={{ background: '#F07B32', color: '#fff', padding: '14px 32px', border: '2.5px solid #F07B32', boxShadow: '4px 4px 0 rgba(240,123,50,0.4)', fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none' }}>
+            <Link href="/shop" style={{ background: '#0D9488', color: '#fff', padding: '14px 32px', border: '2.5px solid #0D9488', boxShadow: '4px 4px 0 rgba(13,148,136,0.4)', fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none' }}>
               EXPLORE PRODUCTS →
             </Link>
             <Link href="/contact" style={{ color: '#fff', padding: '14px 32px', border: '2.5px solid rgba(255,255,255,0.25)', fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none' }}>
@@ -492,7 +492,7 @@ export default function Homepage() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24, flexWrap: 'wrap' }}>
             {['Free Delivery', '30-Day Guarantee', 'Secure Payment'].map((t) => (
               <span key={t} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.08em' }}>
-                <Check style={{ width: 12, height: 12, color: '#F07B32' }} /> {t}
+                <Check style={{ width: 12, height: 12, color: '#0D9488' }} /> {t}
               </span>
             ))}
           </div>
@@ -503,11 +503,20 @@ export default function Homepage() {
         @keyframes mq-fwd { from { transform: translateX(0); } to { transform: translateX(-50%); } }
         @keyframes mq-rev { from { transform: translateX(-50%); } to { transform: translateX(0); } }
         @media (max-width: 900px) {
-          .hero-grid, section > div[style*='grid-template-columns: repeat(3'] { grid-template-columns: 1fr !important; }
+          .hero-grid { grid-template-columns: 1fr !important; padding: 40px 20px 48px !important; gap: 32px !important; }
+          .hero-img-col { display: none !important; }
+          .section-inner { padding: 0 16px !important; }
+          .section-products { padding: 48px 0 !important; }
+          .products-header { flex-direction: column !important; align-items: flex-start !important; gap: 16px !important; }
+          .products-grid { grid-template-columns: 1fr !important; border-left: none !important; }
+          .why-grid { grid-template-columns: 1fr !important; }
+          .how-section { padding: 48px 16px !important; }
+          .how-grid { grid-template-columns: 1fr 1fr !important; }
         }
-        @media (max-width: 640px) {
-          section > div[style*='grid-template-columns: repeat(4'] { grid-template-columns: 1fr 1fr !important; }
-          section > div[style*='grid-template-columns: 1fr 1fr 1fr 1fr'] { grid-template-columns: 1fr 1fr !important; }
+
+        @media (max-width: 500px) {
+          .how-grid { grid-template-columns: 1fr !important; }
+          .how-grid > div { border-right: none !important; border-bottom: 3px solid #0f1117 !important; }
         }
       `}</style>
     </div>

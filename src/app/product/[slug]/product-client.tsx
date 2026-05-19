@@ -20,7 +20,7 @@ function StarRating({ rating }: { rating: number }) {
   return (
     <div style={{ display: 'flex', gap: 2 }}>
       {[1,2,3,4,5].map((i) => (
-        <Star key={i} style={{ width: 14, height: 14, fill: i <= Math.round(rating) ? '#F07B32' : '#e2d9d0', color: i <= Math.round(rating) ? '#F07B32' : '#e2d9d0' }} />
+        <Star key={i} style={{ width: 14, height: 14, fill: i <= Math.round(rating) ? '#0D9488' : '#e2d9d0', color: i <= Math.round(rating) ? '#0D9488' : '#e2d9d0' }} />
       ))}
     </div>
   );
@@ -54,8 +54,8 @@ function ImageGallery({ images }: { images: string[] }) {
               onClick={() => setMain(i)}
               style={{
                 position: 'relative', flexShrink: 0, width: 64, height: 64,
-                border: `2.5px solid ${i === main ? '#F07B32' : '#0f1117'}`,
-                boxShadow: i === main ? '2px 2px 0 #F07B32' : '2px 2px 0 rgba(15,17,23,0.2)',
+                border: `2.5px solid ${i === main ? '#0D9488' : '#0f1117'}`,
+                boxShadow: i === main ? '2px 2px 0 #0D9488' : '2px 2px 0 rgba(15,17,23,0.2)',
                 overflow: 'hidden', opacity: i === main ? 1 : 0.55,
                 cursor: 'pointer', background: 'none', padding: 0,
                 transition: 'opacity 0.2s, border-color 0.2s',
@@ -85,7 +85,7 @@ function Tabs({ product }: { product: StaticProduct }) {
               padding: '12px 20px', fontSize: 10, fontWeight: 700, letterSpacing: '0.14em',
               textTransform: 'uppercase', whiteSpace: 'nowrap', cursor: 'pointer',
               background: i === active ? '#0f1117' : 'transparent',
-              color: i === active ? '#F07B32' : 'rgba(15,17,23,0.45)',
+              color: i === active ? '#0D9488' : 'rgba(15,17,23,0.45)',
               border: 'none', borderRight: '2px solid rgba(15,17,23,0.1)',
               transition: 'background 0.2s, color 0.2s',
               fontFamily: 'inherit',
@@ -100,7 +100,7 @@ function Tabs({ product }: { product: StaticProduct }) {
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
             {product.benefits.map((b, i) => (
               <li key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                <span style={{ width: 20, height: 20, background: '#F07B32', border: '2px solid #0f1117', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                <span style={{ width: 20, height: 20, background: '#0D9488', border: '2px solid #0f1117', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
                   <Check style={{ width: 10, height: 10, color: '#fff' }} />
                 </span>
                 <span style={{ fontSize: 13, color: '#0f1117', lineHeight: 1.65 }}>{b}</span>
@@ -113,7 +113,7 @@ function Tabs({ product }: { product: StaticProduct }) {
             {product.ingredients.map((ing, i) => (
               <div key={i} style={{ display: 'flex', gap: 16, padding: '14px 16px', background: '#faf7f2', border: '2px solid #0f1117', boxShadow: '2px 2px 0 #0f1117' }}>
                 <div style={{ width: 56, textAlign: 'center', flexShrink: 0 }}>
-                  <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 20, color: '#F07B32', lineHeight: 1, letterSpacing: '0.03em' }}>{ing.dose}</p>
+                  <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 20, color: '#0D9488', lineHeight: 1, letterSpacing: '0.03em' }}>{ing.dose}</p>
                 </div>
                 <div>
                   <p style={{ fontWeight: 700, fontSize: 13, color: '#0f1117', marginBottom: 3 }}>{ing.name}</p>
@@ -128,7 +128,7 @@ function Tabs({ product }: { product: StaticProduct }) {
             <div style={{ background: '#faf7f2', border: '2px solid #0f1117', boxShadow: '3px 3px 0 #0f1117', padding: '16px 20px', marginBottom: 12 }}>
               <p style={{ fontSize: 13, color: '#0f1117', lineHeight: 1.75 }}>{product.howToUse}</p>
             </div>
-            <div style={{ padding: '12px 16px', background: 'rgba(240,123,50,0.06)', border: '2px solid rgba(240,123,50,0.3)' }}>
+            <div style={{ padding: '12px 16px', background: 'rgba(13,148,136,0.06)', border: '2px solid rgba(13,148,136,0.3)' }}>
               <p style={{ fontSize: 11, color: '#d95f1a', fontWeight: 600, letterSpacing: '0.04em' }}>
                 Note: Results are best seen with consistent use for 4–6 weeks. Consult a healthcare provider if you have pre-existing conditions.
               </p>
@@ -144,7 +144,7 @@ function Tabs({ product }: { product: StaticProduct }) {
               { icon: ShieldCheck, label: 'Packaging', value: 'Tamper-proof, eco-friendly packaging' },
             ].map((item, i) => (
               <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '12px 16px', background: '#faf7f2', border: '2px solid #0f1117' }}>
-                <item.icon style={{ width: 16, height: 16, color: '#F07B32', flexShrink: 0 }} />
+                <item.icon style={{ width: 16, height: 16, color: '#0D9488', flexShrink: 0 }} />
                 <div>
                   <p style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.18em', color: 'rgba(15,17,23,0.4)', fontWeight: 600, marginBottom: 2 }}>{item.label}</p>
                   <p style={{ fontSize: 12, color: '#0f1117', fontWeight: 600 }}>{item.value}</p>
@@ -170,13 +170,13 @@ function RelatedCard({ product }: { product: StaticProduct }) {
       <div style={{ position: 'relative', aspectRatio: '1', background: '#f3ede4', overflow: 'hidden', borderBottom: '2px solid #0f1117' }}>
         <Image src={product.images[0]} alt={product.name} fill style={{ objectFit: 'cover' }} sizes="300px" />
         {discount > 0 && (
-          <span style={{ position: 'absolute', top: 10, right: 10, background: '#F07B32', color: '#fff', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', padding: '3px 8px', border: '2px solid #0f1117' }}>
+          <span style={{ position: 'absolute', top: 10, right: 10, background: '#0D9488', color: '#fff', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', padding: '3px 8px', border: '2px solid #0f1117' }}>
             {discount}% OFF
           </span>
         )}
       </div>
       <div style={{ padding: '14px 16px' }}>
-        <p style={{ fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#F07B32', fontWeight: 600, marginBottom: 4 }}>{product.category}</p>
+        <p style={{ fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#0D9488', fontWeight: 600, marginBottom: 4 }}>{product.category}</p>
         <h4 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 18, color: '#0f1117', marginBottom: 8, lineHeight: 1.1 }}>{product.name}</h4>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
           <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 22, color: '#0f1117' }}>₹{product.price.toLocaleString()}</span>
@@ -225,9 +225,9 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
       <div style={{ borderBottom: '2px solid rgba(15,17,23,0.1)', background: '#fff' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '10px 32px' }}>
           <nav style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 10, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(15,17,23,0.4)' }}>
-            <Link href="/" style={{ color: 'inherit', textDecoration: 'none' }} onMouseEnter={e => (e.currentTarget.style.color = '#F07B32')} onMouseLeave={e => (e.currentTarget.style.color = 'rgba(15,17,23,0.4)')}>Home</Link>
+            <Link href="/" style={{ color: 'inherit', textDecoration: 'none' }} onMouseEnter={e => (e.currentTarget.style.color = '#0D9488')} onMouseLeave={e => (e.currentTarget.style.color = 'rgba(15,17,23,0.4)')}>Home</Link>
             <ChevronRight style={{ width: 12, height: 12 }} />
-            <Link href="/shop" style={{ color: 'inherit', textDecoration: 'none' }} onMouseEnter={e => (e.currentTarget.style.color = '#F07B32')} onMouseLeave={e => (e.currentTarget.style.color = 'rgba(15,17,23,0.4)')}>Shop</Link>
+            <Link href="/shop" style={{ color: 'inherit', textDecoration: 'none' }} onMouseEnter={e => (e.currentTarget.style.color = '#0D9488')} onMouseLeave={e => (e.currentTarget.style.color = 'rgba(15,17,23,0.4)')}>Shop</Link>
             <ChevronRight style={{ width: 12, height: 12 }} />
             <span style={{ color: '#0f1117' }}>{product.shortName}</span>
           </nav>
@@ -235,11 +235,11 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
       </div>
 
       {/* Main layout */}
-      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '40px 32px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px 64px' }}>
+      <div className="product-container" style={{ maxWidth: 1280, margin: '0 auto', padding: '40px 32px' }}>
+        <div className="product-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px 64px' }}>
 
           {/* LEFT: Images */}
-          <div style={{ position: 'sticky', top: 24, alignSelf: 'start' }}>
+          <div className="product-image-sticky" style={{ position: 'sticky', top: 24, alignSelf: 'start' }}>
             <ImageGallery images={product.images} />
           </div>
 
@@ -251,12 +251,12 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
                 {product.category}
               </span>
               {product.badge && (
-                <span style={{ background: '#0f1117', color: '#F07B32', fontSize: 9, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', padding: '4px 10px', border: '2px solid #0f1117' }}>
+                <span style={{ background: '#0f1117', color: '#0D9488', fontSize: 9, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', padding: '4px 10px', border: '2px solid #0f1117' }}>
                   {product.badge}
                 </span>
               )}
               {discount > 0 && (
-                <span style={{ background: '#F07B32', color: '#fff', fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '4px 10px', border: '2px solid #0f1117', boxShadow: '2px 2px 0 #0f1117' }}>
+                <span style={{ background: '#0D9488', color: '#fff', fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '4px 10px', border: '2px solid #0f1117', boxShadow: '2px 2px 0 #0f1117' }}>
                   {discount}% OFF
                 </span>
               )}
@@ -285,8 +285,8 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
             <div style={{ marginBottom: 24, display: 'flex', flexDirection: 'column', gap: 8 }}>
               {product.benefits.slice(0, 4).map((b, i) => (
                 <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                  <span style={{ width: 18, height: 18, background: 'rgba(240,123,50,0.1)', border: '2px solid #F07B32', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
-                    <Check style={{ width: 9, height: 9, color: '#F07B32' }} />
+                  <span style={{ width: 18, height: 18, background: 'rgba(13,148,136,0.1)', border: '2px solid #0D9488', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                    <Check style={{ width: 9, height: 9, color: '#0D9488' }} />
                   </span>
                   <span style={{ fontSize: 12, color: '#0f1117', lineHeight: 1.6 }}>{b}</span>
                 </div>
@@ -318,15 +318,15 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
                     onClick={() => setSelectedBundle(i)}
                     style={{
                       position: 'relative', padding: '12px 8px', textAlign: 'center', cursor: 'pointer',
-                      border: `2.5px solid ${i === selectedBundle ? '#F07B32' : '#0f1117'}`,
-                      boxShadow: i === selectedBundle ? '3px 3px 0 #F07B32' : '2px 2px 0 #0f1117',
+                      border: `2.5px solid ${i === selectedBundle ? '#0D9488' : '#0f1117'}`,
+                      boxShadow: i === selectedBundle ? '3px 3px 0 #0D9488' : '2px 2px 0 #0f1117',
                       background: i === selectedBundle ? '#0f1117' : '#fff',
                       color: i === selectedBundle ? '#fff' : '#0f1117',
                       transition: 'all 0.15s', fontFamily: 'inherit',
                     }}
                   >
                     {b.badge && (
-                      <span style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', background: '#F07B32', color: '#fff', fontSize: 8, fontWeight: 700, letterSpacing: '0.1em', padding: '2px 8px', border: '2px solid #0f1117', whiteSpace: 'nowrap' }}>
+                      <span style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', background: '#0D9488', color: '#fff', fontSize: 8, fontWeight: 700, letterSpacing: '0.1em', padding: '2px 8px', border: '2px solid #0f1117', whiteSpace: 'nowrap' }}>
                         {b.badge}
                       </span>
                     )}
@@ -358,7 +358,7 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
                 onClick={handleBuyNow}
                 disabled={isBuyingNow}
                 style={{
-                  flex: 1, padding: '14px 20px', background: '#F07B32', color: '#fff',
+                  flex: 1, padding: '14px 20px', background: '#0D9488', color: '#fff',
                   border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117',
                   fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase',
                   cursor: isBuyingNow ? 'not-allowed' : 'pointer', opacity: isBuyingNow ? 0.6 : 1,
@@ -388,7 +388,7 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
                 { icon: Truck, title: 'Pan-India Delivery', sub: '3–5 business days' },
               ].map((item, i) => (
                 <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '10px 12px', background: '#faf7f2', border: '2px solid rgba(15,17,23,0.12)' }}>
-                  <item.icon style={{ width: 14, height: 14, color: '#F07B32', flexShrink: 0, marginTop: 1 }} />
+                  <item.icon style={{ width: 14, height: 14, color: '#0D9488', flexShrink: 0, marginTop: 1 }} />
                   <div>
                     <p style={{ fontSize: 11, fontWeight: 700, color: '#0f1117', marginBottom: 1 }}>{item.title}</p>
                     <p style={{ fontSize: 10, color: 'rgba(15,17,23,0.45)' }}>{item.sub}</p>
@@ -404,9 +404,9 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
         {/* Reviews */}
         <div ref={reviewsRef} style={{ marginTop: 80, scrollMarginTop: 96 }}>
           <div style={{ textAlign: 'center', marginBottom: 36 }}>
-            <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#F07B32', fontWeight: 600, display: 'block', marginBottom: 12 }}>◆ Verified Reviews</span>
+            <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#0D9488', fontWeight: 600, display: 'block', marginBottom: 12 }}>◆ Verified Reviews</span>
             <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(36px,4vw,64px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.9 }}>
-              WHAT CUSTOMERS<br /><span style={{ color: '#F07B32' }}>ARE SAYING.</span>
+              WHAT CUSTOMERS<br /><span style={{ color: '#0D9488' }}>ARE SAYING.</span>
             </h2>
           </div>
           <ProductReviews productId={product.id} productName={product.name} />
@@ -415,9 +415,9 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
         {/* FAQ */}
         <div style={{ marginTop: 80 }}>
           <div style={{ textAlign: 'center', marginBottom: 36 }}>
-            <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#F07B32', fontWeight: 600, display: 'block', marginBottom: 12 }}>◆ Got Questions?</span>
+            <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#0D9488', fontWeight: 600, display: 'block', marginBottom: 12 }}>◆ Got Questions?</span>
             <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(36px,4vw,64px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.9 }}>
-              FREQUENTLY ASKED<br /><span style={{ color: '#F07B32' }}>QUESTIONS.</span>
+              FREQUENTLY ASKED<br /><span style={{ color: '#0D9488' }}>QUESTIONS.</span>
             </h2>
           </div>
           <div style={{ maxWidth: 720, margin: '0 auto' }}>
@@ -429,9 +429,9 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
         {relatedProducts.length > 0 && (
           <div style={{ marginTop: 80 }}>
             <div style={{ textAlign: 'center', marginBottom: 36 }}>
-              <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#F07B32', fontWeight: 600, display: 'block', marginBottom: 12 }}>◆ You May Also Like</span>
+              <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#0D9488', fontWeight: 600, display: 'block', marginBottom: 12 }}>◆ You May Also Like</span>
               <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(36px,4vw,64px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.9 }}>
-                RELATED<br /><span style={{ color: '#F07B32' }}>PRODUCTS.</span>
+                RELATED<br /><span style={{ color: '#0D9488' }}>PRODUCTS.</span>
               </h2>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24, maxWidth: 640, margin: '0 auto' }}>
@@ -441,20 +441,20 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
         )}
       </div>
 
-      {/* Mobile Sticky Bottom */}
-      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#fff', borderTop: '3px solid #0f1117', padding: '12px 16px', zIndex: 500, boxShadow: '0 -4px 0 rgba(15,17,23,0.08)' }}>
-        <div style={{ display: 'none', gap: 8 }} className="mobile-cta-bar">
+      {/* Mobile Sticky Bottom — hidden on desktop via CSS */}
+      <div className="mobile-cta-outer" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#fff', borderTop: '3px solid #0f1117', padding: '12px 16px', zIndex: 500, boxShadow: '0 -4px 0 rgba(15,17,23,0.08)', display: 'none' }}>
+        <div style={{ display: 'flex', gap: 8 }}>
           <button
             onClick={handleAddToCart}
             disabled={isAddingToCart}
-            style={{ background: '#fff', color: '#0f1117', padding: '12px 14px', border: '2.5px solid #0f1117', boxShadow: '3px 3px 0 #0f1117', fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'inherit' }}
+            style={{ background: '#fff', color: '#0f1117', padding: '14px 18px', border: '2.5px solid #0f1117', boxShadow: '3px 3px 0 #0f1117', fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}
           >
-            {isAddingToCart ? '✓' : 'ADD'}
+            {isAddingToCart ? '✓ ADDED' : 'ADD TO CART'}
           </button>
           <button
             onClick={handleBuyNow}
             disabled={isBuyingNow}
-            style={{ flex: 1, background: '#F07B32', color: '#fff', padding: '12px 16px', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontFamily: 'inherit' }}
+            style={{ flex: 1, background: '#0D9488', color: '#fff', padding: '14px 16px', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontFamily: 'inherit' }}
           >
             <Zap style={{ width: 14, height: 14 }} />
             {isBuyingNow ? 'PROCESSING...' : `BUY NOW — ₹${bundle.totalPrice.toLocaleString()}`}
@@ -464,9 +464,10 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
 
       <style>{`
         @media (max-width: 768px) {
-          .mobile-cta-bar { display: flex !important; }
-          div[style*='grid-template-columns: 1fr 1fr;'][style*='gap: 60px'] { grid-template-columns: 1fr !important; gap: 24px !important; }
-          div[style*='position: sticky'] { position: relative !important; top: auto !important; }
+          .mobile-cta-outer { display: block !important; }
+          .product-container { padding: 20px 16px !important; }
+          .product-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+          .product-image-sticky { position: relative !important; top: auto !important; }
         }
       `}</style>
     </div>

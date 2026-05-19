@@ -9,14 +9,6 @@ import { useCart } from '../../../lib/cart';
 import { toast } from '../../../hooks/use-toast';
 import { ShieldCheck, Truck, RotateCcw, ChevronRight, Lock, Zap } from 'lucide-react';
 
-// ── Config ──────────────────────────────────────────────────────────────────
-
-const WOOCOMMERCE = {
-  BASE_URL: 'https://cms.amraj.in',
-  CONSUMER_KEY: 'ck_7610f309972822bfa8e87304ea6c47e9e93b8ff6',
-  CONSUMER_SECRET: 'cs_0f117bc7ec4611ca378adde03010f619c0af59b2',
-};
-
 const RAZORPAY_KEY = 'rzp_live_RJVNEePx4007GD';
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -62,18 +54,17 @@ declare global {
   }
 }
 
-// ── WooCommerce helpers ──────────────────────────────────────────────────────
+// ── WooCommerce helpers (via server-side API routes to avoid CORS) ───────────
 
 async function createWooOrder(data: Record<string, unknown>): Promise<WooOrder> {
-  const auth = btoa(`${WOOCOMMERCE.CONSUMER_KEY}:${WOOCOMMERCE.CONSUMER_SECRET}`);
-  const res = await fetch(`${WOOCOMMERCE.BASE_URL}/wp-json/wc/v3/orders`, {
+  const res = await fetch('/api/woocommerce/create-order', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Basic ${auth}` },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error((err as { message?: string }).message || `Order failed (${res.status})`);
+    throw new Error((err as { error?: string }).error || `Order failed (${res.status})`);
   }
   return res.json();
 }
@@ -83,19 +74,18 @@ async function updateWooOrder(
   status: string,
   paymentData?: RazorpayResponse
 ): Promise<void> {
-  const auth = btoa(`${WOOCOMMERCE.CONSUMER_KEY}:${WOOCOMMERCE.CONSUMER_SECRET}`);
-  const body: Record<string, unknown> = { status };
+  const updateData: Record<string, unknown> = { status };
   if (paymentData) {
-    body.meta_data = [
+    updateData.meta_data = [
       { key: 'razorpay_payment_id', value: paymentData.razorpay_payment_id },
       { key: 'razorpay_order_id', value: paymentData.razorpay_order_id },
       { key: 'razorpay_signature', value: paymentData.razorpay_signature },
     ];
   }
-  const res = await fetch(`${WOOCOMMERCE.BASE_URL}/wp-json/wc/v3/orders/${orderId}`, {
+  const res = await fetch('/api/woocommerce/update-order', {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json', Authorization: `Basic ${auth}` },
-    body: JSON.stringify(body),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ orderId, updateData }),
   });
   if (!res.ok) throw new Error('Failed to update order status');
 }
@@ -115,7 +105,7 @@ function OrderSummary({
   return (
     <div style={{ border: '3px solid #0f1117', background: '#fff', overflow: 'hidden' }}>
       <div style={{ padding: '14px 20px', borderBottom: '3px solid #0f1117', background: '#0f1117' }}>
-        <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 18, color: '#F07B32', letterSpacing: '0.08em' }}>ORDER SUMMARY</h3>
+        <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 18, color: '#0D9488', letterSpacing: '0.08em' }}>ORDER SUMMARY</h3>
       </div>
       <div style={{ padding: 20 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
@@ -149,7 +139,7 @@ function OrderSummary({
           </div>
           <div style={{ borderTop: '2px solid #0f1117', paddingTop: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
             <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#0f1117' }}>Total</span>
-            <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 28, color: '#F07B32', letterSpacing: '0.02em' }}>₹{finalTotal.toLocaleString()}</span>
+            <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 28, color: '#0D9488', letterSpacing: '0.02em' }}>₹{finalTotal.toLocaleString()}</span>
           </div>
         </div>
         {delivery === 0 && (
@@ -189,7 +179,7 @@ export default function Checkout() {
           <div style={{ fontSize: 40, marginBottom: 16 }}>🛒</div>
           <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 32, color: '#0f1117', marginBottom: 10, letterSpacing: '0.04em' }}>YOUR CART IS EMPTY</h2>
           <p style={{ fontSize: 13, color: 'rgba(15,17,23,0.5)', marginBottom: 28, lineHeight: 1.6 }}>Add some products to continue.</p>
-          <Link href="/shop" style={{ display: 'inline-block', background: '#F07B32', color: '#fff', padding: '13px 28px', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none' }}>
+          <Link href="/shop" style={{ display: 'inline-block', background: '#0D9488', color: '#fff', padding: '13px 28px', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none' }}>
             SHOP NOW →
           </Link>
         </div>
@@ -275,7 +265,7 @@ export default function Checkout() {
           name: form.name.trim(),
           contact: form.phone.trim(),
         },
-        theme: { color: '#000000' },
+        theme: { color: '#0D9488' },
         retry: { enabled: true, max_count: 3 },
         modal: {
           ondismiss: async () => {
@@ -315,7 +305,7 @@ export default function Checkout() {
       });
 
       rzp.open();
-      setLoading(false);
+      // loading stays true while Razorpay modal is open; reset in handler/ondismiss/failed
     } catch (err) {
       if (wooOrder?.id) await updateWooOrder(wooOrder.id, 'cancelled').catch(() => {});
       toast({
@@ -338,29 +328,29 @@ export default function Checkout() {
       />
 
       <div style={{ minHeight: '100vh', background: '#faf7f2' }}>
-        <div style={{ maxWidth: 1024, margin: '0 auto', padding: '40px 32px' }}>
+        <div className="checkout-container" style={{ maxWidth: 1024, margin: '0 auto', padding: '40px 32px' }}>
 
           {/* Header */}
           <div style={{ marginBottom: 36 }}>
             <Link href="/cart" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(15,17,23,0.5)', textDecoration: 'none', marginBottom: 20 }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#F07B32')}
+              onMouseEnter={e => (e.currentTarget.style.color = '#0D9488')}
               onMouseLeave={e => (e.currentTarget.style.color = 'rgba(15,17,23,0.5)')}
             >
               <ChevronRight style={{ width: 14, height: 14, transform: 'rotate(180deg)' }} /> BACK TO CART
             </Link>
-            <h1 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(52px,7vw,88px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.9 }}>
-              CHECKOUT.<br /><span style={{ color: '#F07B32', fontSize: '0.7em' }}>COMPLETE YOUR ORDER.</span>
+            <h1 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(36px,7vw,88px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.9 }}>
+              CHECKOUT.<br /><span style={{ color: '#0D9488', fontSize: '0.7em' }}>COMPLETE YOUR ORDER.</span>
             </h1>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 32, alignItems: 'start' }}>
+          <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 32, alignItems: 'start' }}>
 
             {/* LEFT: Form */}
             <div>
               <form onSubmit={handleSubmit} style={{ border: '3px solid #0f1117', background: '#fff', boxShadow: '4px 4px 0 #0f1117', overflow: 'hidden' }}>
                 <div style={{ padding: '16px 24px', borderBottom: '3px solid #0f1117', background: '#0f1117', display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <span style={{ width: 28, height: 28, background: '#F07B32', border: '2px solid #fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Bebas Neue, sans-serif', fontSize: 16, color: '#fff', flexShrink: 0 }}>1</span>
-                  <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 18, color: '#F07B32', letterSpacing: '0.08em' }}>DELIVERY DETAILS</h2>
+                  <span style={{ width: 28, height: 28, background: '#0D9488', border: '2px solid #fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Bebas Neue, sans-serif', fontSize: 16, color: '#fff', flexShrink: 0 }}>1</span>
+                  <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 18, color: '#0D9488', letterSpacing: '0.08em' }}>DELIVERY DETAILS</h2>
                 </div>
                 <div style={{ padding: '28px 24px' }}>
 
@@ -372,7 +362,7 @@ export default function Checkout() {
                       value={form.name}
                       onChange={(e) => { setForm((f) => ({ ...f, name: e.target.value })); if (errors.name) setErrors((er) => ({ ...er, name: undefined })); }}
                       placeholder="Enter your full name"
-                      style={{ width: '100%', padding: '12px 16px', border: `2.5px solid ${errors.name ? '#d95f1a' : '#0f1117'}`, background: errors.name ? '#fff5f0' : '#faf7f2', color: '#0f1117', fontSize: 13, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', transition: 'border-color 0.2s' }}
+                      style={{ width: '100%', padding: '12px 16px', border: `2.5px solid ${errors.name ? '#d95f1a' : '#0f1117'}`, background: errors.name ? '#f0fdf9' : '#faf7f2', color: '#0f1117', fontSize: 13, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', transition: 'border-color 0.2s' }}
                     />
                     {errors.name && <p style={{ color: '#d95f1a', fontSize: 10, marginTop: 6, fontWeight: 600, letterSpacing: '0.05em' }}>{errors.name}</p>}
                   </div>
@@ -387,7 +377,7 @@ export default function Checkout() {
                         value={form.phone}
                         onChange={(e) => { const v = e.target.value.replace(/\D/g, '').slice(0, 10); setForm((f) => ({ ...f, phone: v })); if (errors.phone) setErrors((er) => ({ ...er, phone: undefined })); }}
                         placeholder="10-digit mobile number"
-                        style={{ width: '100%', paddingLeft: 50, paddingRight: 16, paddingTop: 12, paddingBottom: 12, border: `2.5px solid ${errors.phone ? '#d95f1a' : '#0f1117'}`, background: errors.phone ? '#fff5f0' : '#faf7f2', color: '#0f1117', fontSize: 13, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
+                        style={{ width: '100%', paddingLeft: 50, paddingRight: 16, paddingTop: 12, paddingBottom: 12, border: `2.5px solid ${errors.phone ? '#d95f1a' : '#0f1117'}`, background: errors.phone ? '#f0fdf9' : '#faf7f2', color: '#0f1117', fontSize: 13, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
                       />
                     </div>
                     {errors.phone && <p style={{ color: '#d95f1a', fontSize: 10, marginTop: 6, fontWeight: 600 }}>{errors.phone}</p>}
@@ -402,7 +392,7 @@ export default function Checkout() {
                       onChange={(e) => { setForm((f) => ({ ...f, address: e.target.value })); if (errors.address) setErrors((er) => ({ ...er, address: undefined })); }}
                       rows={4}
                       placeholder="House/Flat No., Street, Area, Landmark, City, State, Pincode"
-                      style={{ width: '100%', padding: '12px 16px', border: `2.5px solid ${errors.address ? '#d95f1a' : '#0f1117'}`, background: errors.address ? '#fff5f0' : '#faf7f2', color: '#0f1117', fontSize: 13, outline: 'none', fontFamily: 'inherit', resize: 'none', boxSizing: 'border-box' }}
+                      style={{ width: '100%', padding: '12px 16px', border: `2.5px solid ${errors.address ? '#d95f1a' : '#0f1117'}`, background: errors.address ? '#f0fdf9' : '#faf7f2', color: '#0f1117', fontSize: 13, outline: 'none', fontFamily: 'inherit', resize: 'none', boxSizing: 'border-box' }}
                     />
                     {errors.address && <p style={{ color: '#d95f1a', fontSize: 10, marginTop: 6, fontWeight: 600 }}>{errors.address}</p>}
                     <p style={{ fontSize: 10, color: 'rgba(15,17,23,0.4)', marginTop: 6, letterSpacing: '0.04em' }}>Include city, state and pincode for accurate delivery</p>
@@ -413,7 +403,7 @@ export default function Checkout() {
                     type="submit"
                     disabled={loading || !rzpLoaded}
                     style={{
-                      width: '100%', padding: '16px 20px', background: loading || !rzpLoaded ? 'rgba(15,17,23,0.5)' : '#F07B32',
+                      width: '100%', padding: '16px 20px', background: loading || !rzpLoaded ? 'rgba(15,17,23,0.5)' : '#0D9488',
                       color: '#fff', border: '2.5px solid #0f1117', boxShadow: loading || !rzpLoaded ? 'none' : '4px 4px 0 #0f1117',
                       fontSize: 12, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase',
                       cursor: loading || !rzpLoaded ? 'not-allowed' : 'pointer',
@@ -449,12 +439,12 @@ export default function Checkout() {
             </div>
 
             {/* RIGHT: Summary */}
-            <div style={{ position: 'sticky', top: 24 }}>
+            <div className="checkout-summary" style={{ position: 'sticky', top: 24 }}>
               <OrderSummary items={items} total={subtotal} delivery={delivery} />
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginTop: 12 }}>
                 {[{ icon: ShieldCheck, text: 'Secure' }, { icon: Truck, text: 'Fast' }, { icon: RotateCcw, text: 'Returns' }].map(({ icon: Icon, text }) => (
                   <div key={text} style={{ padding: '10px 8px', background: '#fff', border: '2px solid rgba(15,17,23,0.15)', textAlign: 'center' }}>
-                    <Icon style={{ width: 14, height: 14, color: '#F07B32', margin: '0 auto 4px' }} />
+                    <Icon style={{ width: 14, height: 14, color: '#0D9488', margin: '0 auto 4px' }} />
                     <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#0f1117' }}>{text}</p>
                   </div>
                 ))}
@@ -467,8 +457,9 @@ export default function Checkout() {
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         @media (max-width: 768px) {
-          div[style*='grid-template-columns: 1fr 360px'] { grid-template-columns: 1fr !important; }
-          div[style*='position: sticky'][style*='top: 24'] { position: relative !important; top: auto !important; }
+          .checkout-container { padding: 24px 16px !important; }
+          .checkout-grid { grid-template-columns: 1fr !important; }
+          .checkout-summary { position: relative !important; top: auto !important; }
         }
       `}</style>
     </>

@@ -10,8 +10,8 @@
 
 :root {
   --black: #0f1117;
-  --orange: #F07B32;
-  --orange-dark: #d95f1a;
+  --teal: #0D9488;
+  --teal-dark: #0a7a6e;
   --bg: #faf7f2;
   --bg2: #f3ede4;
   --white: #ffffff;
@@ -54,7 +54,7 @@ body {
   background-image: repeating-linear-gradient(
     -45deg,
     transparent, transparent 8px,
-    rgba(240,123,50,0.05) 8px, rgba(240,123,50,0.05) 9px
+    rgba(13,148,136,0.05) 8px, rgba(13,148,136,0.05) 9px
   );
 }
 
@@ -62,7 +62,7 @@ body {
 .y2k-shadow     { box-shadow: 4px 4px 0 var(--black); }
 .y2k-shadow-sm  { box-shadow: 2px 2px 0 var(--black); }
 .y2k-shadow-lg  { box-shadow: 6px 6px 0 var(--black); }
-.y2k-shadow-or  { box-shadow: 4px 4px 0 var(--orange); }
+.y2k-shadow-or  { box-shadow: 4px 4px 0 var(--teal); }
 
 /* ━━ Y2K BUTTON ━━ */
 .y2k-btn {
@@ -88,7 +88,7 @@ body {
   transform: translate(2px, 2px);
   box-shadow: 1px 1px 0 var(--black);
 }
-.y2k-btn-primary { background: var(--orange); color: var(--white); }
+.y2k-btn-primary { background: var(--teal); color: var(--white); }
 .y2k-btn-black   { background: var(--black); color: var(--white); }
 .y2k-btn-acid    { background: var(--acid);  color: var(--black); }
 .y2k-btn-outline { background: transparent; color: var(--black); }
@@ -187,7 +187,7 @@ body {
   font-weight: 600;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--orange);
+  color: var(--teal);
   margin-bottom: 10px;
   display: block;
 }
