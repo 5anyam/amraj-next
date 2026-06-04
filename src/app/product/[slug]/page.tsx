@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const title = `${product.name} – ${product.tagline} | Amraj`;
-  const description = `Buy ${product.name} online at ₹${product.price}. ${product.tagline}. FSSAI certified, GMP tested. Free delivery across India.`;
+  const description = `Buy ${product.name} online at ₹${product.price}. ${product.tagline}. FSSAI certified, GMP tested. Pan-India delivery.`;
   const imageUrl = product.images[0];
   const canonical = `https://www.amraj.in/product/${product.slug}`;
 
@@ -63,7 +63,7 @@ export default async function Page({ params }: Props) {
     '@context': 'https://schema.org/',
     '@type': 'Product',
     name: product.name,
-    description: `${product.tagline}. FSSAI certified, GMP tested. Free delivery across India.`,
+    description: `${product.tagline}. FSSAI certified, GMP tested. Pan-India delivery.`,
     image: product.images,
     url: canonical,
     sku: `AMRAJ-${product.id}`,

@@ -161,7 +161,7 @@ export default function CartPage() {
 
               {/* Trust badges */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 12 }}>
-                {['Secure Payment', 'Fast Delivery', '30-Day Returns', 'GMP Certified'].map((t) => (
+                {['Secure Payment', 'Pan-India Delivery', 'FSSAI Certified', 'GMP Certified'].map((t) => (
                   <div key={t} style={{ padding: '10px 12px', background: '#fff', border: '2px solid rgba(15,17,23,0.15)', textAlign: 'center' }}>
                     <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#0f1117' }}>{t}</p>
                   </div>

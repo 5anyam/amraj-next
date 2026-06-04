@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import {
-  Star, ShieldCheck, Truck, Check, RotateCcw,
+  Star, ShieldCheck, Truck, Check, Leaf,
   ChevronRight, Package, Zap
 } from 'lucide-react';
 import { StaticProduct, PRODUCTS } from '../../../../lib/products-data';
@@ -140,7 +140,7 @@ function Tabs({ product }: { product: StaticProduct }) {
             {[
               { icon: Package, label: 'Dispatch', value: 'Within 24 hours of order confirmation' },
               { icon: Truck, label: 'Delivery', value: '3–5 business days, pan-India' },
-              { icon: RotateCcw, label: 'Returns', value: '30-day money-back guarantee' },
+              { icon: Leaf, label: 'Quality', value: '100% natural & FSSAI certified' },
               { icon: ShieldCheck, label: 'Packaging', value: 'Tamper-proof, eco-friendly packaging' },
             ].map((item, i) => (
               <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '12px 16px', background: '#faf7f2', border: '2px solid #0f1117' }}>
@@ -376,14 +376,14 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
             {/* Delivery */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#0f1117', marginBottom: 20, padding: '10px 14px', background: 'rgba(204,255,0,0.15)', border: '2px solid rgba(15,17,23,0.2)' }}>
               <Truck style={{ width: 14, height: 14, color: '#0f1117', flexShrink: 0 }} />
-              <span><strong>Free delivery</strong> · Dispatched within 24 hours</span>
+              <span><strong>Pan-India delivery</strong> · 3–5 business days</span>
             </div>
 
             {/* Trust Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
               {[
                 { icon: ShieldCheck, title: '100% Authentic', sub: 'Genuine Products' },
-                { icon: RotateCcw, title: '30-Day Guarantee', sub: 'Hassle-free returns' },
+                { icon: Leaf, title: '100% Natural', sub: 'No artificial additives' },
                 { icon: Package, title: 'GMP Certified', sub: 'Lab tested quality' },
                 { icon: Truck, title: 'Pan-India Delivery', sub: '3–5 business days' },
               ].map((item, i) => (

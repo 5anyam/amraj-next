@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { PRODUCTS, StaticProduct } from '../../lib/products-data';
 import Testimonials from '../../components/TestimonialsSection';
 import HomeFAQ from '../../components/HomeFaq';
-import { Star, ShieldCheck, Truck, RotateCcw, Award, Check, ChevronRight, Leaf, FlaskConical, BadgeCheck } from 'lucide-react';
+import { Star, ShieldCheck, Truck, Award, Check, ChevronRight, Leaf, FlaskConical, BadgeCheck } from 'lucide-react';
 
 /* ── SCROLL REVEAL HOOK ── */
 function useReveal(threshold = 0.1) {
@@ -242,7 +242,7 @@ function ChromeStats() {
     { num: '10,000+', label: 'Happy Customers' },
     { num: '4.8★', label: 'Average Rating' },
     { num: '100%', label: 'Natural Ingredients' },
-    { num: '30 Days', label: 'Money-Back Guarantee' },
+    { num: 'FSSAI', label: 'Certified & Licensed' },
   ];
   return (
     <div
@@ -279,7 +279,7 @@ const whyItems = [
   { icon: Leaf, title: 'Pure & Natural', desc: 'No artificial fillers, no GMOs. Only standardised herbal extracts and pure nutraceuticals.', num: '02' },
   { icon: BadgeCheck, title: 'GMP Certified', desc: 'Manufactured in ISO-approved, GMP-certified facilities with strict quality controls.', num: '03' },
   { icon: ShieldCheck, title: 'Heavy Metal Tested', desc: 'Every batch tested for purity, potency, and freedom from contaminants.', num: '04' },
-  { icon: Truck, title: 'Fast Delivery', desc: 'Dispatched within 24 hours, delivered pan-India in 3–5 days. Easy returns.', num: '05' },
+  { icon: Truck, title: 'Pan-India Delivery', desc: 'Delivered across India in 3–5 business days. Securely packaged to preserve freshness.', num: '05' },
   { icon: Award, title: 'FSSAI Certified', desc: 'FSSAI & GMP certified. Manufactured to the highest Indian quality standards.', num: '06' },
 ];
 
@@ -311,8 +311,8 @@ export default function Homepage() {
               { icon: Award, label: 'FSSAI Certified' },
               { icon: ShieldCheck, label: 'GMP Lab Tested' },
               { emoji: '🇮🇳', label: 'Made in India' },
-              { icon: RotateCcw, label: '30-Day Guarantee' },
-              { icon: Truck, label: 'Free Delivery' },
+              { icon: Leaf, label: '100% Natural' },
+              { icon: FlaskConical, label: 'Lab Tested' },
             ].map((item, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#0f1117' }}>
                 {item.emoji ? <span style={{ fontSize: 16 }}>{item.emoji}</span> : item.icon && <item.icon style={{ width: 14, height: 14, color: '#0D9488' }} />}
@@ -430,7 +430,7 @@ export default function Homepage() {
             {[
               { step: '01', title: 'Choose Your Formula', desc: 'Pick the supplement that targets your specific health goal.' },
               { step: '02', title: 'Order in 60 Seconds', desc: 'Simple checkout — name, phone & address. Done.' },
-              { step: '03', title: 'Fast Delivery', desc: 'Dispatched within 24 hours. Delivered pan-India in 3–5 days.' },
+              { step: '03', title: 'Pan-India Delivery', desc: 'Delivered across India in 3–5 business days, securely packaged.' },
               { step: '04', title: 'Feel the Results', desc: '4–6 weeks of consistent use delivers real, measurable results.' },
             ].map((item, i) => (
               <div key={i} style={{ padding: '32px 24px', textAlign: 'center', borderRight: i < 3 ? '3px solid #0f1117' : 'none', background: i % 2 === 0 ? '#fff' : '#faf7f2' }}>
@@ -490,7 +490,7 @@ export default function Homepage() {
             </Link>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24, flexWrap: 'wrap' }}>
-            {['Free Delivery', '30-Day Guarantee', 'Secure Payment'].map((t) => (
+            {['100% Natural', 'Lab Tested', 'Secure Payment'].map((t) => (
               <span key={t} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.08em' }}>
                 <Check style={{ width: 12, height: 12, color: '#0D9488' }} /> {t}
               </span>

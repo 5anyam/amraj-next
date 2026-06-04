@@ -7,7 +7,7 @@ import Script from 'next/script';
 import Image from 'next/image';
 import { useCart } from '../../../lib/cart';
 import { toast } from '../../../hooks/use-toast';
-import { ShieldCheck, Truck, RotateCcw, ChevronRight, Lock, Zap } from 'lucide-react';
+import { ShieldCheck, Truck, ChevronRight, Lock, Zap } from 'lucide-react';
 
 const RAZORPAY_KEY = 'rzp_live_RJVNEePx4007GD';
 
@@ -145,7 +145,7 @@ function OrderSummary({
         {delivery === 0 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 10, padding: '8px 10px', background: 'rgba(204,255,0,0.15)', border: '2px solid rgba(15,17,23,0.15)' }}>
             <Truck style={{ width: 12, height: 12, color: '#0f1117' }} />
-            <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', color: '#0f1117' }}>Free delivery on orders above ₹500</p>
+            <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', color: '#0f1117' }}>Pan-India delivery · 3–5 business days</p>
           </div>
         )}
       </div>
@@ -424,7 +424,7 @@ export default function Checkout() {
 
                   {/* Trust row */}
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, marginTop: 14, flexWrap: 'wrap' }}>
-                    {[{ icon: Lock, label: 'SSL Secured' }, { icon: ShieldCheck, label: 'Safe Checkout' }, { icon: RotateCcw, label: '30-Day Returns' }].map(({ icon: Icon, label }) => (
+                    {[{ icon: Lock, label: 'SSL Secured' }, { icon: ShieldCheck, label: 'Safe Checkout' }, { icon: ShieldCheck, label: 'FSSAI Certified' }].map(({ icon: Icon, label }) => (
                       <span key={label} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 10, color: 'rgba(15,17,23,0.4)', letterSpacing: '0.08em' }}>
                         <Icon style={{ width: 12, height: 12 }} /> {label}
                       </span>
@@ -442,7 +442,7 @@ export default function Checkout() {
             <div className="checkout-summary" style={{ position: 'sticky', top: 24 }}>
               <OrderSummary items={items} total={subtotal} delivery={delivery} />
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginTop: 12 }}>
-                {[{ icon: ShieldCheck, text: 'Secure' }, { icon: Truck, text: 'Fast' }, { icon: RotateCcw, text: 'Returns' }].map(({ icon: Icon, text }) => (
+                {[{ icon: ShieldCheck, text: 'Secure' }, { icon: Truck, text: 'Delivery' }, { icon: ShieldCheck, text: 'Certified' }].map(({ icon: Icon, text }) => (
                   <div key={text} style={{ padding: '10px 8px', background: '#fff', border: '2px solid rgba(15,17,23,0.15)', textAlign: 'center' }}>
                     <Icon style={{ width: 14, height: 14, color: '#0D9488', margin: '0 auto 4px' }} />
                     <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#0f1117' }}>{text}</p>
