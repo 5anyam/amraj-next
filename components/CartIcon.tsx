@@ -3,7 +3,7 @@
 import { ShoppingBag, X, Plus, Minus, Trash2, ArrowRight } from "lucide-react";
 import { useCart } from "../lib/cart";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 export default function CartIcon() {
@@ -12,31 +12,39 @@ export default function CartIcon() {
   
   const [isOpen, setIsOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [prevCount, setPrevCount] = useState(0);
 
   // Calculate totals
   const count = items.reduce((c, i) => c + i.quantity, 0);
   const subtotal = items.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
 
-  // Animation effect on add
+  // Auto-open ONLY when the user actually adds an item during the session —
+  // never on the initial hydration from localStorage. `armed` turns on shortly
+  // after mount so the localStorage-loaded count doesn't trigger the drawer.
+  const prevCountRef = useRef(count);
+  const armedRef = useRef(false);
+
   useEffect(() => {
-    if (count > prevCount) {
+    const t = setTimeout(() => { armedRef.current = true; }, 600);
+    return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    const prev = prevCountRef.current;
+    prevCountRef.current = count;
+    if (armedRef.current && count > prev) {
       setIsAnimating(true);
-      setIsOpen(true); // Auto-open drawer when adding item
+      setIsOpen(true);
       const timer = setTimeout(() => setIsAnimating(false), 300);
       return () => clearTimeout(timer);
     }
-    setPrevCount(count);
-  }, [count, prevCount]);
+  }, [count]);
 
-  // Lock body scroll when cart is open
+  // Lock scroll when cart is open — only touch overflow-Y so the body's
+  // `overflow-x: hidden` (which clips the off-screen drawer) always stays on,
+  // otherwise the closed drawer causes a horizontal scroll.
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => { document.body.style.overflow = 'unset'; };
+    document.body.style.overflowY = isOpen ? 'hidden' : '';
+    return () => { document.body.style.overflowY = ''; };
   }, [isOpen]);
 
   return (
@@ -54,23 +62,28 @@ export default function CartIcon() {
         />
         {count > 0 && (
           <span className={`absolute top-1 right-0.5 min-w-[18px] h-[18px] flex items-center justify-center bg-[#0D9488] text-white text-[10px] font-bold rounded-full border-2 border-white transition-all duration-300 ${
-            isAnimating ? 'scale-125 bg-orange-500' : ''
+            isAnimating ? 'scale-125 bg-[#0a7a6e]' : ''
           }`}>
             {count}
           </span>
         )}
       </button>
 
+      {/* Overlay wrapper — clips the off-screen drawer so it never adds horizontal scroll */}
+      <div
+        className={`fixed inset-0 z-[60] overflow-hidden ${isOpen ? '' : 'pointer-events-none'}`}
+        aria-hidden={!isOpen}
+      >
       {/* 2. The Overlay Backdrop */}
-      <div 
-        className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] transition-opacity duration-300 ${
+      <div
+        className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${
           isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
         }`}
         onClick={() => setIsOpen(false)}
       />
 
       {/* 3. The Sliding Drawer */}
-      <div className={`fixed top-0 right-0 h-full w-full max-w-md bg-white z-[70] shadow-2xl transform transition-transform duration-300 ease-out flex flex-col ${
+      <div className={`absolute top-0 right-0 h-full w-full max-w-md bg-white z-[70] shadow-2xl transform transition-transform duration-300 ease-out flex flex-col ${
         isOpen ? 'translate-x-0' : 'translate-x-full'
       }`}>
         
@@ -197,6 +210,7 @@ export default function CartIcon() {
            </div>
         )}
 
+      </div>
       </div>
     </>
   );

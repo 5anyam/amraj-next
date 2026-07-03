@@ -68,7 +68,10 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = mobileMenuOpen ? 'hidden' : 'unset';
+    // Only lock vertical scroll — leave the body's `overflow-x: hidden` intact,
+    // otherwise off-screen fixed drawers (nav / cart) create a horizontal scroll.
+    document.body.style.overflowY = mobileMenuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflowY = ''; };
   }, [mobileMenuOpen]);
 
   function handleSearch(e: React.FormEvent) {
