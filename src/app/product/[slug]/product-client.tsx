@@ -101,7 +101,7 @@ function ImageGallery({ images, name }: { images: string[]; name: string }) {
         </div>
       )}
       {/* Main */}
-      <div style={{ position: 'relative', flex: 1, aspectRatio: '1', borderRadius: RADIUS, overflow: 'hidden', background: BG_SOFT, boxShadow: CARD_SHADOW }}>
+      <div className="gallery-main" style={{ position: 'relative', flex: 1, width: '100%', aspectRatio: '1', borderRadius: RADIUS, overflow: 'hidden', background: BG_SOFT, boxShadow: CARD_SHADOW }}>
         <Image src={images[main]} alt={name} fill style={{ objectFit: 'cover' }} sizes="(max-width: 1024px) 100vw, 560px" priority />
       </div>
     </div>
@@ -186,7 +186,7 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
   ];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fff', color: INK, paddingBottom: 100 }}>
+    <div className="product-page" style={{ minHeight: '100vh', background: '#fff', color: INK, paddingBottom: 100 }}>
 
       {/* Breadcrumb */}
       <div style={{ borderBottom: `1px solid ${LINE}`, background: '#fff' }}>
@@ -283,7 +283,7 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
             </div>
 
             {/* CTAs */}
-            <div style={{ display: 'flex', gap: 12, marginBottom: 18 }}>
+            <div className="cta-row" style={{ display: 'flex', gap: 12, marginBottom: 18 }}>
               <button
                 onClick={handleAddToCart}
                 disabled={isAddingToCart}
@@ -306,7 +306,7 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
             </div>
 
             {/* Trust row */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 8 }}>
+            <div className="trust-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 8 }}>
               {trustRow.map((t, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: 13, color: INK, padding: '10px 14px', background: BG_SOFT, borderRadius: 12 }}>
                   <t.icon style={{ width: 16, height: 16, color: ACCENT, flexShrink: 0 }} />
@@ -481,19 +481,33 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
 
       <style>{`
         @media (max-width: 900px) {
-          .product-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
+          .product-grid { grid-template-columns: 1fr !important; gap: 26px !important; }
           .product-image-sticky { position: relative !important; top: auto !important; }
           .benefit-grid, .usage-grid, .quality-grid { grid-template-columns: 1fr !important; }
           .ingredient-grid { grid-template-columns: 1fr !important; }
           .mobile-cta-outer { display: block !important; }
         }
-        @media (min-width: 561px) and (max-width: 900px) {
+        @media (min-width: 601px) and (max-width: 900px) {
           .benefit-grid, .quality-grid, .ingredient-grid { grid-template-columns: repeat(2, 1fr) !important; }
         }
-        @media (max-width: 560px) {
-          .gallery-wrap { flex-direction: column-reverse !important; }
-          .gallery-thumbs { flex-direction: row !important; width: auto !important; overflow-x: auto; }
+        /* Tablet & down: tighten section spacing */
+        @media (max-width: 768px) {
+          .product-page section { padding-top: 52px !important; padding-bottom: 52px !important; padding-left: 18px !important; padding-right: 18px !important; }
+          .product-container { padding: 20px 18px !important; }
+          .product-page { padding-bottom: 92px !important; }
+        }
+        /* Phones: stack gallery, shrink everything a touch */
+        @media (max-width: 600px) {
+          .gallery-wrap { flex-direction: column !important; gap: 10px !important; }
+          .gallery-main { flex: none !important; width: 100% !important; }
+          .gallery-thumbs { flex-direction: row !important; width: 100% !important; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+          .gallery-thumbs > button { width: 62px !important; height: 62px !important; }
+          .product-page section { padding-top: 44px !important; padding-bottom: 44px !important; padding-left: 16px !important; padding-right: 16px !important; }
+          .product-container { padding: 16px !important; }
           .related-grid { grid-template-columns: 1fr !important; }
+          .cta-row { flex-direction: column !important; }
+          .cta-row > button { width: 100% !important; flex: none !important; }
+          .trust-row { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </div>

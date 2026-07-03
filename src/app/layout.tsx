@@ -16,6 +16,12 @@ export const metadata = {
   description: 'An innovative fusion of modern nutraceuticals and ancient herbal wisdom—for results you can feel.',
 };
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const fbPixelId = '821676473858360';
   const gtagId = 'AW-17423083060';
