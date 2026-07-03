@@ -2,12 +2,20 @@
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import CartIcon from './CartIcon';
-import { useIsMobile } from '../hooks/use-mobile';
 import { useAuth } from '../lib/auth-context';
 import React, { useState, useRef, useEffect } from 'react';
 import { FiSearch, FiUser, FiMenu, FiX } from 'react-icons/fi';
 import { BiChevronDown } from 'react-icons/bi';
 import { useTypewriter } from 'react-simple-typewriter';
+
+/* ── PREMIUM TOKENS ── */
+const INK = '#17191f';
+const INK_SOFT = '#5c6470';
+const LINE = '#e9eaee';
+const ACCENT = '#0D9488';
+const ACCENT_DK = '#0a7a6e';
+const ACCENT_SOFT = '#eef7f5';
+const BG_SOFT = '#f6f8f7';
 
 const navItems = [
   { name: 'Home', to: '/' },
@@ -17,7 +25,7 @@ const navItems = [
     submenu: [
       { name: 'Prostate Care', to: '/product/advanced-prostate-care' },
       { name: 'Weight Management', to: '/product/weight-management-pro' },
-      { name: 'Detox', to: '/product/advanced-liver-detox' },
+      { name: 'Liver Detox', to: '/product/advanced-liver-detox' },
     ],
   },
   { name: 'About Us', to: '/about' },
@@ -26,7 +34,6 @@ const navItems = [
 
 export default function Header() {
   const location = usePathname();
-  const isMobile = useIsMobile();
   const [search, setSearch] = useState('');
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -40,7 +47,7 @@ export default function Header() {
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   const [text] = useTypewriter({
-    words: ['Search wellness...', 'Weight loss...', 'Detox...'],
+    words: ['Search wellness...', 'Weight loss...', 'Liver detox...'],
     loop: 0,
     typeSpeed: 70,
     deleteSpeed: 50,
@@ -73,170 +80,122 @@ export default function Header() {
     }
   }
 
+  const navLinkBase: React.CSSProperties = {
+    display: 'block', padding: '8px 14px', fontSize: 14, fontWeight: 500,
+    textDecoration: 'none', borderRadius: 10, transition: 'color 0.2s, background 0.2s',
+  };
+
   return (
     <>
-      {/* ── DESKTOP HEADER ── */}
-      <header
-        style={{ borderBottom: '3px solid #0f1117', background: '#ffffff', position: 'sticky', top: 0, zIndex: 500 }}
-      >
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 68 }}>
+      {/* ── HEADER ── */}
+      <header style={{ borderBottom: `1px solid ${LINE}`, background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', position: 'sticky', top: 0, zIndex: 500 }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 66 }}>
 
             {/* Logo */}
             <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-              <img
-                src="/amraj-logo.jpg"
-                alt="Amraj Logo"
-                style={{ height: 40, width: 'auto', objectFit: 'contain', border: '2px solid #0f1117', boxShadow: '2px 2px 0 #0f1117' }}
-              />
-              <img
-                src="/amraj-text.png"
-                alt="Amraj"
-                style={{ height: 24, width: 'auto', objectFit: 'contain' }}
-              />
+              <img src="/amraj-logo.jpg" alt="Amraj Logo" style={{ height: 38, width: 'auto', objectFit: 'contain', borderRadius: 10 }} />
+              <img src="/amraj-text.png" alt="Amraj" style={{ height: 22, width: 'auto', objectFit: 'contain' }} />
             </Link>
 
             {/* Desktop Nav */}
-            {!isMobile && (
-              <nav style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                {navItems.map((item) => (
-                  <div key={item.name} style={{ position: 'relative' }} ref={item.name === 'Shop' ? shopMenuRef : undefined}>
-                    {item.submenu ? (
-                      <div
-                        onMouseEnter={() => { if (timeoutRef.current) clearTimeout(timeoutRef.current); setShopSubmenuOpen(true); }}
-                        onMouseLeave={() => { timeoutRef.current = setTimeout(() => setShopSubmenuOpen(false), 200); }}
-                      >
-                        <button
-                          style={{
-                            display: 'flex', alignItems: 'center', gap: 4,
-                            padding: '6px 14px', fontSize: 11, fontWeight: 600,
-                            letterSpacing: '0.1em', textTransform: 'uppercase',
-                            color: location.startsWith(item.to) ? '#0D9488' : '#0f1117',
-                            background: 'transparent', border: 'none', cursor: 'pointer',
-                            borderBottom: location.startsWith(item.to) ? '2px solid #0D9488' : '2px solid transparent',
-                            transition: 'color 0.2s, border-color 0.2s',
-                          }}
+            <nav className="hdr-desktop" style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                {navItems.map((item) => {
+                  const active = item.submenu ? location.startsWith(item.to) : location === item.to;
+                  return (
+                    <div key={item.name} style={{ position: 'relative' }} ref={item.name === 'Shop' ? shopMenuRef : undefined}>
+                      {item.submenu ? (
+                        <div
+                          onMouseEnter={() => { if (timeoutRef.current) clearTimeout(timeoutRef.current); setShopSubmenuOpen(true); }}
+                          onMouseLeave={() => { timeoutRef.current = setTimeout(() => setShopSubmenuOpen(false), 200); }}
+                        >
+                          <button
+                            style={{ ...navLinkBase, display: 'flex', alignItems: 'center', gap: 4, color: active ? ACCENT_DK : INK, background: active ? ACCENT_SOFT : 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
+                            onMouseEnter={e => { if (!active) e.currentTarget.style.background = BG_SOFT; }}
+                            onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent'; }}
+                          >
+                            {item.name}
+                            <BiChevronDown style={{ transition: 'transform 0.2s', transform: shopSubmenuOpen ? 'rotate(180deg)' : 'none' }} />
+                          </button>
+                          {shopSubmenuOpen && (
+                            <div style={{ position: 'absolute', top: '100%', left: 0, paddingTop: 10, zIndex: 100 }}>
+                              <div style={{ background: '#fff', border: `1px solid ${LINE}`, borderRadius: 16, boxShadow: '0 12px 32px rgba(16,24,40,0.12)', minWidth: 220, overflow: 'hidden', padding: 6 }}>
+                                {item.submenu.map((sub) => (
+                                  <Link
+                                    key={sub.name}
+                                    href={sub.to}
+                                    style={{ display: 'block', padding: '11px 14px', fontSize: 14, fontWeight: 500, borderRadius: 10, color: location === sub.to ? ACCENT_DK : INK, textDecoration: 'none', transition: 'background 0.15s' }}
+                                    onMouseEnter={e => (e.currentTarget.style.background = BG_SOFT)}
+                                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                                  >
+                                    {sub.name}
+                                  </Link>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <Link
+                          href={item.to}
+                          style={{ ...navLinkBase, color: active ? ACCENT_DK : INK, background: active ? ACCENT_SOFT : 'transparent' }}
+                          onMouseEnter={e => { if (!active) e.currentTarget.style.background = BG_SOFT; }}
+                          onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent'; }}
                         >
                           {item.name}
-                          <BiChevronDown style={{ transition: 'transform 0.2s', transform: shopSubmenuOpen ? 'rotate(180deg)' : 'none' }} />
-                        </button>
-
-                        {shopSubmenuOpen && (
-                          <div style={{
-                            position: 'absolute', top: '100%', left: 0, paddingTop: 8, zIndex: 100,
-                          }}>
-                            <div style={{
-                              background: '#ffffff', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117',
-                              minWidth: 200, overflow: 'hidden',
-                            }}>
-                              {item.submenu.map((sub) => (
-                                <Link
-                                  key={sub.name}
-                                  href={sub.to}
-                                  style={{
-                                    display: 'block', padding: '10px 16px', fontSize: 11,
-                                    fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase',
-                                    color: location === sub.to ? '#0D9488' : '#0f1117',
-                                    textDecoration: 'none',
-                                    borderBottom: '1px solid rgba(15,17,23,0.08)',
-                                    transition: 'background 0.15s',
-                                  }}
-                                  onMouseEnter={e => (e.currentTarget.style.background = '#faf7f2')}
-                                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                                >
-                                  {sub.name}
-                                </Link>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <Link
-                        href={item.to}
-                        style={{
-                          display: 'block', padding: '6px 14px', fontSize: 11, fontWeight: 600,
-                          letterSpacing: '0.1em', textTransform: 'uppercase', textDecoration: 'none',
-                          color: location === item.to ? '#0D9488' : '#0f1117',
-                          borderBottom: location === item.to ? '2px solid #0D9488' : '2px solid transparent',
-                          transition: 'color 0.2s, border-color 0.2s',
-                        }}
-                      >
-                        {item.name}
-                      </Link>
-                    )}
-                  </div>
-                ))}
+                        </Link>
+                      )}
+                    </div>
+                  );
+                })}
               </nav>
-            )}
 
             {/* Right Actions */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
 
               {/* Desktop Search */}
-              {!isMobile && (
-                <form onSubmit={handleSearch} style={{ position: 'relative' }}>
-                  <div style={{
-                    display: 'flex', alignItems: 'center',
-                    border: '2px solid #0f1117', background: '#faf7f2',
-                    padding: '6px 14px', gap: 8, width: 220,
-                  }}>
-                    <FiSearch style={{ color: '#0f1117', flexShrink: 0 }} size={14} />
+              <form className="hdr-desktop" onSubmit={handleSearch} style={{ position: 'relative' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', border: `1px solid ${LINE}`, background: BG_SOFT, borderRadius: 999, padding: '9px 16px', gap: 8, width: 220 }}>
+                    <FiSearch style={{ color: INK_SOFT, flexShrink: 0 }} size={15} />
                     <input
                       type="text"
                       placeholder={text}
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
-                      style={{
-                        background: 'transparent', border: 'none', outline: 'none',
-                        fontSize: 11, color: '#0f1117', width: '100%',
-                        letterSpacing: '0.05em',
-                      }}
+                      style={{ background: 'transparent', border: 'none', outline: 'none', fontSize: 13, color: INK, width: '100%' }}
                     />
                   </div>
                 </form>
-              )}
 
               {/* User (Desktop) */}
-              {!isMobile && (
-                <div style={{ position: 'relative' }} ref={userMenuRef}>
+              <div className="hdr-desktop" style={{ position: 'relative' }} ref={userMenuRef}>
                   {user ? (
                     <>
                       <button
                         onClick={() => setUserMenuOpen(!userMenuOpen)}
-                        style={{
-                          width: 36, height: 36, background: '#0f1117', color: '#0D9488',
-                          border: '2px solid #0f1117', boxShadow: '2px 2px 0 #0f1117',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: 13, fontWeight: 800, cursor: 'pointer',
-                          fontFamily: 'Bebas Neue, sans-serif', letterSpacing: '0.05em',
-                        }}
+                        style={{ width: 40, height: 40, background: ACCENT, color: '#fff', border: 'none', borderRadius: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}
                       >
                         {user.name.charAt(0).toUpperCase()}
                       </button>
                       {userMenuOpen && (
-                        <div style={{
-                          position: 'absolute', top: '100%', right: 0, marginTop: 8,
-                          background: '#fff', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117',
-                          minWidth: 180, zIndex: 200,
-                        }}>
-                          <div style={{ padding: '10px 14px', borderBottom: '2px solid #0f1117' }}>
-                            <p style={{ fontWeight: 700, fontSize: 12, color: '#0f1117' }}>{user.name}</p>
-                            <p style={{ fontSize: 10, color: '#888', marginTop: 2, letterSpacing: '0.04em' }}>{user.email}</p>
+                        <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: 10, background: '#fff', border: `1px solid ${LINE}`, borderRadius: 16, boxShadow: '0 12px 32px rgba(16,24,40,0.12)', minWidth: 200, zIndex: 200, overflow: 'hidden', padding: 6 }}>
+                          <div style={{ padding: '10px 14px', borderBottom: `1px solid ${LINE}`, marginBottom: 4 }}>
+                            <p style={{ fontWeight: 700, fontSize: 14, color: INK }}>{user.name}</p>
+                            <p style={{ fontSize: 12, color: INK_SOFT, marginTop: 2 }}>{user.email}</p>
                           </div>
                           <Link
                             href="/my-account"
                             onClick={() => setUserMenuOpen(false)}
-                            style={{ display: 'block', padding: '10px 14px', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#0f1117', textDecoration: 'none', borderBottom: '1px solid rgba(15,17,23,0.08)' }}
-                            onMouseEnter={e => (e.currentTarget.style.background = '#faf7f2')}
+                            style={{ display: 'block', padding: '11px 14px', fontSize: 14, fontWeight: 500, borderRadius: 10, color: INK, textDecoration: 'none' }}
+                            onMouseEnter={e => (e.currentTarget.style.background = BG_SOFT)}
                             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                           >
                             My Account
                           </Link>
                           <button
                             onClick={() => { logout(); setUserMenuOpen(false); }}
-                            style={{ display: 'block', width: '100%', padding: '10px 14px', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#d95f1a', background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left' }}
-                            onMouseEnter={e => (e.currentTarget.style.background = '#f0fdf9')}
+                            style={{ display: 'block', width: '100%', padding: '11px 14px', fontSize: 14, fontWeight: 500, borderRadius: 10, color: '#c2410c', background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+                            onMouseEnter={e => (e.currentTarget.style.background = '#fef2f2')}
                             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                           >
                             Sign Out
@@ -245,58 +204,46 @@ export default function Header() {
                       )}
                     </>
                   ) : (
-                    <Link href="/login" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, border: '2px solid #0f1117', boxShadow: '2px 2px 0 #0f1117', color: '#0f1117', textDecoration: 'none', transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = '#faf7f2')} onMouseLeave={e => (e.currentTarget.style.background = '#fff')}>
-                      <FiUser size={16} />
+                    <Link href="/login" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, borderRadius: 999, border: `1px solid ${LINE}`, color: INK, textDecoration: 'none', transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget.style.background = BG_SOFT)} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                      <FiUser size={18} />
                     </Link>
                   )}
                 </div>
-              )}
 
               {/* Cart */}
-              <div style={{ borderLeft: '2px solid rgba(15,17,23,0.12)', paddingLeft: 12 }}>
-                <CartIcon />
-              </div>
+              <CartIcon />
 
               {/* Mobile Search */}
-              {isMobile && !showMobileSearch && (
-                <button onClick={() => setShowMobileSearch(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0f1117', padding: 6 }}>
+              {!showMobileSearch && (
+                <button className="hdr-mobile" onClick={() => setShowMobileSearch(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: INK, padding: 6 }}>
                   <FiSearch size={20} />
                 </button>
               )}
 
               {/* Mobile Menu Toggle */}
-              {isMobile && (
-                <button
-                  onClick={() => setMobileMenuOpen(true)}
-                  style={{
-                    background: '#0f1117', color: '#0D9488', border: '2px solid #0f1117',
-                    boxShadow: '2px 2px 0 rgba(15,17,23,0.3)', padding: '6px 8px', cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}
-                >
-                  <FiMenu size={20} />
-                </button>
-              )}
+              <button
+                className="hdr-mobile"
+                onClick={() => setMobileMenuOpen(true)}
+                style={{ background: BG_SOFT, color: INK, border: `1px solid ${LINE}`, borderRadius: 10, padding: '8px 10px', cursor: 'pointer', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <FiMenu size={20} />
+              </button>
             </div>
 
             {/* Mobile Search Overlay */}
-            {isMobile && showMobileSearch && (
-              <div style={{
-                position: 'absolute', inset: 0, background: '#fff', zIndex: 50,
-                display: 'flex', alignItems: 'center', padding: '0 16px',
-                borderBottom: '3px solid #0f1117',
-              }}>
+            {showMobileSearch && (
+              <div style={{ position: 'absolute', inset: 0, background: '#fff', zIndex: 50, display: 'flex', alignItems: 'center', padding: '0 16px', borderBottom: `1px solid ${LINE}` }}>
                 <form style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%' }} onSubmit={handleSearch}>
-                  <FiSearch style={{ color: '#0f1117' }} size={16} />
+                  <FiSearch style={{ color: INK_SOFT }} size={17} />
                   <input
                     autoFocus
                     type="text"
                     placeholder="Search products..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    style={{ flex: 1, border: 'none', outline: 'none', fontSize: 14, color: '#0f1117', background: 'transparent' }}
+                    style={{ flex: 1, border: 'none', outline: 'none', fontSize: 15, color: INK, background: 'transparent' }}
                   />
-                  <button type="button" onClick={() => setShowMobileSearch(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0f1117' }}>
+                  <button type="button" onClick={() => setShowMobileSearch(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: INK }}>
                     <FiX size={20} />
                   </button>
                 </form>
@@ -306,113 +253,107 @@ export default function Header() {
         </div>
       </header>
 
-      {/* ── MOBILE DRAWER ── */}
-      {isMobile && (
-        <>
+      {/* ── MOBILE DRAWER (visibility controlled by state; nav trigger is CSS-hidden on desktop) ── */}
+      <>
           <div
             onClick={() => setMobileMenuOpen(false)}
-            style={{
-              position: 'fixed', inset: 0, background: 'rgba(15,17,23,0.6)',
-              zIndex: 600, opacity: mobileMenuOpen ? 1 : 0,
-              visibility: mobileMenuOpen ? 'visible' : 'hidden', transition: 'opacity 0.3s',
-            }}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(15,17,23,0.5)', zIndex: 600, opacity: mobileMenuOpen ? 1 : 0, visibility: mobileMenuOpen ? 'visible' : 'hidden', transition: 'opacity 0.3s' }}
           />
           <div style={{
-            position: 'fixed', top: 0, right: 0, bottom: 0, width: '82%', maxWidth: 340,
-            background: '#faf7f2', zIndex: 700,
-            border: '3px solid #0f1117', borderRight: 'none',
+            position: 'fixed', top: 0, right: 0, bottom: 0, width: '84%', maxWidth: 340,
+            background: '#fff', zIndex: 700, boxShadow: '-8px 0 40px rgba(16,24,40,0.2)',
             transform: mobileMenuOpen ? 'translateX(0)' : 'translateX(100%)',
             transition: 'transform 0.32s cubic-bezier(.16,1,.3,1)',
             display: 'flex', flexDirection: 'column',
           }}>
             {/* Drawer header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '3px solid #0f1117', background: '#0f1117' }}>
-              <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 22, color: '#fff', letterSpacing: '0.06em' }}>AMRAJ MENU</span>
-              <button onClick={() => setMobileMenuOpen(false)} style={{ background: '#0D9488', border: '2px solid #fff', color: '#fff', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '2px 2px 0 rgba(255,255,255,0.3)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 20px', borderBottom: `1px solid ${LINE}` }}>
+              <span style={{ fontSize: 17, fontWeight: 700, letterSpacing: '-0.01em', color: INK }}>Menu</span>
+              <button onClick={() => setMobileMenuOpen(false)} style={{ background: BG_SOFT, border: `1px solid ${LINE}`, borderRadius: 10, color: INK, width: 38, height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                 <FiX size={18} />
               </button>
             </div>
 
             {/* Nav items */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: '12px 0' }}>
-              {navItems.map((item) => (
-                <div key={item.name}>
-                  {item.submenu ? (
-                    <div style={{ borderBottom: '2px solid rgba(15,17,23,0.08)' }}>
-                      <button
-                        onClick={() => setMobileShopSubmenuOpen(!mobileShopSubmenuOpen)}
-                        style={{
-                          width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                          padding: '14px 20px', fontFamily: 'Bebas Neue, sans-serif', fontSize: 20,
-                          letterSpacing: '0.06em', color: '#0f1117', background: 'none', border: 'none', cursor: 'pointer',
-                        }}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '12px' }}>
+              {navItems.map((item) => {
+                const active = item.submenu ? location.startsWith(item.to) : location === item.to;
+                return (
+                  <div key={item.name}>
+                    {item.submenu ? (
+                      <div>
+                        <button
+                          onClick={() => setMobileShopSubmenuOpen(!mobileShopSubmenuOpen)}
+                          style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 14px', fontSize: 16, fontWeight: 600, borderRadius: 12, color: active ? ACCENT_DK : INK, background: active ? ACCENT_SOFT : 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
+                        >
+                          {item.name}
+                          <BiChevronDown style={{ transition: 'transform 0.2s', transform: mobileShopSubmenuOpen ? 'rotate(180deg)' : 'none' }} />
+                        </button>
+                        {mobileShopSubmenuOpen && (
+                          <div style={{ paddingLeft: 12, paddingBottom: 6 }}>
+                            {item.submenu.map((sub) => (
+                              <Link
+                                key={sub.name}
+                                href={sub.to}
+                                onClick={() => setMobileMenuOpen(false)}
+                                style={{ display: 'block', padding: '11px 14px', fontSize: 14, fontWeight: 500, borderRadius: 10, color: location === sub.to ? ACCENT_DK : INK_SOFT, textDecoration: 'none' }}
+                              >
+                                {sub.name}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <Link
+                        href={item.to}
+                        onClick={() => setMobileMenuOpen(false)}
+                        style={{ display: 'block', padding: '14px 14px', fontSize: 16, fontWeight: 600, borderRadius: 12, color: active ? ACCENT_DK : INK, background: active ? ACCENT_SOFT : 'transparent', textDecoration: 'none' }}
                       >
                         {item.name}
-                        <BiChevronDown style={{ transition: 'transform 0.2s', transform: mobileShopSubmenuOpen ? 'rotate(180deg)' : 'none' }} />
-                      </button>
-                      {mobileShopSubmenuOpen && (
-                        <div style={{ paddingLeft: 20, paddingBottom: 8 }}>
-                          {item.submenu.map((sub) => (
-                            <Link
-                              key={sub.name}
-                              href={sub.to}
-                              onClick={() => setMobileMenuOpen(false)}
-                              style={{ display: 'block', padding: '8px 16px', fontSize: 11, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: location === sub.to ? '#0D9488' : '#555', textDecoration: 'none', borderLeft: '2px solid #0f1117', marginBottom: 4 }}
-                            >
-                              {sub.name}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <Link
-                      href={item.to}
-                      onClick={() => setMobileMenuOpen(false)}
-                      style={{
-                        display: 'block', padding: '14px 20px',
-                        fontFamily: 'Bebas Neue, sans-serif', fontSize: 20,
-                        letterSpacing: '0.06em', color: location === item.to ? '#0D9488' : '#0f1117',
-                        textDecoration: 'none', borderBottom: '2px solid rgba(15,17,23,0.08)',
-                        borderLeft: location === item.to ? '3px solid #0D9488' : '3px solid transparent',
-                      }}
-                    >
-                      {item.name}
-                    </Link>
-                  )}
-                </div>
-              ))}
+                      </Link>
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
             {/* Auth footer */}
-            <div style={{ padding: 20, borderTop: '3px solid #0f1117', background: '#fff' }}>
+            <div style={{ padding: 16, borderTop: `1px solid ${LINE}` }}>
               {user ? (
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, padding: '10px 14px', background: '#faf7f2', border: '2px solid #0f1117' }}>
-                    <div style={{ width: 36, height: 36, background: '#0f1117', color: '#0D9488', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Bebas Neue, sans-serif', fontSize: 18, flexShrink: 0, border: '2px solid #0D9488' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, padding: '12px 14px', background: BG_SOFT, borderRadius: 14 }}>
+                    <div style={{ width: 40, height: 40, background: ACCENT, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, fontWeight: 700, flexShrink: 0, borderRadius: 999 }}>
                       {user.name.charAt(0)}
                     </div>
                     <div>
-                      <p style={{ fontWeight: 700, fontSize: 13, color: '#0f1117' }}>{user.name}</p>
-                      <p style={{ fontSize: 10, color: '#888', letterSpacing: '0.04em' }}>{user.email}</p>
+                      <p style={{ fontWeight: 700, fontSize: 14, color: INK }}>{user.name}</p>
+                      <p style={{ fontSize: 12, color: INK_SOFT }}>{user.email}</p>
                     </div>
                   </div>
-                  <Link href="/my-account" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', padding: '12px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#0f1117', textDecoration: 'none', border: '2.5px solid #0f1117', boxShadow: '3px 3px 0 #0f1117', marginBottom: 10, background: '#faf7f2' }}>
+                  <Link href="/my-account" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', padding: '13px 16px', textAlign: 'center', fontSize: 14, fontWeight: 600, color: INK, textDecoration: 'none', border: `1.5px solid ${LINE}`, borderRadius: 12, marginBottom: 10 }}>
                     My Account
                   </Link>
-                  <button onClick={() => { logout(); setMobileMenuOpen(false); }} style={{ width: '100%', padding: '12px 16px', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#fff', background: '#0f1117', border: '2.5px solid #0f1117', boxShadow: '3px 3px 0 #0D9488', cursor: 'pointer' }}>
+                  <button onClick={() => { logout(); setMobileMenuOpen(false); }} style={{ width: '100%', padding: '13px 16px', fontSize: 14, fontWeight: 600, color: '#fff', background: INK, border: 'none', borderRadius: 12, cursor: 'pointer' }}>
                     Sign Out
                   </button>
                 </div>
               ) : (
-                <Link href="/login" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', padding: '14px 16px', textAlign: 'center', fontFamily: 'Bebas Neue, sans-serif', fontSize: 18, letterSpacing: '0.08em', color: '#fff', textDecoration: 'none', background: '#0f1117', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0D9488' }}>
-                  LOG IN / SIGN UP →
+                <Link href="/login" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', padding: '15px 16px', textAlign: 'center', fontSize: 15, fontWeight: 700, color: '#fff', textDecoration: 'none', background: ACCENT, borderRadius: 14, boxShadow: '0 8px 20px rgba(13,148,136,0.28)' }}>
+                  Log in / Sign up
                 </Link>
               )}
             </div>
           </div>
-        </>
-      )}
+      </>
+
+      <style>{`
+        .hdr-mobile { display: none; }
+        @media (max-width: 767px) {
+          .hdr-desktop { display: none !important; }
+          .hdr-mobile { display: flex !important; }
+        }
+      `}</style>
     </>
   );
 }

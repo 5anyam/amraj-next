@@ -1,43 +1,48 @@
 "use client"
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Sprout, FlaskConical, HeartHandshake, Award, Check, Sparkles } from 'lucide-react';
+
+const INK = '#17191f';
+const INK_SOFT = '#5c6470';
+const LINE = '#e9eaee';
+const ACCENT = '#0D9488';
+const ACCENT_DK = '#0a7a6e';
+const ACCENT_SOFT = '#eef7f5';
+const BG_SOFT = '#f6f8f7';
+const CARD_SHADOW = '0 2px 16px rgba(16,24,40,0.05)';
+const RADIUS = 20;
 
 function ConsultationModal() {
   const [isOpen, setIsOpen] = useState(false);
-
   return (
     <>
       <button
         onClick={() => setIsOpen(true)}
-        style={{ background: '#0D9488', color: '#fff', padding: '14px 36px', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', fontSize: 11, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'inherit', transition: 'transform 0.15s, box-shadow 0.15s' }}
-        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translate(-2px,-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '6px 6px 0 #0f1117'; }}
-        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = '4px 4px 0 #0f1117'; }}
+        style={{ background: '#fff', color: INK, padding: '15px 34px', border: 'none', borderRadius: 14, fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
       >
-        GET FREE CONSULTATION →
+        Get a free consultation →
       </button>
 
       {isOpen && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,17,23,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '20px' }}>
-          <div style={{ background: '#fff', border: '3px solid #0f1117', boxShadow: '8px 8px 0 #0f1117', width: '100%', maxWidth: 480, overflow: 'hidden' }}>
-            <div style={{ background: '#0f1117', padding: '18px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 24, color: '#0D9488', letterSpacing: '0.06em' }}>FREE CONSULTATION</h3>
-              <button onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <X size={20} />
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,17,23,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: 20 }}>
+          <div style={{ background: '#fff', borderRadius: 24, boxShadow: '0 30px 70px rgba(16,24,40,0.25)', width: '100%', maxWidth: 460, overflow: 'hidden' }}>
+            <div style={{ padding: '22px 26px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${LINE}` }}>
+              <h3 style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.02em', color: INK }}>Free consultation</h3>
+              <button onClick={() => setIsOpen(false)} style={{ background: BG_SOFT, border: `1px solid ${LINE}`, borderRadius: 10, width: 36, height: 36, color: INK, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <X size={18} />
               </button>
             </div>
-            <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 14 }}>
-              {['Your Name', 'Your Email', 'Your Phone'].map((ph, i) => (
+            <div style={{ padding: 26, display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {['Your name', 'Your email', 'Your phone'].map((ph, i) => (
                 <input key={i} type={i === 1 ? 'email' : i === 2 ? 'tel' : 'text'} placeholder={ph}
-                  style={{ width: '100%', padding: '12px 16px', border: '2px solid #0f1117', background: '#faf7f2', color: '#0f1117', fontSize: 13, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }} />
+                  style={{ width: '100%', padding: '13px 16px', border: `1.5px solid ${LINE}`, background: '#fff', color: INK, fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', borderRadius: 12 }} />
               ))}
               <textarea placeholder="Tell us about your health goals..." rows={4}
-                style={{ width: '100%', padding: '12px 16px', border: '2px solid #0f1117', background: '#faf7f2', color: '#0f1117', fontSize: 13, outline: 'none', resize: 'vertical', fontFamily: 'inherit', boxSizing: 'border-box' }} />
+                style={{ width: '100%', padding: '13px 16px', border: `1.5px solid ${LINE}`, background: '#fff', color: INK, fontSize: 14, outline: 'none', resize: 'vertical', fontFamily: 'inherit', boxSizing: 'border-box', borderRadius: 12 }} />
               <button onClick={() => setIsOpen(false)}
-                style={{ background: '#0f1117', color: '#fff', padding: '13px 20px', border: '2.5px solid #0f1117', fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'inherit', transition: 'background 0.2s' }}
-                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = '#0D9488')}
-                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = '#0f1117')}
+                style={{ background: ACCENT, color: '#fff', padding: '14px 20px', border: 'none', borderRadius: 12, fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 8px 20px rgba(13,148,136,0.28)' }}
               >
-                BOOK CONSULTATION →
+                Book consultation →
               </button>
             </div>
           </div>
@@ -47,134 +52,116 @@ function ConsultationModal() {
   );
 }
 
+function SectionHeading({ eyebrow, title, sub }: { eyebrow: string; title: string; sub?: string }) {
+  return (
+    <div style={{ textAlign: 'center', maxWidth: 680, margin: '0 auto 44px' }}>
+      <span style={{ display: 'inline-block', fontSize: 12, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: ACCENT, marginBottom: 12 }}>{eyebrow}</span>
+      <h2 style={{ fontSize: 'clamp(28px,3.6vw,42px)', fontWeight: 700, letterSpacing: '-0.025em', color: INK, lineHeight: 1.12 }}>{title}</h2>
+      {sub && <p style={{ fontSize: 15.5, color: INK_SOFT, lineHeight: 1.7, marginTop: 14 }}>{sub}</p>}
+    </div>
+  );
+}
+
 export default function AboutPage() {
   return (
-    <main style={{ minHeight: '100vh', background: '#faf7f2' }}>
+    <main style={{ minHeight: '100vh', background: '#fff', color: INK }}>
 
       {/* Hero */}
-      <section className="about-hero" style={{ background: '#0f1117', padding: '64px 32px', borderBottom: '4px solid #0D9488', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(13,148,136,0.04) 40px, rgba(13,148,136,0.04) 41px)', pointerEvents: 'none' }} />
-        <div style={{ maxWidth: 960, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 2 }}>
-          <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#0D9488', display: 'block', marginBottom: 16 }}>◆ Our Story</span>
-          <h1 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(60px,10vw,120px)', color: '#fff', lineHeight: 0.9, marginBottom: 20, letterSpacing: '0.02em' }}>
-            ABOUT<br /><span style={{ color: '#0D9488' }}>AMRAJ.</span>
+      <section className="about-hero" style={{ background: 'linear-gradient(170deg,#ffffff 0%,#f2faf8 60%,#f6f8f7 100%)', padding: '72px 24px', borderBottom: `1px solid ${LINE}` }}>
+        <div style={{ maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: ACCENT_SOFT, color: ACCENT_DK, fontSize: 12, fontWeight: 600, padding: '7px 14px', borderRadius: 999, marginBottom: 22 }}>
+            <Sparkles size={14} /> Our story
+          </span>
+          <h1 style={{ fontSize: 'clamp(38px,5.4vw,60px)', fontWeight: 700, letterSpacing: '-0.03em', color: INK, lineHeight: 1.06, marginBottom: 20 }}>
+            Rooted in tradition,<br />backed by science.
           </h1>
-          <p style={{ fontSize: 14, fontWeight: 300, color: 'rgba(255,255,255,0.5)', maxWidth: 520, margin: '0 auto', lineHeight: 1.8 }}>
-            An innovative fusion of modern nutraceuticals and ancient herbal wisdom — for results you can feel.
+          <p style={{ fontSize: 17, color: INK_SOFT, lineHeight: 1.75, maxWidth: 560, margin: '0 auto' }}>
+            An innovative fusion of modern nutraceuticals and ancient herbal wisdom — for wellness results you can feel.
           </p>
         </div>
       </section>
 
-      <div className="about-container" style={{ maxWidth: 1280, margin: '0 auto', padding: '64px 32px' }}>
+      <div className="about-container" style={{ maxWidth: 1080, margin: '0 auto', padding: '80px 24px' }}>
 
         {/* Mission */}
-        <section className="about-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, alignItems: 'center', marginBottom: 80 }}>
-          <div style={{ border: '3px solid #0f1117', boxShadow: '6px 6px 0 #0f1117', background: '#0D9488', display: 'flex', alignItems: 'center', justifyContent: 'center', aspectRatio: '4/3' }}>
-            <div style={{ textAlign: 'center', padding: 32 }}>
-              <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 80, lineHeight: 1, color: '#0f1117', letterSpacing: '0.02em' }}>NATURE<br />+<br />SCIENCE</div>
+        <section className="about-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center', marginBottom: 96 }}>
+          <div style={{ borderRadius: 24, background: 'linear-gradient(150deg,#0D9488,#0a7a6e)', display: 'flex', alignItems: 'center', justifyContent: 'center', aspectRatio: '4/3', boxShadow: '0 20px 50px rgba(13,148,136,0.2)' }}>
+            <div style={{ textAlign: 'center', padding: 32, color: '#fff' }}>
+              <p style={{ fontSize: 34, fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.15 }}>Nature<br />+ Science</p>
             </div>
           </div>
           <div>
-            <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.24em', textTransform: 'uppercase', color: '#0D9488', display: 'block', marginBottom: 12 }}>◆ Our Mission</span>
-            <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 48, letterSpacing: '0.02em', color: '#0f1117', lineHeight: 1, marginBottom: 20 }}>YOUR TRUSTED WELLNESS PARTNER</h2>
-            <p style={{ fontSize: 14, color: 'rgba(15,17,23,0.65)', lineHeight: 1.8, marginBottom: 24 }}>
-              At Amraj Wellness LLP, we bridge the gap between time-tested herbal traditions and cutting-edge nutraceutical science. Our commitment is to provide you with premium wellness solutions that deliver measurable results while honoring the wisdom of nature.
+            <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: ACCENT, display: 'block', marginBottom: 12 }}>Our mission</span>
+            <h2 style={{ fontSize: 'clamp(26px,3.2vw,38px)', fontWeight: 700, letterSpacing: '-0.02em', color: INK, lineHeight: 1.15, marginBottom: 18 }}>Your trusted wellness partner</h2>
+            <p style={{ fontSize: 15.5, color: INK_SOFT, lineHeight: 1.8 }}>
+              At Amraj Wellness LLP, we bridge the gap between time-tested herbal traditions and cutting-edge nutraceutical science. Our commitment is to provide premium wellness solutions with meaningful, well-researched ingredients — while honouring the wisdom of nature.
             </p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#0D9488' }}>
-              DISCOVER OUR STORY →
-            </div>
           </div>
         </section>
 
         {/* Why Choose */}
-        <section style={{ marginBottom: 80 }}>
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.24em', textTransform: 'uppercase', color: '#0D9488', display: 'block', marginBottom: 12 }}>◆ Our Advantages</span>
-            <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(40px,5vw,64px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 1 }}>WHY CHOOSE AMRAJ?</h2>
-          </div>
-          <div className="about-4col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', border: '3px solid #0f1117', boxShadow: '6px 6px 0 #0f1117' }}>
+        <section style={{ marginBottom: 96 }}>
+          <SectionHeading eyebrow="Our advantages" title="Why choose Amraj?" />
+          <div className="about-4col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 18 }}>
             {[
-              { num: '01', title: 'ANCIENT WISDOM', desc: 'Traditional herbal knowledge passed down through generations' },
-              { num: '02', title: 'MODERN SCIENCE', desc: 'Research-backed formulations with clinically proven efficacy' },
-              { num: '03', title: 'PERSONALIZED CARE', desc: 'Tailored wellness solutions for your unique needs' },
-              { num: '04', title: 'PREMIUM QUALITY', desc: 'Highest standards in sourcing and manufacturing' },
+              { icon: Sprout, title: 'Ancient wisdom', desc: 'Traditional herbal knowledge passed down through generations.' },
+              { icon: FlaskConical, title: 'Modern science', desc: 'Research-backed formulations at meaningful, effective dosages.' },
+              { icon: HeartHandshake, title: 'Honest care', desc: 'Clear labels, real ingredients — no proprietary-blend guesswork.' },
+              { icon: Award, title: 'Premium quality', desc: 'FSSAI-licensed, GMP-certified sourcing and manufacturing.' },
             ].map((item, i) => (
-              <div key={i} style={{ padding: '36px 28px', borderRight: i < 3 ? '3px solid #0f1117' : 'none', background: i % 2 === 0 ? '#fff' : '#faf7f2', textAlign: 'center' }}>
-                <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 56, color: 'rgba(13,148,136,0.15)', lineHeight: 1, marginBottom: 12 }}>{item.num}</div>
-                <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 18, letterSpacing: '0.04em', color: '#0f1117', marginBottom: 10 }}>{item.title}</h3>
-                <p style={{ fontSize: 12, color: 'rgba(15,17,23,0.55)', lineHeight: 1.7 }}>{item.desc}</p>
+              <div key={i} style={{ background: '#fff', borderRadius: RADIUS, border: `1px solid ${LINE}`, padding: '28px 24px', boxShadow: CARD_SHADOW }}>
+                <div style={{ width: 48, height: 48, borderRadius: 14, background: ACCENT_SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                  <item.icon style={{ width: 23, height: 23, color: ACCENT_DK }} />
+                </div>
+                <h3 style={{ fontSize: 18, fontWeight: 700, color: INK, marginBottom: 9 }}>{item.title}</h3>
+                <p style={{ fontSize: 14, color: INK_SOFT, lineHeight: 1.65 }}>{item.desc}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* Vision */}
-        <section className="about-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, alignItems: 'center', marginBottom: 80 }}>
+        <section className="about-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center', marginBottom: 96 }}>
           <div>
-            <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.24em', textTransform: 'uppercase', color: '#0D9488', display: 'block', marginBottom: 12 }}>◆ Our Vision</span>
-            <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 48, letterSpacing: '0.02em', color: '#0f1117', lineHeight: 1, marginBottom: 20 }}>INDIA&apos;S MOST TRUSTED WELLNESS BRAND</h2>
-            <p style={{ fontSize: 14, color: 'rgba(15,17,23,0.65)', lineHeight: 1.8, marginBottom: 24 }}>
-              To empower millions to achieve optimal health through the perfect harmony of nature and science.
+            <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: ACCENT, display: 'block', marginBottom: 12 }}>Our vision</span>
+            <h2 style={{ fontSize: 'clamp(26px,3.2vw,38px)', fontWeight: 700, letterSpacing: '-0.02em', color: INK, lineHeight: 1.15, marginBottom: 18 }}>India&apos;s most trusted wellness brand</h2>
+            <p style={{ fontSize: 15.5, color: INK_SOFT, lineHeight: 1.8, marginBottom: 24 }}>
+              To empower millions to support their everyday health through the perfect harmony of nature and science.
             </p>
-            <div style={{ borderLeft: '4px solid #0D9488', paddingLeft: 20, background: '#fff', border: '2px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', padding: '20px 20px 20px 24px' }}>
-              <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#0D9488', marginBottom: 8 }}>OUR PROMISE</p>
-              <p style={{ fontSize: 13, color: 'rgba(15,17,23,0.7)', lineHeight: 1.7 }}>
-                Every product we create is a testament to our commitment to your well-being, combining the best of both worlds for results you can truly feel.
+            <div style={{ background: BG_SOFT, borderRadius: 16, border: `1px solid ${LINE}`, borderLeft: `4px solid ${ACCENT}`, padding: '20px 22px' }}>
+              <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: ACCENT_DK, marginBottom: 8 }}>Our promise</p>
+              <p style={{ fontSize: 14.5, color: INK_SOFT, lineHeight: 1.7 }}>
+                Every product we create reflects our commitment to your well-being — combining the best of both worlds for results you can genuinely feel.
               </p>
             </div>
           </div>
-          <div style={{ border: '3px solid #0f1117', boxShadow: '6px 6px 0 #0f1117', background: '#0f1117', display: 'flex', alignItems: 'center', justifyContent: 'center', aspectRatio: '4/3' }}>
+          <div style={{ borderRadius: 24, background: 'linear-gradient(150deg,#17191f,#2a2e3a)', display: 'flex', alignItems: 'center', justifyContent: 'center', aspectRatio: '4/3', boxShadow: '0 20px 50px rgba(16,24,40,0.18)' }}>
             <div style={{ textAlign: 'center', padding: 32 }}>
-              <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 72, lineHeight: 1, color: '#0D9488', letterSpacing: '0.02em' }}>TRUSTED<br />QUALITY</div>
+              <p style={{ fontSize: 34, fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.15, color: '#fff' }}>Trusted<br /><span style={{ color: ACCENT }}>quality</span></p>
             </div>
           </div>
         </section>
 
-        {/* Process */}
-        <section style={{ marginBottom: 80 }}>
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.24em', textTransform: 'uppercase', color: '#0D9488', display: 'block', marginBottom: 12 }}>◆ How We Work</span>
-            <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(40px,5vw,64px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 1 }}>OUR WELLNESS JOURNEY</h2>
-          </div>
-          <div className="about-5col" style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', border: '3px solid #0f1117', boxShadow: '6px 6px 0 #0f1117' }}>
-            {[
-              { step: '01', title: 'CONSULT', desc: 'Understanding your unique wellness needs and goals' },
-              { step: '02', title: 'ANALYSE', desc: 'Comprehensive health assessment and lifestyle evaluation' },
-              { step: '03', title: 'FORMULATE', desc: 'Custom blend of herbs and nutraceuticals for you' },
-              { step: '04', title: 'DELIVER', desc: 'Premium products delivered to your doorstep' },
-              { step: '05', title: 'SUPPORT', desc: 'Ongoing guidance and wellness monitoring' },
-            ].map((item, i) => (
-              <div key={i} style={{ padding: '36px 20px', borderRight: i < 4 ? '3px solid #0f1117' : 'none', background: i % 2 !== 0 ? '#fff' : '#faf7f2', textAlign: 'center' }}>
-                <div style={{ width: 48, height: 48, background: '#0D9488', border: '2.5px solid #0f1117', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', boxShadow: '3px 3px 0 #0f1117' }}>
-                  <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 18, color: '#fff', letterSpacing: '0.04em' }}>{item.step}</span>
-                </div>
-                <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 16, letterSpacing: '0.06em', color: '#0f1117', marginBottom: 8 }}>{item.title}</h3>
-                <p style={{ fontSize: 11, color: 'rgba(15,17,23,0.55)', lineHeight: 1.6 }}>{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Why Choose Detailed */}
-        <section className="about-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, alignItems: 'center', marginBottom: 80 }}>
-          <div style={{ border: '3px solid #0f1117', boxShadow: '6px 6px 0 #0f1117', background: '#faf7f2', display: 'flex', alignItems: 'center', justifyContent: 'center', aspectRatio: '4/3' }}>
+        {/* Edge / checklist */}
+        <section className="about-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center', marginBottom: 96 }}>
+          <div style={{ borderRadius: 24, background: 'linear-gradient(150deg,#f0fdf9,#e6f3ef)', border: `1px solid ${LINE}`, display: 'flex', alignItems: 'center', justifyContent: 'center', aspectRatio: '4/3' }}>
             <div style={{ textAlign: 'center', padding: 32 }}>
-              <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 64, lineHeight: 1.1, color: '#0f1117', letterSpacing: '0.02em' }}>ANCIENT<br /><span style={{ color: '#0D9488' }}>WISDOM.</span><br />MODERN<br /><span style={{ color: '#0D9488' }}>RESULTS.</span></div>
+              <p style={{ fontSize: 30, fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.2, color: INK }}>Ancient <span style={{ color: ACCENT }}>wisdom.</span><br />Modern <span style={{ color: ACCENT }}>results.</span></p>
             </div>
           </div>
           <div>
-            <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.24em', textTransform: 'uppercase', color: '#0D9488', display: 'block', marginBottom: 12 }}>◆ Our Edge</span>
-            <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 48, letterSpacing: '0.02em', color: '#0f1117', lineHeight: 1, marginBottom: 20 }}>WHY CHOOSE AMRAJ?</h2>
-            <p style={{ fontSize: 14, color: 'rgba(15,17,23,0.65)', lineHeight: 1.8, marginBottom: 24 }}>
-              We combine the wisdom of ancient Ayurveda with modern scientific research to create products that are both effective and safe. Our team of experts ensures every formulation meets the highest quality standards.
+            <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: ACCENT, display: 'block', marginBottom: 12 }}>Our edge</span>
+            <h2 style={{ fontSize: 'clamp(26px,3.2vw,38px)', fontWeight: 700, letterSpacing: '-0.02em', color: INK, lineHeight: 1.15, marginBottom: 18 }}>Held to a higher standard</h2>
+            <p style={{ fontSize: 15.5, color: INK_SOFT, lineHeight: 1.8, marginBottom: 24 }}>
+              We combine the wisdom of traditional Ayurveda with modern research to create products that are effective, safe and honest. Every formulation is held to strict quality standards.
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {['ISO certified manufacturing facilities', '100% natural and organic ingredients', 'Clinically tested formulations', 'Personalized wellness solutions'].map((item, i) => (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {['ISO-approved, GMP-certified facilities', 'Standardised natural ingredients', 'Meaningful, research-backed dosages', 'Every batch lab-tested for purity'].map((item, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 20, height: 20, background: '#0D9488', border: '2px solid #0f1117', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ fontSize: 10, color: '#fff', fontWeight: 700 }}>✓</span>
-                  </div>
-                  <p style={{ fontSize: 13, color: 'rgba(15,17,23,0.7)' }}>{item}</p>
+                  <span style={{ width: 24, height: 24, borderRadius: 999, background: ACCENT_SOFT, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Check style={{ width: 13, height: 13, color: ACCENT_DK }} strokeWidth={3} />
+                  </span>
+                  <p style={{ fontSize: 15, color: INK }}>{item}</p>
                 </div>
               ))}
             </div>
@@ -182,36 +169,30 @@ export default function AboutPage() {
         </section>
 
         {/* CTA */}
-        <section className="about-cta" style={{ background: '#0f1117', padding: '64px 48px', border: '3px solid #0f1117', boxShadow: '8px 8px 0 #0D9488', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(13,148,136,0.06) 40px, rgba(13,148,136,0.06) 41px)', pointerEvents: 'none' }} />
-          <div style={{ position: 'relative', zIndex: 2 }}>
-            <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#0D9488', display: 'block', marginBottom: 16 }}>◆ Take Action</span>
-            <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px,7vw,88px)', color: '#fff', lineHeight: 0.9, marginBottom: 20, letterSpacing: '0.02em' }}>
-              READY TO TRANSFORM<br /><span style={{ color: '#0D9488' }}>YOUR WELLNESS?</span>
+        <section className="about-cta" style={{ background: 'linear-gradient(135deg,#0D9488,#0a7a6e)', borderRadius: 32, padding: '72px 40px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle at 20% 20%, rgba(255,255,255,0.12), transparent 40%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'relative', zIndex: 2, maxWidth: 560, margin: '0 auto' }}>
+            <h2 style={{ fontSize: 'clamp(28px,4vw,44px)', fontWeight: 700, letterSpacing: '-0.025em', color: '#fff', lineHeight: 1.12, marginBottom: 16 }}>
+              Ready to transform your wellness?
             </h2>
-            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', maxWidth: 480, margin: '0 auto 36px', lineHeight: 1.8 }}>
-              Experience the perfect fusion of ancient wisdom and modern science. Let us guide you on your journey to optimal health.
+            <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, marginBottom: 34 }}>
+              Experience the fusion of ancient wisdom and modern science. Let us guide you on your journey to better everyday health.
             </p>
             <ConsultationModal />
           </div>
         </section>
-
       </div>
 
       <style>{`
         @media (max-width: 900px) {
-          .about-container { padding: 40px 16px !important; }
-          .about-hero { padding: 48px 16px !important; }
-          .about-2col { grid-template-columns: 1fr !important; }
+          .about-container { padding: 56px 18px !important; }
+          .about-hero { padding: 52px 18px !important; }
+          .about-2col { grid-template-columns: 1fr !important; gap: 28px !important; }
           .about-4col { grid-template-columns: 1fr 1fr !important; }
-          .about-4col > div { border-right: none !important; border-bottom: 3px solid #0f1117 !important; }
-          .about-5col { grid-template-columns: 1fr 1fr !important; }
-          .about-5col > div { border-right: none !important; border-bottom: 3px solid #0f1117 !important; }
-          .about-cta { padding: 48px 20px !important; }
+          .about-cta { padding: 52px 22px !important; }
         }
         @media (max-width: 560px) {
           .about-4col { grid-template-columns: 1fr !important; }
-          .about-5col { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </main>

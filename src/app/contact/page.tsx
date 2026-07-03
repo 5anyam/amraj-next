@@ -1,15 +1,19 @@
 "use client"
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Clock, Send, CheckCircle, Calendar } from 'lucide-react';
+import { Mail, Phone, MapPin, Clock, Send, CheckCircle, Calendar, Sparkles } from 'lucide-react';
+
+const INK = '#17191f';
+const INK_SOFT = '#5c6470';
+const LINE = '#e9eaee';
+const ACCENT = '#0D9488';
+const ACCENT_DK = '#0a7a6e';
+const ACCENT_SOFT = '#eef7f5';
+const BG_SOFT = '#f6f8f7';
+const CARD_SHADOW = '0 2px 16px rgba(16,24,40,0.05)';
+const RADIUS = 20;
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: ''
-  });
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -24,90 +28,87 @@ export default function ContactPage() {
   };
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', padding: '12px 16px', border: '2px solid #0f1117', background: '#fff',
-    color: '#0f1117', fontSize: 13, outline: 'none', boxSizing: 'border-box',
-    fontFamily: 'inherit', boxShadow: '2px 2px 0 #0f1117',
+    width: '100%', padding: '13px 16px', border: `1.5px solid ${LINE}`, background: '#fff',
+    color: INK, fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', borderRadius: 12,
   };
   const labelStyle: React.CSSProperties = {
-    display: 'block', fontSize: 9, fontWeight: 700, letterSpacing: '0.18em',
-    textTransform: 'uppercase', color: 'rgba(15,17,23,0.5)', marginBottom: 8,
+    display: 'block', fontSize: 13, fontWeight: 600, color: INK, marginBottom: 7,
   };
 
   return (
-    <main style={{ minHeight: '100vh', background: '#faf7f2' }}>
+    <main style={{ minHeight: '100vh', background: '#fff', color: INK }}>
 
       {/* Hero */}
-      <section className="contact-hero" style={{ background: '#0f1117', padding: '64px 32px', borderBottom: '4px solid #0D9488', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(13,148,136,0.04) 40px, rgba(13,148,136,0.04) 41px)', pointerEvents: 'none' }} />
-        <div style={{ maxWidth: 960, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 2 }}>
-          <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#0D9488', display: 'block', marginBottom: 16 }}>◆ We&apos;re Here to Help</span>
-          <h1 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(60px,10vw,120px)', color: '#fff', lineHeight: 0.9, marginBottom: 20, letterSpacing: '0.02em' }}>
-            GET IN<br /><span style={{ color: '#0D9488' }}>TOUCH.</span>
-          </h1>
-          <p style={{ fontSize: 14, fontWeight: 300, color: 'rgba(255,255,255,0.5)', maxWidth: 480, margin: '0 auto', lineHeight: 1.8 }}>
-            Have questions about our wellness solutions? We&apos;d love to hear from you and guide you toward better health.
+      <section className="contact-hero" style={{ background: 'linear-gradient(170deg,#ffffff 0%,#f2faf8 60%,#f6f8f7 100%)', padding: '72px 24px', borderBottom: `1px solid ${LINE}` }}>
+        <div style={{ maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: ACCENT_SOFT, color: ACCENT_DK, fontSize: 12, fontWeight: 600, padding: '7px 14px', borderRadius: 999, marginBottom: 22 }}>
+            <Sparkles size={14} /> We&apos;re here to help
+          </span>
+          <h1 style={{ fontSize: 'clamp(38px,5.4vw,60px)', fontWeight: 700, letterSpacing: '-0.03em', color: INK, lineHeight: 1.06, marginBottom: 20 }}>Get in touch</h1>
+          <p style={{ fontSize: 17, color: INK_SOFT, lineHeight: 1.75, maxWidth: 520, margin: '0 auto' }}>
+            Have questions about our wellness range? We&apos;d love to hear from you and help you choose the right formula.
           </p>
         </div>
       </section>
 
-      <div className="contact-container" style={{ maxWidth: 1280, margin: '0 auto', padding: '64px 32px' }}>
+      <div className="contact-container" style={{ maxWidth: 1080, margin: '0 auto', padding: '72px 24px' }}>
 
         {/* Contact Cards */}
-        <section className="contact-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', border: '3px solid #0f1117', boxShadow: '6px 6px 0 #0f1117', marginBottom: 64 }}>
+        <section className="contact-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 18, marginBottom: 64 }}>
           {[
-            { icon: <Mail size={22} />, title: 'EMAIL US', sub: 'Response within 24 hours', value: 'care@amraj.in', href: 'mailto:care@amraj.in' },
-            { icon: <Phone size={22} />, title: 'CALL US', sub: 'Speak with our experts', value: '+91 92116 19009', href: 'tel:+919211619009' },
-            { icon: <MapPin size={22} />, title: 'VISIT US', sub: 'Personal consultation', value: 'Prashant Vihar, New Delhi', href: null },
+            { icon: <Mail size={22} />, title: 'Email us', sub: 'Response within 24 hours', value: 'care@amraj.in', href: 'mailto:care@amraj.in' },
+            { icon: <Phone size={22} />, title: 'Call us', sub: 'Speak with our team', value: '+91 92116 19009', href: 'tel:+919211619009' },
+            { icon: <MapPin size={22} />, title: 'Visit us', sub: 'By appointment', value: 'Prashant Vihar, New Delhi', href: null },
           ].map((card, i) => (
-            <div key={i} style={{ padding: '40px 32px', borderRight: i < 2 ? '3px solid #0f1117' : 'none', background: i === 1 ? '#0f1117' : '#fff', textAlign: 'center' }}>
-              <div style={{ width: 52, height: 52, background: i === 1 ? '#0D9488' : '#0D9488', border: '2.5px solid #0f1117', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', boxShadow: '3px 3px 0 rgba(15,17,23,0.2)', color: '#fff' }}>
+            <div key={i} style={{ background: '#fff', borderRadius: RADIUS, border: `1px solid ${LINE}`, padding: '32px 28px', textAlign: 'center', boxShadow: CARD_SHADOW }}>
+              <div style={{ width: 52, height: 52, borderRadius: 16, background: ACCENT_SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px', color: ACCENT_DK }}>
                 {card.icon}
               </div>
-              <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 20, letterSpacing: '0.06em', color: i === 1 ? '#0D9488' : '#0f1117', marginBottom: 8 }}>{card.title}</h3>
-              <p style={{ fontSize: 11, color: i === 1 ? 'rgba(255,255,255,0.45)' : 'rgba(15,17,23,0.45)', marginBottom: 14, letterSpacing: '0.04em' }}>{card.sub}</p>
+              <h3 style={{ fontSize: 18, fontWeight: 700, color: INK, marginBottom: 6 }}>{card.title}</h3>
+              <p style={{ fontSize: 13, color: INK_SOFT, marginBottom: 14 }}>{card.sub}</p>
               {card.href
-                ? <a href={card.href} style={{ fontSize: 13, fontWeight: 600, color: '#0D9488', textDecoration: 'none', borderBottom: '2px solid #0D9488', paddingBottom: 2 }}>{card.value}</a>
-                : <address style={{ fontSize: 12, color: i === 1 ? 'rgba(255,255,255,0.6)' : 'rgba(15,17,23,0.6)', fontStyle: 'normal', lineHeight: 1.6 }}>{card.value}</address>
+                ? <a href={card.href} style={{ fontSize: 14.5, fontWeight: 600, color: ACCENT_DK, textDecoration: 'none' }}>{card.value}</a>
+                : <address style={{ fontSize: 14, color: INK_SOFT, fontStyle: 'normal', lineHeight: 1.6 }}>{card.value}</address>
               }
             </div>
           ))}
         </section>
 
         {/* Form + Office Info */}
-        <section className="contact-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 420px', gap: 40, marginBottom: 64 }}>
+        <section className="contact-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: 32, marginBottom: 72 }}>
 
           {/* Form */}
-          <div style={{ border: '3px solid #0f1117', background: '#fff', boxShadow: '6px 6px 0 #0f1117', overflow: 'hidden' }}>
-            <div style={{ padding: '18px 28px', borderBottom: '3px solid #0f1117', background: '#0f1117' }}>
-              <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 22, color: '#0D9488', letterSpacing: '0.08em' }}>SEND US A MESSAGE</h2>
+          <div style={{ borderRadius: RADIUS, border: `1px solid ${LINE}`, background: '#fff', boxShadow: CARD_SHADOW, overflow: 'hidden' }}>
+            <div style={{ padding: '22px 28px', borderBottom: `1px solid ${LINE}` }}>
+              <h2 style={{ fontSize: 21, fontWeight: 700, letterSpacing: '-0.02em', color: INK }}>Send us a message</h2>
             </div>
             <div style={{ padding: 28 }}>
               <div className="contact-form-inner" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
                 <div>
-                  <label style={labelStyle}>Full Name</label>
+                  <label style={labelStyle}>Full name</label>
                   <input type="text" name="name" value={formData.name} onChange={handleInputChange} placeholder="Your full name" style={inputStyle} />
                 </div>
                 <div>
-                  <label style={labelStyle}>Email Address</label>
+                  <label style={labelStyle}>Email address</label>
                   <input type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="your@email.com" style={inputStyle} />
                 </div>
               </div>
               <div className="contact-form-inner" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
                 <div>
-                  <label style={labelStyle}>Phone Number</label>
+                  <label style={labelStyle}>Phone number</label>
                   <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} placeholder="+91 XXXXX XXXXX" style={inputStyle} />
                 </div>
                 <div>
                   <label style={labelStyle}>Subject</label>
                   <select name="subject" value={formData.subject} onChange={handleInputChange}
-                    style={{ ...inputStyle, cursor: 'pointer', appearance: 'none', backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' fill=\'%230f1117\' viewBox=\'0 0 16 16\'%3E%3Cpath d=\'M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z\'/%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 14px center' }}
+                    style={{ ...inputStyle, cursor: 'pointer', appearance: 'none', backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' fill=\'%235c6470\' viewBox=\'0 0 16 16\'%3E%3Cpath d=\'M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z\'/%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 14px center' }}
                   >
                     <option value="">Select a subject</option>
-                    <option value="general">General Inquiry</option>
-                    <option value="consultation">Wellness Consultation</option>
-                    <option value="products">Product Information</option>
+                    <option value="general">General inquiry</option>
+                    <option value="consultation">Wellness consultation</option>
+                    <option value="products">Product information</option>
                     <option value="partnership">Partnership</option>
-                    <option value="support">Customer Support</option>
+                    <option value="support">Customer support</option>
                   </select>
                 </div>
               </div>
@@ -118,46 +119,43 @@ export default function ContactPage() {
                   style={{ ...inputStyle, resize: 'vertical' }} />
               </div>
               <button onClick={handleSubmit}
-                style={{ width: '100%', background: isSubmitted ? '#0f1117' : '#0D9488', color: '#fff', padding: '14px 20px', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'background 0.2s' }}
-                onMouseEnter={e => { if (!isSubmitted) (e.currentTarget as HTMLElement).style.background = '#0f1117'; }}
-                onMouseLeave={e => { if (!isSubmitted) (e.currentTarget as HTMLElement).style.background = '#0D9488'; }}
+                style={{ width: '100%', background: isSubmitted ? INK : ACCENT, color: '#fff', padding: '15px 20px', border: 'none', borderRadius: 14, fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, boxShadow: isSubmitted ? 'none' : '0 8px 20px rgba(13,148,136,0.25)', transition: 'background 0.2s' }}
               >
-                {isSubmitted ? (<><CheckCircle size={16} /> MESSAGE SENT!</>) : (<><Send size={16} /> SEND MESSAGE →</>)}
+                {isSubmitted ? (<><CheckCircle size={17} /> Message sent!</>) : (<><Send size={16} /> Send message</>)}
               </button>
             </div>
           </div>
 
           {/* Office Info */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            <div style={{ border: '3px solid #0f1117', background: '#fff', boxShadow: '4px 4px 0 #0f1117', overflow: 'hidden' }}>
-              <div style={{ padding: '16px 24px', borderBottom: '3px solid #0f1117', background: '#0f1117' }}>
-                <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 20, color: '#0D9488', letterSpacing: '0.08em' }}>OUR OFFICE</h3>
+            <div style={{ borderRadius: RADIUS, border: `1px solid ${LINE}`, background: '#fff', boxShadow: CARD_SHADOW, overflow: 'hidden' }}>
+              <div style={{ padding: '18px 24px', borderBottom: `1px solid ${LINE}` }}>
+                <h3 style={{ fontSize: 18, fontWeight: 700, color: INK }}>Our office</h3>
               </div>
               <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
                 {[
-                  { icon: <MapPin size={18} />, label: 'ADDRESS', content: 'D5/204, Chintpurni House,\nCentral Market, Prashant Vihar,\nNew Delhi-110085' },
-                  { icon: <Clock size={18} />, label: 'BUSINESS HOURS', content: 'Mon–Fri: 9:00 AM – 6:00 PM\nSaturday: 10:00 AM – 4:00 PM\nSunday: Closed' },
-                  { icon: <Calendar size={18} />, label: 'CONSULTATIONS', content: 'By Appointment Only\nCall us to schedule your session' },
+                  { icon: <MapPin size={18} />, label: 'Address', content: 'D5/204, Chintpurni House,\nCentral Market, Prashant Vihar,\nNew Delhi-110085' },
+                  { icon: <Clock size={18} />, label: 'Business hours', content: 'Mon–Fri: 9:00 AM – 6:00 PM\nSaturday: 10:00 AM – 4:00 PM\nSunday: Closed' },
+                  { icon: <Calendar size={18} />, label: 'Consultations', content: 'By appointment only\nCall us to schedule your session' },
                 ].map((item, i) => (
                   <div key={i} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-                    <div style={{ width: 36, height: 36, background: '#0D9488', border: '2px solid #0f1117', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#fff' }}>
+                    <div style={{ width: 40, height: 40, borderRadius: 12, background: ACCENT_SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: ACCENT_DK }}>
                       {item.icon}
                     </div>
                     <div>
-                      <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(15,17,23,0.4)', marginBottom: 6 }}>{item.label}</p>
-                      <p style={{ fontSize: 12, color: 'rgba(15,17,23,0.7)', lineHeight: 1.7, whiteSpace: 'pre-line' }}>{item.content}</p>
+                      <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: INK_SOFT, marginBottom: 6 }}>{item.label}</p>
+                      <p style={{ fontSize: 14, color: INK, lineHeight: 1.7, whiteSpace: 'pre-line' }}>{item.content}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Map placeholder */}
-            <div style={{ border: '3px solid #0f1117', background: '#0f1117', boxShadow: '4px 4px 0 #0D9488', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', flex: 1 }}>
-              <div style={{ textAlign: 'center' }}>
-                <MapPin size={36} style={{ color: '#0D9488', marginBottom: 12 }} />
-                <h4 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 22, color: '#fff', letterSpacing: '0.06em', marginBottom: 8 }}>FIND US HERE</h4>
-                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.06em' }}>PRASHANT VIHAR, NEW DELHI</p>
+            <div style={{ borderRadius: RADIUS, background: 'linear-gradient(150deg,#0D9488,#0a7a6e)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', flex: 1, boxShadow: '0 12px 30px rgba(13,148,136,0.18)' }}>
+              <div style={{ textAlign: 'center', color: '#fff' }}>
+                <MapPin size={34} style={{ marginBottom: 12 }} />
+                <h4 style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>Find us here</h4>
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)' }}>Prashant Vihar, New Delhi</p>
               </div>
             </div>
           </div>
@@ -165,55 +163,45 @@ export default function ContactPage() {
 
         {/* FAQ */}
         <section style={{ marginBottom: 64 }}>
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.24em', textTransform: 'uppercase', color: '#0D9488', display: 'block', marginBottom: 12 }}>◆ Quick Answers</span>
-            <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(40px,5vw,64px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 1 }}>FREQUENTLY ASKED</h2>
+          <div style={{ textAlign: 'center', maxWidth: 680, margin: '0 auto 44px' }}>
+            <span style={{ display: 'inline-block', fontSize: 12, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: ACCENT, marginBottom: 12 }}>Quick answers</span>
+            <h2 style={{ fontSize: 'clamp(28px,3.6vw,42px)', fontWeight: 700, letterSpacing: '-0.025em', color: INK, lineHeight: 1.12 }}>Frequently asked</h2>
           </div>
-          <div className="contact-faq-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <div className="contact-faq-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
             {[
-              { q: 'How quickly will I receive a response?', a: 'We typically respond to emails within 24 hours and phone calls are answered during business hours.' },
-              { q: 'Do you offer free consultations?', a: 'Yes, we offer free initial consultations to understand your wellness needs and recommend suitable products.' },
-              { q: 'Can I visit your office without an appointment?', a: 'We recommend scheduling an appointment to ensure our wellness experts are available for personalized attention.' },
-              { q: 'What information should I include in my inquiry?', a: 'Please include your health goals, any specific concerns, and current wellness routine to help us provide the best recommendations.' },
+              { q: 'How quickly will I receive a response?', a: 'We typically respond to emails within 24 hours, and phone calls are answered during business hours.' },
+              { q: 'Do you offer free consultations?', a: 'Yes — we offer free initial consultations to understand your wellness needs and recommend suitable products.' },
+              { q: 'Can I visit your office without an appointment?', a: 'We recommend scheduling an appointment so our team is available to give you personalised attention.' },
+              { q: 'What should I include in my inquiry?', a: 'Please share your health goals, any specific concerns, and current routine so we can give the best recommendations.' },
             ].map((faq, i) => (
-              <div key={i} style={{ border: '2.5px solid #0f1117', background: '#fff', padding: '24px 28px', boxShadow: '3px 3px 0 #0f1117' }}>
-                <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 18, letterSpacing: '0.03em', color: '#0f1117', marginBottom: 10, lineHeight: 1.2 }}>{faq.q}</h3>
-                <p style={{ fontSize: 12, color: 'rgba(15,17,23,0.6)', lineHeight: 1.7 }}>{faq.a}</p>
+              <div key={i} style={{ borderRadius: RADIUS, border: `1px solid ${LINE}`, background: '#fff', padding: '26px 28px', boxShadow: CARD_SHADOW }}>
+                <h3 style={{ fontSize: 17, fontWeight: 700, color: INK, marginBottom: 10, lineHeight: 1.3 }}>{faq.q}</h3>
+                <p style={{ fontSize: 14, color: INK_SOFT, lineHeight: 1.7 }}>{faq.a}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* CTA */}
-        <section className="contact-cta" style={{ background: '#0f1117', padding: '64px 48px', border: '3px solid #0f1117', boxShadow: '8px 8px 0 #0D9488', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(13,148,136,0.06) 40px, rgba(13,148,136,0.06) 41px)', pointerEvents: 'none' }} />
-          <div style={{ position: 'relative', zIndex: 2 }}>
-            <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#0D9488', display: 'block', marginBottom: 16 }}>◆ Start Today</span>
-            <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px,7vw,88px)', color: '#fff', lineHeight: 0.9, marginBottom: 20, letterSpacing: '0.02em' }}>
-              READY TO START YOUR<br /><span style={{ color: '#0D9488' }}>WELLNESS JOURNEY?</span>
+        <section className="contact-cta" style={{ background: 'linear-gradient(135deg,#0D9488,#0a7a6e)', borderRadius: 32, padding: '72px 40px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle at 20% 20%, rgba(255,255,255,0.12), transparent 40%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'relative', zIndex: 2, maxWidth: 560, margin: '0 auto' }}>
+            <h2 style={{ fontSize: 'clamp(28px,4vw,44px)', fontWeight: 700, letterSpacing: '-0.025em', color: '#fff', lineHeight: 1.12, marginBottom: 16 }}>
+              Ready to start your wellness journey?
             </h2>
-            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', maxWidth: 480, margin: '0 auto 36px', lineHeight: 1.8 }}>
-              Contact us today and let our experts guide you towards optimal health with personalized solutions.
+            <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, marginBottom: 34 }}>
+              Reach out today and let our team help you choose the right formula for your goals.
             </p>
-            <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <a href="tel:+919211619009"
-                style={{ display: 'inline-block', background: '#fff', color: '#0f1117', padding: '13px 32px', border: '2.5px solid #fff', boxShadow: '4px 4px 0 rgba(255,255,255,0.3)', fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none', transition: 'transform 0.15s, box-shadow 0.15s' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translate(-2px,-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '6px 6px 0 rgba(255,255,255,0.3)'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = '4px 4px 0 rgba(255,255,255,0.3)'; }}
-              >
-                CALL NOW →
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <a href="tel:+919211619009" style={{ display: 'inline-block', background: '#fff', color: INK, padding: '15px 32px', borderRadius: 14, fontSize: 15, fontWeight: 700, textDecoration: 'none' }}>
+                Call now →
               </a>
-              <a href="mailto:care@amraj.in"
-                style={{ display: 'inline-block', background: '#0D9488', color: '#fff', padding: '13px 32px', border: '2.5px solid #0D9488', boxShadow: '4px 4px 0 rgba(13,148,136,0.4)', fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none', transition: 'transform 0.15s, box-shadow 0.15s' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translate(-2px,-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '6px 6px 0 rgba(13,148,136,0.4)'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = '4px 4px 0 rgba(13,148,136,0.4)'; }}
-              >
-                EMAIL US →
+              <a href="mailto:care@amraj.in" style={{ display: 'inline-block', background: 'transparent', color: '#fff', padding: '15px 32px', borderRadius: 14, fontSize: 15, fontWeight: 700, textDecoration: 'none', border: '1.5px solid rgba(255,255,255,0.5)' }}>
+                Email us →
               </a>
             </div>
           </div>
         </section>
-
       </div>
 
       <style>{`
@@ -221,14 +209,12 @@ export default function ContactPage() {
           .contact-form-grid { grid-template-columns: 1fr !important; }
         }
         @media (max-width: 900px) {
-          .contact-container { padding: 40px 16px !important; }
-          .contact-hero { padding: 48px 16px !important; }
+          .contact-container { padding: 56px 18px !important; }
+          .contact-hero { padding: 52px 18px !important; }
           .contact-cards { grid-template-columns: 1fr !important; }
-          .contact-cards > div { border-right: none !important; border-bottom: 3px solid #0f1117 !important; }
-          .contact-cards > div:last-child { border-bottom: none !important; }
           .contact-faq-grid { grid-template-columns: 1fr !important; }
           .contact-form-inner { grid-template-columns: 1fr !important; }
-          .contact-cta { padding: 48px 20px !important; }
+          .contact-cta { padding: 52px 22px !important; }
         }
       `}</style>
     </main>
