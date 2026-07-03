@@ -96,35 +96,35 @@ function HeroSection() {
   }, [images.length]);
 
   return (
-    <section style={{ background: '#0f1117', position: 'relative', overflow: 'hidden', borderBottom: '4px solid #0D9488' }}>
+    <section style={{ background: 'linear-gradient(160deg,#ffffff 0%,#f0fdf9 45%,#faf7f2 100%)', position: 'relative', overflow: 'hidden', borderBottom: '4px solid #0D9488' }}>
       {/* stripe bg */}
-      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(13,148,136,0.03) 40px, rgba(13,148,136,0.03) 41px)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(13,148,136,0.04) 40px, rgba(13,148,136,0.04) 41px)', pointerEvents: 'none' }} />
 
-      <div className="hero-grid" style={{ maxWidth: 1280, margin: '0 auto', padding: '60px 32px 70px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center' }}>
+      <div className="hero-grid" style={{ maxWidth: 1280, margin: '0 auto', padding: '60px 32px 70px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center', position: 'relative', zIndex: 2 }}>
         {/* Left */}
         <div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(13,148,136,0.12)', border: '2px solid rgba(13,148,136,0.4)', color: '#0D9488', fontSize: 9, fontWeight: 600, letterSpacing: '0.24em', textTransform: 'uppercase', padding: '5px 14px', marginBottom: 28 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(13,148,136,0.1)', border: '2px solid rgba(13,148,136,0.4)', color: '#0a7a6e', fontSize: 9, fontWeight: 700, letterSpacing: '0.24em', textTransform: 'uppercase', padding: '5px 14px', marginBottom: 28 }}>
             ◆ New Season Drop 2026 ◆
           </div>
 
           <h1 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(72px, 10vw, 140px)', lineHeight: 0.88, letterSpacing: '0.01em', marginBottom: 8 }}>
-            <span style={{ display: 'block', color: '#fff' }}>SCIENCE</span>
+            <span style={{ display: 'block', color: '#0f1117' }}>SCIENCE</span>
             <span style={{ display: 'block', color: 'transparent', WebkitTextStroke: '3px #0D9488' }}>BACKED.</span>
-            <span style={{ display: 'block', color: '#0D9488', textShadow: '4px 4px 0 rgba(13,148,136,0.3)' }}>RESULTS</span>
+            <span style={{ display: 'block', color: '#0D9488', textShadow: '4px 4px 0 rgba(13,148,136,0.18)' }}>RESULTS</span>
           </h1>
           <h1 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px, 7vw, 100px)', lineHeight: 0.88, letterSpacing: '0.01em', marginBottom: 24 }}>
-            <span style={{ display: 'block', color: '#fff', opacity: 0.85, fontSize: '0.55em', letterSpacing: '0.03em' }}>YOU CAN FEEL.</span>
+            <span style={{ display: 'block', color: '#0f1117', opacity: 0.75, fontSize: '0.55em', letterSpacing: '0.03em' }}>YOU CAN FEEL.</span>
           </h1>
 
-          <p style={{ fontSize: 14, fontWeight: 300, color: 'rgba(255,255,255,0.55)', lineHeight: 1.9, maxWidth: 380, marginBottom: 36 }}>
-            Precision-formulated supplements rooted in traditional wisdom and modern clinical research. Real ingredients, real results.
+          <p style={{ fontSize: 14, fontWeight: 400, color: 'rgba(15,17,23,0.6)', lineHeight: 1.9, maxWidth: 380, marginBottom: 36 }}>
+            Precision-formulated supplements rooted in traditional wisdom and modern research. Real ingredients, honest formulations.
           </p>
 
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 36 }}>
-            <Link href="/shop" style={{ background: '#0D9488', color: '#fff', padding: '13px 28px', border: '2.5px solid #0D9488', boxShadow: '4px 4px 0 rgba(13,148,136,0.4)', fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <Link href="/shop" style={{ background: '#0D9488', color: '#fff', padding: '13px 28px', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
               SHOP NOW <ChevronRight size={14} />
             </Link>
-            <Link href="/about" style={{ color: '#fff', padding: '13px 28px', border: '2.5px solid rgba(255,255,255,0.25)', fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none' }}>
+            <Link href="/about" style={{ color: '#0f1117', padding: '13px 28px', border: '2.5px solid #0f1117', fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none' }}>
               OUR STORY
             </Link>
           </div>
@@ -133,7 +133,7 @@ function HeroSection() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <div style={{ display: 'flex' }}>
               {['/users/vanshika.jpeg','/users/dr-abhinav-rana.jpeg','/users/savita.webp','/users/anil-tyagi.jpeg'].map((src, i) => (
-                <div key={i} style={{ width: 36, height: 36, borderRadius: '50%', border: '2px solid rgba(13,148,136,0.5)', overflow: 'hidden', marginLeft: i > 0 ? -10 : 0, flexShrink: 0, position: 'relative' }}>
+                <div key={i} style={{ width: 36, height: 36, borderRadius: '50%', border: '2px solid #0D9488', overflow: 'hidden', marginLeft: i > 0 ? -10 : 0, flexShrink: 0, position: 'relative' }}>
                   <Image src={src} alt="Customer" fill style={{ objectFit: 'cover' }} sizes="36px" />
                 </div>
               ))}
@@ -142,8 +142,8 @@ function HeroSection() {
               <div style={{ display: 'flex', gap: 2 }}>
                 {[1,2,3,4,5].map(i => <Star key={i} style={{ width: 12, height: 12, fill: '#0D9488', color: '#0D9488' }} />)}
               </div>
-              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 2, letterSpacing: '0.05em' }}>
-                Trusted by <strong style={{ color: '#0D9488' }}>10,000+</strong> customers
+              <p style={{ fontSize: 11, color: 'rgba(15,17,23,0.5)', marginTop: 2, letterSpacing: '0.05em' }}>
+                Trusted by <strong style={{ color: '#0a7a6e' }}>10,000+</strong> customers
               </p>
             </div>
           </div>
@@ -153,8 +153,8 @@ function HeroSection() {
         <div className="hero-img-col" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <div className="hero-img-wrap" style={{ position: 'relative', width: 320, height: 380 }}>
             {/* Offset shadow layer */}
-            <div style={{ position: 'absolute', inset: 0, border: '3px solid #0D9488', transform: 'translate(8px, 8px)', opacity: 0.4 }} />
-            <div style={{ position: 'relative', width: '100%', height: '100%', border: '3px solid rgba(255,255,255,0.15)', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', inset: 0, border: '3px solid #0D9488', transform: 'translate(8px, 8px)', opacity: 0.5 }} />
+            <div style={{ position: 'relative', width: '100%', height: '100%', border: '3px solid #0f1117', boxShadow: '6px 6px 0 rgba(15,17,23,0.12)', overflow: 'hidden' }}>
               {images.map((src, i) => (
                 <div
                   key={i}
@@ -178,7 +178,7 @@ function HeroSection() {
                 <button
                   key={i}
                   onClick={() => setActive(i)}
-                  style={{ width: i === active ? 24 : 8, height: 8, background: i === active ? '#0D9488' : 'rgba(255,255,255,0.3)', border: 'none', cursor: 'pointer', transition: 'all 0.3s', padding: 0 }}
+                  style={{ width: i === active ? 24 : 8, height: 8, background: i === active ? '#0D9488' : 'rgba(15,17,23,0.2)', border: 'none', cursor: 'pointer', transition: 'all 0.3s', padding: 0 }}
                 />
               ))}
             </div>
@@ -218,13 +218,13 @@ function MarqueeBelt() {
         </div>
       </div>
       {/* Row 2 */}
-      <div style={{ overflow: 'hidden', background: '#0f1117', padding: '10px 0' }}>
+      <div style={{ overflow: 'hidden', background: '#fff', padding: '10px 0' }}>
         <div style={{ display: 'inline-flex', whiteSpace: 'nowrap', animation: 'mq-rev 14s linear infinite' }}>
           {[...Array(2)].map((_, r) => (
             <span key={r} style={{ display: 'inline-flex' }}>
               {row2.map((t) => (
-                <span key={t} style={{ display: 'inline-flex', alignItems: 'center', gap: 14, padding: '0 20px', fontFamily: 'Bebas Neue, sans-serif', fontSize: 15, letterSpacing: '0.2em', color: '#0D9488' }}>
-                  {t} <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>▶</span>
+                <span key={t} style={{ display: 'inline-flex', alignItems: 'center', gap: 14, padding: '0 20px', fontFamily: 'Bebas Neue, sans-serif', fontSize: 15, letterSpacing: '0.2em', color: '#0f1117' }}>
+                  {t} <span style={{ fontSize: 10, color: '#0D9488' }}>▶</span>
                 </span>
               ))}
             </span>
@@ -361,19 +361,19 @@ export default function Homepage() {
       {/* ── MANIFESTO ── */}
       <section
         ref={manifestoRef}
-        style={{ background: '#0f1117', padding: '100px 48px', borderTop: '4px solid #0D9488', borderBottom: '4px solid #0D9488', position: 'relative', overflow: 'hidden' }}
+        style={{ background: 'linear-gradient(135deg,#f0fdf9 0%,#faf7f2 100%)', padding: '100px 48px', borderTop: '4px solid #0D9488', borderBottom: '4px solid #0D9488', position: 'relative', overflow: 'hidden' }}
       >
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(13,148,136,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(13,148,136,0.05) 1px, transparent 1px)', backgroundSize: '40px 40px', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(13,148,136,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(13,148,136,0.06) 1px, transparent 1px)', backgroundSize: '40px 40px', pointerEvents: 'none' }} />
         <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative', zIndex: 2 }}>
-          <div className="manifesto-line"><span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px,8vw,120px)', lineHeight: 0.9, color: '#fff' }}>WE DON&apos;T MAKE</span></div>
+          <div className="manifesto-line"><span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px,8vw,120px)', lineHeight: 0.9, color: '#0f1117' }}>WE DON&apos;T MAKE</span></div>
           <div className="manifesto-line"><span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px,8vw,120px)', lineHeight: 0.9, color: '#0D9488' }}>PRODUCTS. WE MAKE</span></div>
-          <div className="manifesto-line"><span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px,8vw,120px)', lineHeight: 0.9, color: '#ccff00' }}>THE DIFFERENCE</span></div>
-          <div className="manifesto-line"><span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px,8vw,120px)', lineHeight: 0.9, color: 'rgba(255,255,255,0.7)' }}>BETWEEN DAYS.</span></div>
+          <div className="manifesto-line"><span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px,8vw,120px)', lineHeight: 0.9, color: 'transparent', WebkitTextStroke: '2px #0D9488' }}>THE DIFFERENCE</span></div>
+          <div className="manifesto-line"><span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px,8vw,120px)', lineHeight: 0.9, color: 'rgba(15,17,23,0.55)' }}>BETWEEN DAYS.</span></div>
           <div style={{ marginTop: 56, display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-            <Link href="/shop" style={{ background: '#0D9488', color: '#fff', padding: '13px 28px', border: '2.5px solid #0D9488', boxShadow: '4px 4px 0 rgba(13,148,136,0.4)', fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none' }}>
+            <Link href="/shop" style={{ background: '#0D9488', color: '#fff', padding: '13px 28px', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none' }}>
               OWN IT NOW →
             </Link>
-            <Link href="/about" style={{ color: '#fff', padding: '13px 28px', border: '2.5px solid rgba(255,255,255,0.25)', fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none' }}>
+            <Link href="/about" style={{ color: '#0f1117', padding: '13px 28px', border: '2.5px solid #0f1117', fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none' }}>
               OUR STORY
             </Link>
           </div>
@@ -472,27 +472,27 @@ export default function Homepage() {
       </section>
 
       {/* ── BOTTOM CTA ── */}
-      <section style={{ background: '#0f1117', padding: '80px 32px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 12px, rgba(13,148,136,0.04) 12px, rgba(13,148,136,0.04) 13px)', pointerEvents: 'none' }} />
+      <section style={{ background: 'linear-gradient(135deg,#0D9488 0%,#0a7a6e 100%)', padding: '80px 32px', textAlign: 'center', position: 'relative', overflow: 'hidden', borderTop: '4px solid #0f1117' }}>
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 12px, rgba(255,255,255,0.05) 12px, rgba(255,255,255,0.05) 13px)', pointerEvents: 'none' }} />
         <div style={{ maxWidth: 640, margin: '0 auto', position: 'relative', zIndex: 2 }}>
           <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(52px,7vw,100px)', color: '#fff', lineHeight: 0.9, marginBottom: 16 }}>
-            READY TO<br /><span style={{ color: '#0D9488' }}>TRANSFORM</span><br />YOUR HEALTH?
+            READY TO<br /><span style={{ color: '#ccff00' }}>TRANSFORM</span><br />YOUR HEALTH?
           </h2>
-          <p style={{ fontSize: 14, fontWeight: 300, color: 'rgba(255,255,255,0.5)', marginBottom: 40, lineHeight: 1.7 }}>
+          <p style={{ fontSize: 14, fontWeight: 400, color: 'rgba(255,255,255,0.82)', marginBottom: 40, lineHeight: 1.7 }}>
             Join thousands of Indians who have taken charge of their wellness with Amraj.
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'center', marginBottom: 36 }}>
-            <Link href="/shop" style={{ background: '#0D9488', color: '#fff', padding: '14px 32px', border: '2.5px solid #0D9488', boxShadow: '4px 4px 0 rgba(13,148,136,0.4)', fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none' }}>
+            <Link href="/shop" style={{ background: '#fff', color: '#0f1117', padding: '14px 32px', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none' }}>
               EXPLORE PRODUCTS →
             </Link>
-            <Link href="/contact" style={{ color: '#fff', padding: '14px 32px', border: '2.5px solid rgba(255,255,255,0.25)', fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none' }}>
+            <Link href="/contact" style={{ color: '#fff', padding: '14px 32px', border: '2.5px solid rgba(255,255,255,0.6)', fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none' }}>
               TALK TO US
             </Link>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24, flexWrap: 'wrap' }}>
             {['100% Natural', 'Lab Tested', 'Secure Payment'].map((t) => (
-              <span key={t} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.08em' }}>
-                <Check style={{ width: 12, height: 12, color: '#0D9488' }} /> {t}
+              <span key={t} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.08em' }}>
+                <Check style={{ width: 12, height: 12, color: '#ccff00' }} /> {t}
               </span>
             ))}
           </div>

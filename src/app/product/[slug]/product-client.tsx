@@ -7,9 +7,9 @@ import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import {
   Star, ShieldCheck, Truck, Check, Leaf,
-  ChevronRight, Package, Zap
+  ChevronRight, Package, Zap, FlaskConical
 } from 'lucide-react';
-import { StaticProduct, PRODUCTS } from '../../../../lib/products-data';
+import { StaticProduct, PRODUCTS, HEALTH_DISCLAIMER } from '../../../../lib/products-data';
 import { useCart } from '../../../../lib/cart';
 import { toast } from '../../../../hooks/use-toast';
 
@@ -187,10 +187,89 @@ function RelatedCard({ product }: { product: StaticProduct }) {
   );
 }
 
+/* ── SECTION HEADING ── */
+function SectionHeading({ eyebrow, line1, line2 }: { eyebrow: string; line1: string; line2: string }) {
+  return (
+    <div style={{ textAlign: 'center', marginBottom: 36 }}>
+      <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#0D9488', fontWeight: 600, display: 'block', marginBottom: 12 }}>◆ {eyebrow}</span>
+      <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(36px,4vw,64px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.9 }}>
+        {line1}<br /><span style={{ color: '#0D9488' }}>{line2}</span>
+      </h2>
+    </div>
+  );
+}
+
+/* ── KEY INGREDIENTS — image slots (fill product.ingredients[].image later) ── */
+function IngredientSpotlight({ product }: { product: StaticProduct }) {
+  if (!product.ingredients.length) return null;
+  return (
+    <section style={{ marginTop: 80 }}>
+      <SectionHeading eyebrow="Inside Every Capsule" line1="KEY" line2="INGREDIENTS." />
+      <div className="ingredient-grid" style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(product.ingredients.length, 3)}, 1fr)`, gap: 20, maxWidth: 1000, margin: '0 auto' }}>
+        {product.ingredients.map((ing, i) => (
+          <div key={i} style={{ display: 'flex', flexDirection: 'column', border: '3px solid #0f1117', boxShadow: '5px 5px 0 #0f1117', background: '#fff', overflow: 'hidden' }}>
+            {/* Image area — shows ing.image when provided, else a styled placeholder */}
+            <div style={{ position: 'relative', aspectRatio: '4 / 3', background: 'linear-gradient(150deg,#f0fdf9,#e3f5f1)', borderBottom: '3px solid #0f1117', overflow: 'hidden' }}>
+              {ing.image ? (
+                <Image src={ing.image} alt={ing.name} fill style={{ objectFit: 'cover' }} sizes="(max-width: 768px) 100vw, 320px" />
+              ) : (
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+                  <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(13,148,136,0.12)', border: '2px solid rgba(13,148,136,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Leaf style={{ width: 24, height: 24, color: '#0D9488' }} />
+                  </div>
+                  <span style={{ fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(15,17,23,0.35)', fontWeight: 600 }}>Herbal Extract</span>
+                </div>
+              )}
+              {/* dose sticker */}
+              <span style={{ position: 'absolute', top: 12, right: 12, background: '#0f1117', color: '#0D9488', fontFamily: 'Bebas Neue, sans-serif', fontSize: 16, letterSpacing: '0.04em', padding: '3px 10px', border: '2px solid #0D9488' }}>
+                {ing.dose}
+              </span>
+            </div>
+            {/* Body */}
+            <div style={{ padding: '18px 18px 20px' }}>
+              <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 20, letterSpacing: '0.03em', color: '#0f1117', lineHeight: 1.05, marginBottom: 8 }}>{ing.name}</h3>
+              <p style={{ fontSize: 12.5, color: 'rgba(15,17,23,0.6)', lineHeight: 1.65 }}>{ing.benefit}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ── LANDING BANNERS — full-width infographic sections (A+ style) ── */
+function BannerSections({ banners, name }: { banners: string[]; name: string }) {
+  if (!banners.length) return null;
+  return (
+    <section style={{ marginTop: 80 }}>
+      <SectionHeading eyebrow="Why It Works" line1="THE FULL" line2="STORY." />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24, maxWidth: 1000, margin: '0 auto' }}>
+        {banners.map((src, i) => (
+          <div key={i} style={{ position: 'relative', border: '3px solid #0f1117', boxShadow: '6px 6px 0 #0f1117', overflow: 'hidden', background: '#f3ede4' }}>
+            <Image
+              src={src}
+              alt={`${name} — details ${i + 1}`}
+              width={1200}
+              height={1200}
+              sizes="(max-width: 1024px) 100vw, 1000px"
+              style={{ width: '100%', height: 'auto', display: 'block' }}
+            />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function ProductClient({ product }: { product: StaticProduct }) {
   const router = useRouter();
   const { addToCart } = useCart();
   const reviewsRef = useRef<HTMLDivElement>(null);
+
+  // Split product.images into gallery photos vs infographic banners.
+  const banners = product.images.filter((src) => /Info/i.test(src));
+  const galleryImages = product.images.filter((src) => !/Info/i.test(src));
+  const gallery = galleryImages.length ? galleryImages : product.images;
 
   const [selectedBundle, setSelectedBundle] = useState(0);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
@@ -240,7 +319,7 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
 
           {/* LEFT: Images */}
           <div className="product-image-sticky" style={{ position: 'sticky', top: 24, alignSelf: 'start' }}>
-            <ImageGallery images={product.images} />
+            <ImageGallery images={gallery} />
           </div>
 
           {/* RIGHT: Info */}
@@ -401,6 +480,12 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
           </div>
         </div>
 
+        {/* Key Ingredients — image slots */}
+        <IngredientSpotlight product={product} />
+
+        {/* Landing banners — infographic sections */}
+        <BannerSections banners={banners} name={product.name} />
+
         {/* Reviews */}
         <div ref={reviewsRef} style={{ marginTop: 80, scrollMarginTop: 96 }}>
           <div style={{ textAlign: 'center', marginBottom: 36 }}>
@@ -439,6 +524,12 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
             </div>
           </div>
         )}
+
+        {/* Compliance disclaimer */}
+        <div style={{ marginTop: 72, maxWidth: 900, margin: '72px auto 0', display: 'flex', gap: 12, alignItems: 'flex-start', padding: '18px 20px', background: '#fff', border: '2px solid rgba(15,17,23,0.15)' }}>
+          <FlaskConical style={{ width: 16, height: 16, color: 'rgba(15,17,23,0.35)', flexShrink: 0, marginTop: 2 }} />
+          <p style={{ fontSize: 11, color: 'rgba(15,17,23,0.5)', lineHeight: 1.7, letterSpacing: '0.01em' }}>{HEALTH_DISCLAIMER}</p>
+        </div>
       </div>
 
       {/* Mobile Sticky Bottom — hidden on desktop via CSS */}
@@ -465,9 +556,13 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
       <style>{`
         @media (max-width: 768px) {
           .mobile-cta-outer { display: block !important; }
-          .product-container { padding: 20px 16px !important; }
+          .product-container { padding: 20px 16px 40px !important; }
           .product-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
           .product-image-sticky { position: relative !important; top: auto !important; }
+          .ingredient-grid { grid-template-columns: 1fr !important; }
+        }
+        @media (min-width: 769px) and (max-width: 1024px) {
+          .ingredient-grid { grid-template-columns: repeat(2, 1fr) !important; }
         }
       `}</style>
     </div>
