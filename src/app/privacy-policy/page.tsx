@@ -22,7 +22,7 @@ export default function PrivacyPolicyPage() {
             By accessing or using our Platform, you agree to the terms of this Privacy Policy and consent to the practices described herein.
           </p>
 
-          <h2 className="text-xl font-semibold mt-10 text-orange-500">1. Personal Information We Collect</h2>
+          <h2 className="text-xl font-semibold mt-10 text-teal-700">1. Personal Information We Collect</h2>
           <ul className="list-disc pl-6 space-y-1">
             <li>Name, contact details (email, phone), shipping & billing address</li>
             <li>Date of birth, gender (where applicable)</li>
@@ -32,7 +32,7 @@ export default function PrivacyPolicyPage() {
             <li>Health or wellness-related preferences (if voluntarily provided)</li>
           </ul>
 
-          <h2 className="text-xl font-semibold mt-10 text-orange-500">2. How We Collect Information</h2>
+          <h2 className="text-xl font-semibold mt-10 text-teal-700">2. How We Collect Information</h2>
           <ul className="list-disc pl-6 space-y-1">
             <li>When you make a purchase or create an account</li>
             <li>Through contact forms, newsletter signups, or feedback surveys</li>
@@ -41,7 +41,7 @@ export default function PrivacyPolicyPage() {
             <li>Social media platforms and affiliate campaigns</li>
           </ul>
 
-          <h2 className="text-xl font-semibold mt-10 text-orange-500">3. Purpose of Use</h2>
+          <h2 className="text-xl font-semibold mt-10 text-teal-700">3. Purpose of Use</h2>
           <ul className="list-disc pl-6 space-y-1">
             <li>Process and deliver orders</li>
             <li>Customize product recommendations</li>
@@ -51,39 +51,39 @@ export default function PrivacyPolicyPage() {
             <li>Prevent fraud and ensure compliance</li>
           </ul>
 
-          <h2 className="text-xl font-semibold mt-10 text-orange-500">4. Sharing of Personal Information</h2>
+          <h2 className="text-xl font-semibold mt-10 text-teal-700">4. Sharing of Personal Information</h2>
           <p>
             We may share your data with trusted service providers, analytics partners, and legal authorities (if required). We do <strong>not sell</strong> your personal data.
           </p>
 
-          <h2 className="text-xl font-semibold mt-10 text-orange-500">5. Cookies and Tracking Technologies</h2>
+          <h2 className="text-xl font-semibold mt-10 text-teal-700">5. Cookies and Tracking Technologies</h2>
           <p>
             We use cookies to remember preferences, analyze traffic, and enhance user experience. You can manage cookies via your browser settings.
           </p>
 
-          <h2 className="text-xl font-semibold mt-10 text-orange-500">6. Data Security</h2>
+          <h2 className="text-xl font-semibold mt-10 text-teal-700">6. Data Security</h2>
           <p>
             We implement encryption, firewalls, and secure servers to safeguard your data. However, no online transmission is completely secure.
           </p>
 
-          <h2 className="text-xl font-semibold mt-10 text-orange-500">7. Your Rights and Choices</h2>
+          <h2 className="text-xl font-semibold mt-10 text-teal-700">7. Your Rights and Choices</h2>
           <ul className="list-disc pl-6 space-y-1">
             <li>Request access or correction of your data</li>
             <li>Withdraw consent for marketing</li>
             <li>Request deletion of your personal data</li>
           </ul>
 
-          <h2 className="text-xl font-semibold mt-10 text-orange-500">8. Children’s Privacy</h2>
+          <h2 className="text-xl font-semibold mt-10 text-teal-700">8. Children’s Privacy</h2>
           <p>
             Our services are not intended for individuals under the age of 18. We do not knowingly collect information from minors.
           </p>
 
-          <h2 className="text-xl font-semibold mt-10 text-orange-500">9. Policy Updates</h2>
+          <h2 className="text-xl font-semibold mt-10 text-teal-700">9. Policy Updates</h2>
           <p>
             We may update this Privacy Policy from time to time. Updates will be reflected with a revised effective date.
           </p>
 
-          <h2 className="text-xl font-semibold mt-10 text-orange-500">10. Contact / Grievance Officer</h2>
+          <h2 className="text-xl font-semibold mt-10 text-teal-700">10. Contact / Grievance Officer</h2>
           <p>If you have questions or concerns, please contact:</p>
           <div className="pl-4">
             <p><strong>Grievance Officer:</strong> Aman Bhardwaj</p>

@@ -76,13 +76,13 @@ export default function MyAccountPage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 to-orange-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 to-emerald-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl p-8 mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-teal-600 to-orange-500 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-teal-700 to-teal-500 bg-clip-text text-transparent">
                 My Account
               </h1>
               <p className="text-gray-600 mt-1">Welcome back, <span className="font-semibold text-teal-600">{user.name}</span></p>
@@ -109,7 +109,7 @@ export default function MyAccountPage() {
             </div>
           ) : orders.length === 0 ? (
             <div className="text-center py-20">
-              <div className="w-24 h-24 mx-auto bg-gradient-to-r from-teal-100 to-orange-100 rounded-2xl flex items-center justify-center mb-4">
+              <div className="w-24 h-24 mx-auto bg-gradient-to-r from-teal-100 to-emerald-100 rounded-2xl flex items-center justify-center mb-4">
                 <svg className="w-12 h-12 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
@@ -118,7 +118,7 @@ export default function MyAccountPage() {
               <p className="text-gray-600 mb-6">Your orders will appear here once you make a purchase.</p>
               <a
                 href="/products"
-                className="inline-block bg-gradient-to-r from-teal-500 to-orange-500 hover:from-teal-600 hover:to-orange-600 text-white px-8 py-3 rounded-xl font-semibold transition-all"
+                className="inline-block bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600 text-white px-8 py-3 rounded-xl font-semibold transition-all"
               >
                 Start Shopping
               </a>
@@ -147,7 +147,7 @@ export default function MyAccountPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
                     {order.items.slice(0, 3).map((item, idx) => (
                       <div key={idx} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                        <div className="w-12 h-12 bg-gradient-to-r from-teal-100 to-orange-100 rounded-lg flex items-center justify-center">
+                        <div className="w-12 h-12 bg-gradient-to-r from-teal-100 to-emerald-100 rounded-lg flex items-center justify-center">
                           <span className="text-xs font-semibold text-teal-600">{item.name.split(' ')[0]}</span>
                         </div>
                         <div className="min-w-0 flex-1">

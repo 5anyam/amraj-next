@@ -11,6 +11,18 @@ import { ShieldCheck, Truck, ChevronRight, Lock, Zap } from 'lucide-react';
 
 const RAZORPAY_KEY = 'rzp_live_RJVNEePx4007GD';
 
+// ── Premium tokens ──
+const INK = '#17191f';
+const INK_SOFT = '#5c6470';
+const LINE = '#e9eaee';
+const ACCENT = '#0D9488';
+const ACCENT_DK = '#0a7a6e';
+const ACCENT_SOFT = '#eef7f5';
+const BG_SOFT = '#f6f8f7';
+const CARD_SHADOW = '0 2px 16px rgba(16,24,40,0.05)';
+const ERR = '#dc2626';
+const RADIUS = 20;
+
 // ── Types ────────────────────────────────────────────────────────────────────
 
 interface WooOrder {
@@ -103,49 +115,49 @@ function OrderSummary({
 }) {
   const finalTotal = total + delivery;
   return (
-    <div style={{ border: '3px solid #0f1117', background: '#fff', overflow: 'hidden' }}>
-      <div style={{ padding: '14px 20px', borderBottom: '3px solid #0f1117', background: '#0f1117' }}>
-        <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 18, color: '#0D9488', letterSpacing: '0.08em' }}>ORDER SUMMARY</h3>
+    <div style={{ borderRadius: RADIUS, border: `1px solid ${LINE}`, background: '#fff', boxShadow: CARD_SHADOW, overflow: 'hidden' }}>
+      <div style={{ padding: '18px 22px', borderBottom: `1px solid ${LINE}` }}>
+        <h3 style={{ fontSize: 17, fontWeight: 700, color: INK }}>Order summary</h3>
       </div>
-      <div style={{ padding: 20 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
+      <div style={{ padding: 22 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 16 }}>
           {items.map((item) => (
             <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               {item.images?.[0]?.src && (
-                <div style={{ position: 'relative', width: 48, height: 48, flexShrink: 0, border: '2px solid #0f1117', overflow: 'hidden', background: '#f3ede4' }}>
-                  <Image src={item.images[0].src} alt={item.name} fill style={{ objectFit: 'cover' }} sizes="48px" />
+                <div style={{ position: 'relative', width: 52, height: 52, flexShrink: 0, borderRadius: 12, overflow: 'hidden', background: BG_SOFT }}>
+                  <Image src={item.images[0].src} alt={item.name} fill style={{ objectFit: 'cover' }} sizes="52px" />
                 </div>
               )}
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: 12, fontWeight: 700, color: '#0f1117', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</p>
-                <p style={{ fontSize: 10, color: 'rgba(15,17,23,0.45)', letterSpacing: '0.06em' }}>Qty: {item.quantity}</p>
+                <p style={{ fontSize: 14, fontWeight: 600, color: INK, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</p>
+                <p style={{ fontSize: 12.5, color: INK_SOFT }}>Qty: {item.quantity}</p>
               </div>
-              <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 18, color: '#0f1117', flexShrink: 0 }}>
+              <p style={{ fontSize: 15, fontWeight: 700, color: INK, flexShrink: 0 }}>
                 ₹{(parseFloat(item.price) * item.quantity).toLocaleString()}
               </p>
             </div>
           ))}
         </div>
-        <div style={{ borderTop: '2px solid rgba(15,17,23,0.12)', paddingTop: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'rgba(15,17,23,0.55)' }}>
-            <span>Subtotal</span><span>₹{total.toLocaleString()}</span>
+        <div style={{ borderTop: `1px solid ${LINE}`, paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: INK_SOFT }}>
+            <span>Subtotal</span><span style={{ color: INK }}>₹{total.toLocaleString()}</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
-            <span style={{ color: 'rgba(15,17,23,0.55)' }}>Delivery</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+            <span style={{ color: INK_SOFT }}>Delivery</span>
             {delivery === 0
-              ? <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', color: '#0f1117', background: '#ccff00', border: '2px solid #0f1117', padding: '1px 8px' }}>FREE</span>
-              : <span style={{ color: '#0f1117' }}>₹{delivery}</span>
+              ? <span style={{ fontSize: 12, fontWeight: 700, color: ACCENT_DK, background: ACCENT_SOFT, padding: '2px 10px', borderRadius: 999 }}>FREE</span>
+              : <span style={{ color: INK }}>₹{delivery}</span>
             }
           </div>
-          <div style={{ borderTop: '2px solid #0f1117', paddingTop: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#0f1117' }}>Total</span>
-            <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 28, color: '#0D9488', letterSpacing: '0.02em' }}>₹{finalTotal.toLocaleString()}</span>
+          <div style={{ borderTop: `1px solid ${LINE}`, paddingTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <span style={{ fontSize: 15, fontWeight: 700, color: INK }}>Total</span>
+            <span style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.02em', color: INK }}>₹{finalTotal.toLocaleString()}</span>
           </div>
         </div>
         {delivery === 0 && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 10, padding: '8px 10px', background: 'rgba(204,255,0,0.15)', border: '2px solid rgba(15,17,23,0.15)' }}>
-            <Truck style={{ width: 12, height: 12, color: '#0f1117' }} />
-            <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', color: '#0f1117' }}>Pan-India delivery · 3–5 business days</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 14, padding: '10px 12px', background: ACCENT_SOFT, borderRadius: 12 }}>
+            <Truck style={{ width: 14, height: 14, color: ACCENT_DK }} />
+            <p style={{ fontSize: 12.5, fontWeight: 500, color: ACCENT_DK }}>Pan-India delivery · 3–5 business days</p>
           </div>
         )}
       </div>
@@ -174,13 +186,13 @@ export default function Checkout() {
 
   if (items.length === 0) {
     return (
-      <div style={{ minHeight: '100vh', background: '#faf7f2', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
-        <div style={{ border: '3px solid #0f1117', background: '#fff', boxShadow: '6px 6px 0 #0f1117', padding: '48px 40px', textAlign: 'center', maxWidth: 380, width: '100%' }}>
-          <div style={{ fontSize: 40, marginBottom: 16 }}>🛒</div>
-          <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 32, color: '#0f1117', marginBottom: 10, letterSpacing: '0.04em' }}>YOUR CART IS EMPTY</h2>
-          <p style={{ fontSize: 13, color: 'rgba(15,17,23,0.5)', marginBottom: 28, lineHeight: 1.6 }}>Add some products to continue.</p>
-          <Link href="/shop" style={{ display: 'inline-block', background: '#0D9488', color: '#fff', padding: '13px 28px', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none' }}>
-            SHOP NOW →
+      <div style={{ minHeight: '100vh', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
+        <div style={{ borderRadius: RADIUS, border: `1px solid ${LINE}`, background: '#fff', boxShadow: CARD_SHADOW, padding: '48px 40px', textAlign: 'center', maxWidth: 400, width: '100%' }}>
+          <div style={{ fontSize: 44, marginBottom: 16 }}>🛒</div>
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: INK, marginBottom: 10 }}>Your cart is empty</h2>
+          <p style={{ fontSize: 15, color: INK_SOFT, marginBottom: 26, lineHeight: 1.6 }}>Add some products to continue.</p>
+          <Link href="/shop" style={{ display: 'inline-block', background: ACCENT, color: '#fff', padding: '14px 30px', borderRadius: 14, fontSize: 15, fontWeight: 700, textDecoration: 'none', boxShadow: '0 8px 20px rgba(13,148,136,0.28)' }}>
+            Shop now →
           </Link>
         </div>
       </div>
@@ -327,75 +339,74 @@ export default function Checkout() {
         }
       />
 
-      <div style={{ minHeight: '100vh', background: '#faf7f2' }}>
-        <div className="checkout-container" style={{ maxWidth: 1024, margin: '0 auto', padding: '40px 32px' }}>
+      <div style={{ minHeight: '100vh', background: '#fff', color: INK }}>
+        <div className="checkout-container" style={{ maxWidth: 1024, margin: '0 auto', padding: '44px 24px' }}>
 
           {/* Header */}
-          <div style={{ marginBottom: 36 }}>
-            <Link href="/cart" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(15,17,23,0.5)', textDecoration: 'none', marginBottom: 20 }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#0D9488')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(15,17,23,0.5)')}
+          <div style={{ marginBottom: 32 }}>
+            <Link href="/cart" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 500, color: INK_SOFT, textDecoration: 'none', marginBottom: 18 }}
+              onMouseEnter={e => (e.currentTarget.style.color = ACCENT_DK)}
+              onMouseLeave={e => (e.currentTarget.style.color = INK_SOFT)}
             >
-              <ChevronRight style={{ width: 14, height: 14, transform: 'rotate(180deg)' }} /> BACK TO CART
+              <ChevronRight style={{ width: 16, height: 16, transform: 'rotate(180deg)' }} /> Back to cart
             </Link>
-            <h1 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(36px,7vw,88px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.9 }}>
-              CHECKOUT.<br /><span style={{ color: '#0D9488', fontSize: '0.7em' }}>COMPLETE YOUR ORDER.</span>
-            </h1>
+            <h1 style={{ fontSize: 'clamp(30px,4vw,44px)', fontWeight: 700, letterSpacing: '-0.03em', color: INK, lineHeight: 1.05 }}>Checkout</h1>
+            <p style={{ fontSize: 15, color: INK_SOFT, marginTop: 8 }}>Complete your order in a few seconds.</p>
           </div>
 
-          <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 32, alignItems: 'start' }}>
+          <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 28, alignItems: 'start' }}>
 
             {/* LEFT: Form */}
             <div>
-              <form onSubmit={handleSubmit} style={{ border: '3px solid #0f1117', background: '#fff', boxShadow: '4px 4px 0 #0f1117', overflow: 'hidden' }}>
-                <div style={{ padding: '16px 24px', borderBottom: '3px solid #0f1117', background: '#0f1117', display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <span style={{ width: 28, height: 28, background: '#0D9488', border: '2px solid #fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Bebas Neue, sans-serif', fontSize: 16, color: '#fff', flexShrink: 0 }}>1</span>
-                  <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 18, color: '#0D9488', letterSpacing: '0.08em' }}>DELIVERY DETAILS</h2>
+              <form onSubmit={handleSubmit} style={{ borderRadius: RADIUS, border: `1px solid ${LINE}`, background: '#fff', boxShadow: CARD_SHADOW, overflow: 'hidden' }}>
+                <div style={{ padding: '18px 24px', borderBottom: `1px solid ${LINE}`, display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={{ width: 30, height: 30, background: ACCENT, borderRadius: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700, color: '#fff', flexShrink: 0 }}>1</span>
+                  <h2 style={{ fontSize: 17, fontWeight: 700, color: INK }}>Delivery details</h2>
                 </div>
                 <div style={{ padding: '28px 24px' }}>
 
                   {/* Name */}
                   <div style={{ marginBottom: 20 }}>
-                    <label style={{ display: 'block', fontSize: 9, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#0f1117', marginBottom: 8 }}>Full Name *</label>
+                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: INK, marginBottom: 7 }}>Full name *</label>
                     <input
                       type="text"
                       value={form.name}
                       onChange={(e) => { setForm((f) => ({ ...f, name: e.target.value })); if (errors.name) setErrors((er) => ({ ...er, name: undefined })); }}
                       placeholder="Enter your full name"
-                      style={{ width: '100%', padding: '12px 16px', border: `2.5px solid ${errors.name ? '#d95f1a' : '#0f1117'}`, background: errors.name ? '#f0fdf9' : '#faf7f2', color: '#0f1117', fontSize: 13, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', transition: 'border-color 0.2s' }}
+                      style={{ width: '100%', padding: '13px 16px', border: `1.5px solid ${errors.name ? ERR : LINE}`, background: '#fff', color: INK, fontSize: 14, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', borderRadius: 12, transition: 'border-color 0.2s' }}
                     />
-                    {errors.name && <p style={{ color: '#d95f1a', fontSize: 10, marginTop: 6, fontWeight: 600, letterSpacing: '0.05em' }}>{errors.name}</p>}
+                    {errors.name && <p style={{ color: ERR, fontSize: 12.5, marginTop: 6, fontWeight: 500 }}>{errors.name}</p>}
                   </div>
 
                   {/* Phone */}
                   <div style={{ marginBottom: 20 }}>
-                    <label style={{ display: 'block', fontSize: 9, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#0f1117', marginBottom: 8 }}>Phone Number *</label>
+                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: INK, marginBottom: 7 }}>Phone number *</label>
                     <div style={{ position: 'relative' }}>
-                      <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 13, fontWeight: 700, color: '#0f1117' }}>+91</span>
+                      <span style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', fontSize: 14, fontWeight: 600, color: INK_SOFT }}>+91</span>
                       <input
                         type="tel"
                         value={form.phone}
                         onChange={(e) => { const v = e.target.value.replace(/\D/g, '').slice(0, 10); setForm((f) => ({ ...f, phone: v })); if (errors.phone) setErrors((er) => ({ ...er, phone: undefined })); }}
                         placeholder="10-digit mobile number"
-                        style={{ width: '100%', paddingLeft: 50, paddingRight: 16, paddingTop: 12, paddingBottom: 12, border: `2.5px solid ${errors.phone ? '#d95f1a' : '#0f1117'}`, background: errors.phone ? '#f0fdf9' : '#faf7f2', color: '#0f1117', fontSize: 13, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
+                        style={{ width: '100%', paddingLeft: 52, paddingRight: 16, paddingTop: 13, paddingBottom: 13, border: `1.5px solid ${errors.phone ? ERR : LINE}`, background: '#fff', color: INK, fontSize: 14, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', borderRadius: 12 }}
                       />
                     </div>
-                    {errors.phone && <p style={{ color: '#d95f1a', fontSize: 10, marginTop: 6, fontWeight: 600 }}>{errors.phone}</p>}
-                    <p style={{ fontSize: 10, color: 'rgba(15,17,23,0.4)', marginTop: 6, letterSpacing: '0.04em' }}>Order updates will be sent to this number</p>
+                    {errors.phone && <p style={{ color: ERR, fontSize: 12.5, marginTop: 6, fontWeight: 500 }}>{errors.phone}</p>}
+                    <p style={{ fontSize: 12.5, color: INK_SOFT, marginTop: 6 }}>Order updates will be sent to this number</p>
                   </div>
 
                   {/* Address */}
                   <div style={{ marginBottom: 28 }}>
-                    <label style={{ display: 'block', fontSize: 9, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#0f1117', marginBottom: 8 }}>Delivery Address *</label>
+                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: INK, marginBottom: 7 }}>Delivery address *</label>
                     <textarea
                       value={form.address}
                       onChange={(e) => { setForm((f) => ({ ...f, address: e.target.value })); if (errors.address) setErrors((er) => ({ ...er, address: undefined })); }}
                       rows={4}
                       placeholder="House/Flat No., Street, Area, Landmark, City, State, Pincode"
-                      style={{ width: '100%', padding: '12px 16px', border: `2.5px solid ${errors.address ? '#d95f1a' : '#0f1117'}`, background: errors.address ? '#f0fdf9' : '#faf7f2', color: '#0f1117', fontSize: 13, outline: 'none', fontFamily: 'inherit', resize: 'none', boxSizing: 'border-box' }}
+                      style={{ width: '100%', padding: '13px 16px', border: `1.5px solid ${errors.address ? ERR : LINE}`, background: '#fff', color: INK, fontSize: 14, outline: 'none', fontFamily: 'inherit', resize: 'vertical', boxSizing: 'border-box', borderRadius: 12 }}
                     />
-                    {errors.address && <p style={{ color: '#d95f1a', fontSize: 10, marginTop: 6, fontWeight: 600 }}>{errors.address}</p>}
-                    <p style={{ fontSize: 10, color: 'rgba(15,17,23,0.4)', marginTop: 6, letterSpacing: '0.04em' }}>Include city, state and pincode for accurate delivery</p>
+                    {errors.address && <p style={{ color: ERR, fontSize: 12.5, marginTop: 6, fontWeight: 500 }}>{errors.address}</p>}
+                    <p style={{ fontSize: 12.5, color: INK_SOFT, marginTop: 6 }}>Include city, state and pincode for accurate delivery</p>
                   </div>
 
                   {/* Pay Button */}
@@ -403,49 +414,49 @@ export default function Checkout() {
                     type="submit"
                     disabled={loading || !rzpLoaded}
                     style={{
-                      width: '100%', padding: '16px 20px', background: loading || !rzpLoaded ? 'rgba(15,17,23,0.5)' : '#0D9488',
-                      color: '#fff', border: '2.5px solid #0f1117', boxShadow: loading || !rzpLoaded ? 'none' : '4px 4px 0 #0f1117',
-                      fontSize: 12, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase',
+                      width: '100%', padding: '16px 20px', background: loading || !rzpLoaded ? '#9aa1ac' : ACCENT,
+                      color: '#fff', border: 'none', borderRadius: 14, boxShadow: loading || !rzpLoaded ? 'none' : '0 10px 24px rgba(13,148,136,0.28)',
+                      fontSize: 15, fontWeight: 700,
                       cursor: loading || !rzpLoaded ? 'not-allowed' : 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, fontFamily: 'inherit',
-                      transition: 'transform 0.15s, box-shadow 0.15s',
+                      transition: 'background 0.2s',
                     }}
-                    onMouseEnter={e => { if (!loading && rzpLoaded) { (e.currentTarget as HTMLElement).style.transform = 'translate(-2px,-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '6px 6px 0 #0f1117'; }}}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = '4px 4px 0 #0f1117'; }}
+                    onMouseEnter={e => { if (!loading && rzpLoaded) (e.currentTarget as HTMLElement).style.background = ACCENT_DK; }}
+                    onMouseLeave={e => { if (!loading && rzpLoaded) (e.currentTarget as HTMLElement).style.background = ACCENT; }}
                   >
                     {loading ? (
-                      <><span style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTop: '2px solid #fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite', flexShrink: 0 }} />PROCESSING...</>
+                      <><span style={{ width: 17, height: 17, border: '2px solid rgba(255,255,255,0.4)', borderTop: '2px solid #fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite', flexShrink: 0 }} />Processing…</>
                     ) : !rzpLoaded ? (
-                      <><span style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTop: '2px solid #fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite', flexShrink: 0 }} />LOADING PAYMENT...</>
+                      <><span style={{ width: 17, height: 17, border: '2px solid rgba(255,255,255,0.4)', borderTop: '2px solid #fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite', flexShrink: 0 }} />Loading payment…</>
                     ) : (
-                      <><Zap style={{ width: 16, height: 16 }} />PAY ₹{finalTotal.toLocaleString()} SECURELY</>
+                      <><Zap style={{ width: 17, height: 17 }} />Pay ₹{finalTotal.toLocaleString()} securely</>
                     )}
                   </button>
 
                   {/* Trust row */}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, marginTop: 14, flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, marginTop: 16, flexWrap: 'wrap' }}>
                     {[{ icon: Lock, label: 'SSL Secured' }, { icon: ShieldCheck, label: 'Safe Checkout' }, { icon: ShieldCheck, label: 'FSSAI Certified' }].map(({ icon: Icon, label }) => (
-                      <span key={label} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 10, color: 'rgba(15,17,23,0.4)', letterSpacing: '0.08em' }}>
-                        <Icon style={{ width: 12, height: 12 }} /> {label}
+                      <span key={label} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12.5, color: INK_SOFT }}>
+                        <Icon style={{ width: 14, height: 14, color: ACCENT }} /> {label}
                       </span>
                     ))}
                   </div>
                 </div>
               </form>
 
-              <p style={{ textAlign: 'center', fontSize: 10, color: 'rgba(15,17,23,0.35)', marginTop: 14, letterSpacing: '0.08em' }}>
-                Payments powered by <strong style={{ color: 'rgba(15,17,23,0.6)' }}>Razorpay</strong> — India&apos;s most trusted payment gateway
+              <p style={{ textAlign: 'center', fontSize: 12.5, color: INK_SOFT, marginTop: 14 }}>
+                Payments powered by <strong style={{ color: INK }}>Razorpay</strong> — India&apos;s most trusted payment gateway
               </p>
             </div>
 
             {/* RIGHT: Summary */}
             <div className="checkout-summary" style={{ position: 'sticky', top: 24 }}>
               <OrderSummary items={items} total={subtotal} delivery={delivery} />
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginTop: 12 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginTop: 14 }}>
                 {[{ icon: ShieldCheck, text: 'Secure' }, { icon: Truck, text: 'Delivery' }, { icon: ShieldCheck, text: 'Certified' }].map(({ icon: Icon, text }) => (
-                  <div key={text} style={{ padding: '10px 8px', background: '#fff', border: '2px solid rgba(15,17,23,0.15)', textAlign: 'center' }}>
-                    <Icon style={{ width: 14, height: 14, color: '#0D9488', margin: '0 auto 4px' }} />
-                    <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#0f1117' }}>{text}</p>
+                  <div key={text} style={{ padding: '12px 8px', background: BG_SOFT, borderRadius: 12, textAlign: 'center' }}>
+                    <Icon style={{ width: 16, height: 16, color: ACCENT, margin: '0 auto 5px' }} />
+                    <p style={{ fontSize: 12, fontWeight: 600, color: INK }}>{text}</p>
                   </div>
                 ))}
               </div>

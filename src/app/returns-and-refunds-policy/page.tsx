@@ -12,7 +12,7 @@ export default function ReturnsRefundPolicy() {
         <p className="text-sm text-gray-500 mb-8 text-center">Please Read Carefully</p>
 
         <section className="space-y-6 text-base leading-7 text-gray-800">
-          <h2 className="text-xl font-semibold text-orange-500">Returns</h2>
+          <h2 className="text-xl font-semibold text-teal-700">Returns</h2>
           <p>
             All our shipments are carefully inspected before dispatch. If you receive a product in any of the following states, kindly notify us within <strong>30 days</strong>.
           </p>
@@ -44,7 +44,7 @@ export default function ReturnsRefundPolicy() {
             <li>If pickup is unavailable at your location, you may need to self-ship — courier cost will be reimbursed</li>
           </ul>
 
-          <h2 className="text-xl font-semibold text-orange-500 mt-10">Refunds</h2>
+          <h2 className="text-xl font-semibold text-teal-700 mt-10">Refunds</h2>
 
           <h3 className="font-semibold mt-4">REFUNDS WILL NOT BE ISSUED IF</h3>
           <ul className="list-disc pl-6 space-y-1">
@@ -63,14 +63,14 @@ export default function ReturnsRefundPolicy() {
             <li>Double payment made from the same email</li>
           </ul>
 
-          <h2 className="text-xl font-semibold text-orange-500 mt-10">Cancellation & Refunds</h2>
+          <h2 className="text-xl font-semibold text-teal-700 mt-10">Cancellation & Refunds</h2>
           <ul className="list-disc pl-6 space-y-1">
             <li>You can cancel your order before dispatch by emailing <strong>support@amraj.in</strong></li>
             <li>Post-dispatch, cancellations are not allowed</li>
             <li>Refund for cancellations will be processed within 5–7 days to the original payment method</li>
           </ul>
 
-          <h2 className="text-xl font-semibold text-orange-500 mt-10">Additional Refund Information</h2>
+          <h2 className="text-xl font-semibold text-teal-700 mt-10">Additional Refund Information</h2>
           <ul className="list-disc pl-6 space-y-1">
             <li>No processing fee for returns or replacements</li>
             <li>If you replace with a higher-priced product, you will need to pay the difference</li>

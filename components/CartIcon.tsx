@@ -53,7 +53,7 @@ export default function CartIcon() {
           strokeWidth={2}
         />
         {count > 0 && (
-          <span className={`absolute top-1 right-0.5 min-w-[18px] h-[18px] flex items-center justify-center bg-black text-white text-[10px] font-bold rounded-full border-2 border-white transition-all duration-300 ${
+          <span className={`absolute top-1 right-0.5 min-w-[18px] h-[18px] flex items-center justify-center bg-[#0D9488] text-white text-[10px] font-bold rounded-full border-2 border-white transition-all duration-300 ${
             isAnimating ? 'scale-125 bg-orange-500' : ''
           }`}>
             {count}
@@ -100,7 +100,7 @@ export default function CartIcon() {
                 </div>
                 <button 
                    onClick={() => setIsOpen(false)}
-                   className="mt-4 px-6 py-2 bg-black text-white text-sm font-medium rounded-full hover:bg-gray-800 transition-colors"
+                   className="mt-4 px-6 py-2 bg-[#0D9488] text-white text-sm font-medium rounded-full hover:bg-[#0a7a6e] transition-colors"
                 >
                    Start Shopping
                 </button>
@@ -182,7 +182,7 @@ export default function CartIcon() {
               </p>
               <Link
                  href="/checkout"
-                 className="w-full flex items-center justify-center gap-2 bg-black text-white py-4 rounded-xl font-bold hover:bg-gray-900 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl"
+                 className="w-full flex items-center justify-center gap-2 bg-[#0D9488] text-white py-4 rounded-xl font-bold hover:bg-[#0a7a6e] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl"
                  onClick={() => setIsOpen(false)}
               >
                  Checkout Securely <ArrowRight className="w-4 h-4" />
