@@ -1,33 +1,43 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PRODUCTS, StaticProduct } from '../../lib/products-data';
 import Testimonials from '../../components/TestimonialsSection';
 import HomeFAQ from '../../components/HomeFaq';
-import { Star, ShieldCheck, Truck, Award, Check, ChevronRight, Leaf, FlaskConical, BadgeCheck } from 'lucide-react';
+import {
+  Star, ShieldCheck, Truck, Award, Check, ChevronRight, Leaf,
+  FlaskConical, BadgeCheck, Sparkles, HeartHandshake, ArrowRight,
+} from 'lucide-react';
 
-/* ── SCROLL REVEAL HOOK ── */
-function useReveal(threshold = 0.1) {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) el.classList.add('visible'); }, { threshold });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return ref;
-}
+/* ── PREMIUM TOKENS ── */
+const INK = '#17191f';
+const INK_SOFT = '#5c6470';
+const LINE = '#e9eaee';
+const ACCENT = '#0D9488';
+const ACCENT_DK = '#0a7a6e';
+const ACCENT_SOFT = '#eef7f5';
+const BG_SOFT = '#f6f8f7';
+const CARD_SHADOW = '0 2px 16px rgba(16,24,40,0.05)';
+const RADIUS = 20;
 
-/* ── STAR RATING ── */
-function StarRating({ rating }: { rating: number }) {
+function StarRating({ rating, size = 15 }: { rating: number; size?: number }) {
   return (
     <div style={{ display: 'flex', gap: 2 }}>
-      {[1,2,3,4,5].map((i) => (
-        <Star key={i} style={{ width: 14, height: 14, fill: i <= Math.round(rating) ? '#0D9488' : '#e2d9d0', color: i <= Math.round(rating) ? '#0D9488' : '#e2d9d0' }} />
+      {[1, 2, 3, 4, 5].map((i) => (
+        <Star key={i} style={{ width: size, height: size, fill: i <= Math.round(rating) ? '#f5a623' : '#e4e6eb', color: i <= Math.round(rating) ? '#f5a623' : '#e4e6eb' }} />
       ))}
+    </div>
+  );
+}
+
+function SectionHeading({ eyebrow, title, sub }: { eyebrow: string; title: React.ReactNode; sub?: string }) {
+  return (
+    <div style={{ textAlign: 'center', marginBottom: 44, maxWidth: 680, margin: '0 auto 44px' }}>
+      <span style={{ display: 'inline-block', fontSize: 12, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: ACCENT, marginBottom: 12 }}>{eyebrow}</span>
+      <h2 style={{ fontSize: 'clamp(30px,3.6vw,44px)', fontWeight: 700, letterSpacing: '-0.025em', color: INK, lineHeight: 1.1 }}>{title}</h2>
+      {sub && <p style={{ fontSize: 15.5, color: INK_SOFT, lineHeight: 1.7, marginTop: 16 }}>{sub}</p>}
     </div>
   );
 }
@@ -38,46 +48,37 @@ function ProductCard({ product }: { product: StaticProduct }) {
   return (
     <Link
       href={`/product/${product.slug}`}
-      style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', background: '#fff', transition: 'transform 0.25s cubic-bezier(.16,1,.3,1), box-shadow 0.25s', overflow: 'hidden' }}
-      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translate(-2px,-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '6px 6px 0 #0f1117'; }}
-      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = '4px 4px 0 #0f1117'; }}
+      style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', borderRadius: RADIUS, border: `1px solid ${LINE}`, background: '#fff', overflow: 'hidden', boxShadow: CARD_SHADOW, transition: 'transform 0.25s cubic-bezier(.16,1,.3,1), box-shadow 0.25s' }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-6px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 18px 40px rgba(16,24,40,0.12)'; }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = CARD_SHADOW; }}
     >
-      {/* Image */}
-      <div style={{ position: 'relative', aspectRatio: '1', background: '#f3ede4', overflow: 'hidden', borderBottom: '2.5px solid #0f1117' }}>
-        <Image src={product.images[0]} alt={product.name} fill style={{ objectFit: 'cover', transition: 'transform 0.5s' }} sizes="(max-width: 768px) 100vw, 33vw" />
+      <div style={{ position: 'relative', aspectRatio: '1', background: BG_SOFT, overflow: 'hidden' }}>
+        <Image src={product.images[0]} alt={product.name} fill style={{ objectFit: 'cover' }} sizes="(max-width: 768px) 100vw, 33vw" />
         {product.badge && (
-          <span style={{ position: 'absolute', top: 12, left: 12, background: '#0f1117', color: '#0D9488', fontSize: 9, fontFamily: 'Bebas Neue, sans-serif', letterSpacing: '0.2em', padding: '4px 10px', border: '2px solid #0D9488' }}>
-            {product.badge}
-          </span>
+          <span style={{ position: 'absolute', top: 14, left: 14, background: '#fff', color: INK, fontSize: 11, fontWeight: 600, letterSpacing: '0.04em', padding: '5px 12px', borderRadius: 999, boxShadow: '0 2px 8px rgba(16,24,40,0.1)' }}>{product.badge}</span>
         )}
         {discount > 0 && (
-          <span style={{ position: 'absolute', top: 12, right: 12, background: '#0D9488', color: '#fff', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', padding: '4px 8px', border: '2px solid #0f1117', boxShadow: '2px 2px 0 #0f1117' }}>
-            {discount}% OFF
-          </span>
+          <span style={{ position: 'absolute', top: 14, right: 14, background: ACCENT, color: '#fff', fontSize: 12, fontWeight: 700, padding: '5px 11px', borderRadius: 999 }}>{discount}% OFF</span>
         )}
       </div>
-
-      {/* Info */}
-      <div style={{ padding: '18px 20px 20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <p style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#0D9488', marginBottom: 6, fontWeight: 600 }}>{product.category}</p>
-        <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 22, letterSpacing: '0.03em', color: '#0f1117', marginBottom: 6, lineHeight: 1.1 }}>{product.name}</h3>
-        <p style={{ fontSize: 12, color: 'rgba(15,17,23,0.5)', marginBottom: 12, lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{product.tagline}</p>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-          <StarRating rating={product.rating} />
-          <span style={{ fontSize: 11, color: 'rgba(15,17,23,0.45)' }}>({product.reviewCount})</span>
+      <div style={{ padding: '22px 24px 24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <p style={{ fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: ACCENT, marginBottom: 8, fontWeight: 600 }}>{product.category}</p>
+        <h3 style={{ fontSize: 21, fontWeight: 700, letterSpacing: '-0.015em', color: INK, marginBottom: 8, lineHeight: 1.2 }}>{product.name}</h3>
+        <p style={{ fontSize: 14, color: INK_SOFT, marginBottom: 14, lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{product.tagline}</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
+          <StarRating rating={product.rating} size={14} />
+          <span style={{ fontSize: 12.5, color: INK_SOFT }}>{product.rating.toFixed(1)} ({product.reviewCount})</span>
         </div>
-
         <div style={{ marginTop: 'auto' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 12 }}>
-            <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 28, color: '#0f1117', letterSpacing: '0.02em' }}>₹{product.price.toLocaleString()}</span>
-            <span style={{ fontSize: 13, color: 'rgba(15,17,23,0.35)', textDecoration: 'line-through' }}>₹{product.regularPrice.toLocaleString()}</span>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 16 }}>
+            <span style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.02em', color: INK }}>₹{product.price.toLocaleString()}</span>
+            <span style={{ fontSize: 15, color: '#9aa1ac', textDecoration: 'line-through' }}>₹{product.regularPrice.toLocaleString()}</span>
           </div>
-          <div style={{ background: '#0f1117', color: '#fff', textAlign: 'center', padding: '11px 16px', fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', border: '2px solid #0f1117', transition: 'background 0.2s' }}
-            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = '#0D9488')}
-            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = '#0f1117')}
+          <div style={{ background: ACCENT, color: '#fff', textAlign: 'center', padding: '13px 16px', fontSize: 14, fontWeight: 700, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'background 0.2s' }}
+            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = ACCENT_DK)}
+            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = ACCENT)}
           >
-            SHOP NOW →
+            Shop Now <ArrowRight size={16} />
           </div>
         </div>
       </div>
@@ -89,233 +90,101 @@ function ProductCard({ product }: { product: StaticProduct }) {
 function HeroSection() {
   const [active, setActive] = useState(0);
   const images = PRODUCTS.map(p => p.images[0]);
-
   useEffect(() => {
     const t = setInterval(() => setActive((p) => (p + 1) % images.length), 3500);
     return () => clearInterval(t);
   }, [images.length]);
 
   return (
-    <section style={{ background: 'linear-gradient(160deg,#ffffff 0%,#f0fdf9 45%,#faf7f2 100%)', position: 'relative', overflow: 'hidden', borderBottom: '4px solid #0D9488' }}>
-      {/* stripe bg */}
-      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(13,148,136,0.04) 40px, rgba(13,148,136,0.04) 41px)', pointerEvents: 'none' }} />
-
-      <div className="hero-grid" style={{ maxWidth: 1280, margin: '0 auto', padding: '60px 32px 70px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center', position: 'relative', zIndex: 2 }}>
+    <section style={{ background: 'linear-gradient(170deg,#ffffff 0%,#f2faf8 55%,#f6f8f7 100%)', position: 'relative', overflow: 'hidden' }}>
+      <div className="hero-grid" style={{ maxWidth: 1200, margin: '0 auto', padding: '76px 24px 84px', display: 'grid', gridTemplateColumns: '1.05fr 1fr', gap: 56, alignItems: 'center' }}>
         {/* Left */}
         <div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(13,148,136,0.1)', border: '2px solid rgba(13,148,136,0.4)', color: '#0a7a6e', fontSize: 9, fontWeight: 700, letterSpacing: '0.24em', textTransform: 'uppercase', padding: '5px 14px', marginBottom: 28 }}>
-            ◆ New Season Drop 2026 ◆
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: ACCENT_SOFT, color: ACCENT_DK, fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', padding: '7px 14px', borderRadius: 999, marginBottom: 26 }}>
+            <Sparkles size={14} /> Science-led wellness, made in India
           </div>
-
-          <h1 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(72px, 10vw, 140px)', lineHeight: 0.88, letterSpacing: '0.01em', marginBottom: 8 }}>
-            <span style={{ display: 'block', color: '#0f1117' }}>SCIENCE</span>
-            <span style={{ display: 'block', color: 'transparent', WebkitTextStroke: '3px #0D9488' }}>BACKED.</span>
-            <span style={{ display: 'block', color: '#0D9488', textShadow: '4px 4px 0 rgba(13,148,136,0.18)' }}>RESULTS</span>
+          <h1 style={{ fontSize: 'clamp(40px,5.4vw,68px)', fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.04, color: INK, marginBottom: 22 }}>
+            Feel your best,<br />every single day.
           </h1>
-          <h1 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px, 7vw, 100px)', lineHeight: 0.88, letterSpacing: '0.01em', marginBottom: 24 }}>
-            <span style={{ display: 'block', color: '#0f1117', opacity: 0.75, fontSize: '0.55em', letterSpacing: '0.03em' }}>YOU CAN FEEL.</span>
-          </h1>
-
-          <p style={{ fontSize: 14, fontWeight: 400, color: 'rgba(15,17,23,0.6)', lineHeight: 1.9, maxWidth: 380, marginBottom: 36 }}>
-            Precision-formulated supplements rooted in traditional wisdom and modern research. Real ingredients, honest formulations.
+          <p style={{ fontSize: 17, color: INK_SOFT, lineHeight: 1.75, maxWidth: 440, marginBottom: 32 }}>
+            Precision-formulated supplements rooted in traditional wisdom and modern research — real ingredients, honest formulations, meaningful doses.
           </p>
-
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 36 }}>
-            <Link href="/shop" style={{ background: '#0D9488', color: '#fff', padding: '13px 28px', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-              SHOP NOW <ChevronRight size={14} />
+            <Link href="/shop" style={{ background: ACCENT, color: '#fff', padding: '15px 28px', borderRadius: 14, fontSize: 15, fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 10px 24px rgba(13,148,136,0.28)' }}>
+              Shop Products <ChevronRight size={16} />
             </Link>
-            <Link href="/about" style={{ color: '#0f1117', padding: '13px 28px', border: '2.5px solid #0f1117', fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none' }}>
-              OUR STORY
+            <Link href="/about" style={{ background: '#fff', color: INK, padding: '15px 28px', borderRadius: 14, fontSize: 15, fontWeight: 700, textDecoration: 'none', border: `1.5px solid ${LINE}` }}>
+              Our Story
             </Link>
           </div>
-
-          {/* Social proof */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <div style={{ display: 'flex' }}>
-              {['/users/vanshika.jpeg','/users/dr-abhinav-rana.jpeg','/users/savita.webp','/users/anil-tyagi.jpeg'].map((src, i) => (
-                <div key={i} style={{ width: 36, height: 36, borderRadius: '50%', border: '2px solid #0D9488', overflow: 'hidden', marginLeft: i > 0 ? -10 : 0, flexShrink: 0, position: 'relative' }}>
-                  <Image src={src} alt="Customer" fill style={{ objectFit: 'cover' }} sizes="36px" />
+              {['/users/vanshika.jpeg', '/users/dr-abhinav-rana.jpeg', '/users/savita.webp', '/users/anil-tyagi.jpeg'].map((src, i) => (
+                <div key={i} style={{ width: 38, height: 38, borderRadius: '50%', border: '2.5px solid #fff', overflow: 'hidden', marginLeft: i > 0 ? -12 : 0, flexShrink: 0, position: 'relative', boxShadow: '0 2px 6px rgba(16,24,40,0.12)' }}>
+                  <Image src={src} alt="Customer" fill style={{ objectFit: 'cover' }} sizes="38px" />
                 </div>
               ))}
             </div>
             <div>
-              <div style={{ display: 'flex', gap: 2 }}>
-                {[1,2,3,4,5].map(i => <Star key={i} style={{ width: 12, height: 12, fill: '#0D9488', color: '#0D9488' }} />)}
-              </div>
-              <p style={{ fontSize: 11, color: 'rgba(15,17,23,0.5)', marginTop: 2, letterSpacing: '0.05em' }}>
-                Trusted by <strong style={{ color: '#0a7a6e' }}>10,000+</strong> customers
-              </p>
+              <StarRating rating={5} size={13} />
+              <p style={{ fontSize: 13, color: INK_SOFT, marginTop: 3 }}>Trusted by <strong style={{ color: INK }}>10,000+</strong> customers</p>
             </div>
           </div>
         </div>
 
-        {/* Right — Product Image Stack */}
-        <div className="hero-img-col" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <div className="hero-img-wrap" style={{ position: 'relative', width: 320, height: 380 }}>
-            {/* Offset shadow layer */}
-            <div style={{ position: 'absolute', inset: 0, border: '3px solid #0D9488', transform: 'translate(8px, 8px)', opacity: 0.5 }} />
-            <div style={{ position: 'relative', width: '100%', height: '100%', border: '3px solid #0f1117', boxShadow: '6px 6px 0 rgba(15,17,23,0.12)', overflow: 'hidden' }}>
-              {images.map((src, i) => (
-                <div
-                  key={i}
-                  style={{
-                    position: 'absolute', inset: 0,
-                    opacity: i === active ? 1 : 0,
-                    transition: 'opacity 0.7s ease',
-                  }}
-                >
-                  <Image src={src} alt={PRODUCTS[i].name} fill style={{ objectFit: 'cover' }} sizes="360px" priority={i === 0} />
-                </div>
-              ))}
-              {/* Sticker */}
-              <div style={{ position: 'absolute', top: 16, right: 16, background: '#ccff00', border: '2px solid #0f1117', boxShadow: '2px 2px 0 #0f1117', padding: '4px 10px', fontFamily: 'Bebas Neue, sans-serif', fontSize: 12, letterSpacing: '0.1em', color: '#0f1117', transform: 'rotate(8deg)' }}>
-                NEW DROP ◆
+        {/* Right — product image */}
+        <div className="hero-img-col" style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
+          <div style={{ position: 'relative', width: 380, height: 440, borderRadius: 28, overflow: 'hidden', background: BG_SOFT, boxShadow: '0 30px 70px rgba(16,24,40,0.16)' }}>
+            {images.map((src, i) => (
+              <div key={i} style={{ position: 'absolute', inset: 0, opacity: i === active ? 1 : 0, transition: 'opacity 0.7s ease' }}>
+                <Image src={src} alt={PRODUCTS[i].name} fill style={{ objectFit: 'cover' }} sizes="380px" priority={i === 0} />
               </div>
+            ))}
+          </div>
+          {/* Floating chip */}
+          <div style={{ position: 'absolute', bottom: 24, left: 8, background: '#fff', borderRadius: 16, padding: '12px 16px', boxShadow: '0 12px 30px rgba(16,24,40,0.16)', display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 38, height: 38, borderRadius: 12, background: ACCENT_SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <BadgeCheck style={{ width: 20, height: 20, color: ACCENT_DK }} />
             </div>
-            {/* Dots */}
-            <div style={{ position: 'absolute', bottom: -24, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 8 }}>
-              {images.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActive(i)}
-                  style={{ width: i === active ? 24 : 8, height: 8, background: i === active ? '#0D9488' : 'rgba(15,17,23,0.2)', border: 'none', cursor: 'pointer', transition: 'all 0.3s', padding: 0 }}
-                />
-              ))}
+            <div>
+              <p style={{ fontSize: 13, fontWeight: 700, color: INK }}>FSSAI & GMP</p>
+              <p style={{ fontSize: 11.5, color: INK_SOFT }}>Lab-tested quality</p>
             </div>
           </div>
         </div>
       </div>
-
-      {/* mobile override */}
-      <style>{`
-        @media (max-width: 768px) {
-          .hero-grid { grid-template-columns: 1fr !important; }
-          .hero-img-wrap { width: 260px !important; height: 300px !important; }
-        }
-      `}</style>
     </section>
-  );
-}
-
-/* ── MARQUEE BELT ── */
-function MarqueeBelt() {
-  const row1 = ['CARRY BETTER', 'LIVE BETTER', 'OWN BETTER', 'FEEL BETTER', 'LOOK BETTER'];
-  const row2 = ['PROSTATE CARE', 'LIVER DETOX', 'WEIGHT MANAGEMENT', 'NUTRACEUTICALS', 'AYURVEDIC SCIENCE'];
-  return (
-    <div style={{ borderTop: '3px solid #0f1117', borderBottom: '3px solid #0f1117' }}>
-      {/* Row 1 */}
-      <div style={{ overflow: 'hidden', borderBottom: '2px solid #0f1117', background: '#0D9488', padding: '10px 0' }}>
-        <div style={{ display: 'inline-flex', whiteSpace: 'nowrap', animation: 'mq-fwd 18s linear infinite' }}>
-          {[...Array(2)].map((_, r) => (
-            <span key={r} style={{ display: 'inline-flex' }}>
-              {row1.map((t) => (
-                <span key={t} style={{ display: 'inline-flex', alignItems: 'center', gap: 14, padding: '0 20px', fontSize: 11, fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#fff' }}>
-                  {t} <span style={{ fontSize: 14 }}>◆</span>
-                </span>
-              ))}
-            </span>
-          ))}
-        </div>
-      </div>
-      {/* Row 2 */}
-      <div style={{ overflow: 'hidden', background: '#fff', padding: '10px 0' }}>
-        <div style={{ display: 'inline-flex', whiteSpace: 'nowrap', animation: 'mq-rev 14s linear infinite' }}>
-          {[...Array(2)].map((_, r) => (
-            <span key={r} style={{ display: 'inline-flex' }}>
-              {row2.map((t) => (
-                <span key={t} style={{ display: 'inline-flex', alignItems: 'center', gap: 14, padding: '0 20px', fontFamily: 'Bebas Neue, sans-serif', fontSize: 15, letterSpacing: '0.2em', color: '#0f1117' }}>
-                  {t} <span style={{ fontSize: 10, color: '#0D9488' }}>▶</span>
-                </span>
-              ))}
-            </span>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ── CHROME STATS ── */
-function ChromeStats() {
-  const ref = useReveal(0.15);
-  const stats = [
-    { num: '10,000+', label: 'Happy Customers' },
-    { num: '4.8★', label: 'Average Rating' },
-    { num: '100%', label: 'Natural Ingredients' },
-    { num: 'FSSAI', label: 'Certified & Licensed' },
-  ];
-  return (
-    <div
-      ref={ref}
-      className="reveal"
-      style={{
-        position: 'relative', background: 'linear-gradient(180deg,#ffffff 0%,#e8f0f8 15%,#b8d0e8 35%,#7090a8 50%,#b8d0e8 65%,#e8f0f8 85%,#ffffff 100%)',
-        border: '3px solid #0f1117', borderLeft: 'none', borderRight: 'none',
-        padding: '40px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-around', flexWrap: 'wrap', gap: 24,
-      }}
-    >
-      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(255,255,255,0.4) 60px, rgba(255,255,255,0.4) 61px)', pointerEvents: 'none' }} />
-      {stats.map((s, i) => (
-        <React.Fragment key={s.label}>
-          {i > 0 && <div style={{ width: 1, height: 56, background: 'rgba(15,17,23,0.15)', position: 'relative', zIndex: 1, flexShrink: 0 }} />}
-          <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
-            <span style={{
-              fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(44px,5vw,72px)',
-              background: 'linear-gradient(180deg,#fff 0%,#8090a0 50%,#fff 100%)',
-              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-              WebkitTextStroke: '1px rgba(15,17,23,0.2)', display: 'block', lineHeight: 1,
-            }}>{s.num}</span>
-            <p style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#0f1117', marginTop: 4 }}>{s.label}</p>
-          </div>
-        </React.Fragment>
-      ))}
-    </div>
   );
 }
 
 /* ── WHY AMRAJ ── */
 const whyItems = [
-  { icon: FlaskConical, title: 'Clinically Researched', desc: 'Every ingredient chosen based on peer-reviewed clinical studies at therapeutic dosages.', num: '01' },
-  { icon: Leaf, title: 'Pure & Natural', desc: 'No artificial fillers, no GMOs. Only standardised herbal extracts and pure nutraceuticals.', num: '02' },
-  { icon: BadgeCheck, title: 'GMP Certified', desc: 'Manufactured in ISO-approved, GMP-certified facilities with strict quality controls.', num: '03' },
-  { icon: ShieldCheck, title: 'Heavy Metal Tested', desc: 'Every batch tested for purity, potency, and freedom from contaminants.', num: '04' },
-  { icon: Truck, title: 'Pan-India Delivery', desc: 'Delivered across India in 3–5 business days. Securely packaged to preserve freshness.', num: '05' },
-  { icon: Award, title: 'FSSAI Certified', desc: 'FSSAI & GMP certified. Manufactured to the highest Indian quality standards.', num: '06' },
+  { icon: FlaskConical, title: 'Research-led formulas', desc: 'Every ingredient is chosen based on published research at meaningful dosages.' },
+  { icon: Leaf, title: 'Pure & natural', desc: 'No artificial fillers or GMOs — only standardised herbal extracts & nutraceuticals.' },
+  { icon: BadgeCheck, title: 'GMP certified', desc: 'Manufactured in ISO-approved, GMP-certified facilities with strict quality controls.' },
+  { icon: ShieldCheck, title: 'Heavy-metal tested', desc: 'Every batch is screened for purity, potency and freedom from contaminants.' },
+  { icon: Truck, title: 'Pan-India delivery', desc: 'Delivered across India in 3–5 business days, securely packaged to stay fresh.' },
+  { icon: Award, title: 'FSSAI licensed', desc: 'Made to the highest Indian quality and safety standards.' },
 ];
 
 export default function Homepage() {
-  const productsRef = useReveal(0.1);
-  const manifestoRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const el = manifestoRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) el.classList.add('manifesto-visible');
-    }, { threshold: 0.3 });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
   return (
-    <div style={{ minHeight: '100vh', background: '#faf7f2', overflow: 'hidden' }}>
-
+    <div style={{ minHeight: '100vh', background: '#fff', color: INK }}>
       <HeroSection />
-      <MarqueeBelt />
 
       {/* ── TRUST BAR ── */}
-      <section style={{ background: '#fff', borderBottom: '3px solid #0f1117' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '14px 32px' }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '8px 32px', alignItems: 'center' }}>
+      <section style={{ background: '#fff', borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}` }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '18px 24px' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px 40px', alignItems: 'center' }}>
             {[
               { icon: Award, label: 'FSSAI Certified' },
               { icon: ShieldCheck, label: 'GMP Lab Tested' },
               { emoji: '🇮🇳', label: 'Made in India' },
               { icon: Leaf, label: '100% Natural' },
-              { icon: FlaskConical, label: 'Lab Tested' },
+              { icon: FlaskConical, label: 'Heavy-Metal Tested' },
             ].map((item, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#0f1117' }}>
-                {item.emoji ? <span style={{ fontSize: 16 }}>{item.emoji}</span> : item.icon && <item.icon style={{ width: 14, height: 14, color: '#0D9488' }} />}
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: 13.5, fontWeight: 500, color: INK }}>
+                {item.emoji ? <span style={{ fontSize: 17 }}>{item.emoji}</span> : item.icon && <item.icon style={{ width: 16, height: 16, color: ACCENT }} />}
                 {item.label}
               </div>
             ))}
@@ -324,121 +193,72 @@ export default function Homepage() {
       </section>
 
       {/* ── PRODUCTS ── */}
-      <section className="section-products" style={{ padding: '80px 0', background: '#faf7f2' }} id="products">
-        <div className="section-inner" style={{ maxWidth: 1280, margin: '0 auto', padding: '0 32px' }}>
-
-          <div className="reveal products-header" ref={productsRef} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingBottom: 40, marginBottom: 0, borderBottom: '3px solid #0f1117' }}>
-            <div>
-              <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#0D9488', fontWeight: 600, display: 'block', marginBottom: 10 }}>◆ Our Bestsellers</span>
-              <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px,6vw,88px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.9 }}>
-                TARGETED<br /><span style={{ color: '#0D9488' }}>HEALTH SOLUTIONS.</span>
-              </h2>
-            </div>
-            <Link
-              href="/shop"
-              style={{ background: '#0D9488', color: '#fff', padding: '12px 24px', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'transform 0.15s, box-shadow 0.15s' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translate(-2px,-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '6px 6px 0 #0f1117'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = '4px 4px 0 #0f1117'; }}
-            >
-              VIEW ALL →
+      <section style={{ padding: '84px 24px' }} id="products">
+        <div style={{ maxWidth: 1120, margin: '0 auto' }}>
+          <SectionHeading eyebrow="Our bestsellers" title="Targeted health solutions" sub="Three focused formulas for the goals that matter most — prostate care, liver health and weight management." />
+          <div className="products-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+            {PRODUCTS.map((product) => <ProductCard key={product.id} product={product} />)}
+          </div>
+          <div style={{ textAlign: 'center', marginTop: 44 }}>
+            <Link href="/shop" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#fff', color: INK, padding: '14px 28px', borderRadius: 14, fontSize: 15, fontWeight: 700, textDecoration: 'none', border: `1.5px solid ${INK}` }}>
+              View all products <ArrowRight size={16} />
             </Link>
           </div>
+        </div>
+      </section>
 
-          <div className="products-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0, borderLeft: '3px solid #0f1117' }}>
-            {PRODUCTS.map((product) => (
-              <div key={product.id} style={{ borderRight: '3px solid #0f1117', borderBottom: '3px solid #0f1117', borderTop: '3px solid #0f1117' }}>
-                <div style={{ margin: 0 }}>
-                  <ProductCard product={product} />
+      {/* ── STATS ── */}
+      <section style={{ background: BG_SOFT, borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, padding: '56px 24px' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }} className="stats-grid">
+          {[
+            { num: '10,000+', label: 'Happy customers' },
+            { num: '4.8★', label: 'Average rating' },
+            { num: '100%', label: 'Natural ingredients' },
+            { num: 'FSSAI', label: 'Certified & licensed' },
+          ].map((s) => (
+            <div key={s.label} style={{ textAlign: 'center' }}>
+              <p style={{ fontSize: 'clamp(30px,4vw,44px)', fontWeight: 700, letterSpacing: '-0.02em', color: ACCENT_DK, lineHeight: 1 }}>{s.num}</p>
+              <p style={{ fontSize: 13.5, color: INK_SOFT, marginTop: 8 }}>{s.label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── WHY AMRAJ ── */}
+      <section style={{ padding: '84px 24px' }} id="why">
+        <div style={{ maxWidth: 1120, margin: '0 auto' }}>
+          <SectionHeading eyebrow="The Amraj difference" title="Better made, better lived" sub="We hold every formula to a higher standard — from sourcing to the capsule in your hand." />
+          <div className="why-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+            {whyItems.map((item, i) => (
+              <div key={i} style={{ background: '#fff', borderRadius: RADIUS, border: `1px solid ${LINE}`, padding: '28px 26px', boxShadow: CARD_SHADOW }}>
+                <div style={{ width: 48, height: 48, borderRadius: 14, background: ACCENT_SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 18 }}>
+                  <item.icon style={{ width: 23, height: 23, color: ACCENT_DK }} />
                 </div>
+                <h3 style={{ fontSize: 19, fontWeight: 700, letterSpacing: '-0.01em', color: INK, marginBottom: 10 }}>{item.title}</h3>
+                <p style={{ fontSize: 14.5, color: INK_SOFT, lineHeight: 1.7 }}>{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <ChromeStats />
-
-      {/* ── MANIFESTO ── */}
-      <section
-        ref={manifestoRef}
-        style={{ background: 'linear-gradient(135deg,#f0fdf9 0%,#faf7f2 100%)', padding: '100px 48px', borderTop: '4px solid #0D9488', borderBottom: '4px solid #0D9488', position: 'relative', overflow: 'hidden' }}
-      >
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(13,148,136,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(13,148,136,0.06) 1px, transparent 1px)', backgroundSize: '40px 40px', pointerEvents: 'none' }} />
-        <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative', zIndex: 2 }}>
-          <div className="manifesto-line"><span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px,8vw,120px)', lineHeight: 0.9, color: '#0f1117' }}>WE DON&apos;T MAKE</span></div>
-          <div className="manifesto-line"><span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px,8vw,120px)', lineHeight: 0.9, color: '#0D9488' }}>PRODUCTS. WE MAKE</span></div>
-          <div className="manifesto-line"><span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px,8vw,120px)', lineHeight: 0.9, color: 'transparent', WebkitTextStroke: '2px #0D9488' }}>THE DIFFERENCE</span></div>
-          <div className="manifesto-line"><span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px,8vw,120px)', lineHeight: 0.9, color: 'rgba(15,17,23,0.55)' }}>BETWEEN DAYS.</span></div>
-          <div style={{ marginTop: 56, display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-            <Link href="/shop" style={{ background: '#0D9488', color: '#fff', padding: '13px 28px', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none' }}>
-              OWN IT NOW →
-            </Link>
-            <Link href="/about" style={{ color: '#0f1117', padding: '13px 28px', border: '2.5px solid #0f1117', fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none' }}>
-              OUR STORY
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ── WHY AMRAJ ── */}
-      <section style={{ background: '#fff', borderBottom: '4px solid #0f1117' }} id="why">
-        <div style={{ borderBottom: '3px solid #0f1117', padding: '48px 40px', background: 'linear-gradient(135deg,#f0fdf9,#faf7f2)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 20 }}>
-          <div>
-            <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#0D9488', fontWeight: 600, display: 'block', marginBottom: 10 }}>◆ The Amraj Difference</span>
-            <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(48px,6vw,88px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.9 }}>
-              BETTER MADE.<br /><span style={{ color: '#0D9488' }}>BETTER LIVED.</span>
-            </h2>
-          </div>
-          <Link href="/shop" style={{ background: '#0f1117', color: '#fff', padding: '13px 28px', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 rgba(15,17,23,0.3)', fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none' }}>
-            SHOP NOW →
-          </Link>
-        </div>
-        <div className="why-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)' }}>
-          {whyItems.map((item, i) => (
-            <div
-              key={i}
-              style={{
-                padding: '40px 32px', borderRight: (i + 1) % 3 !== 0 ? '3px solid #0f1117' : 'none',
-                borderBottom: i < 3 ? '3px solid #0f1117' : 'none',
-                position: 'relative', overflow: 'hidden', cursor: 'default',
-                transition: 'background 0.2s',
-              }}
-              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = '#faf7f2')}
-              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = '#fff')}
-            >
-              <span style={{ position: 'absolute', top: -10, right: 16, fontFamily: 'Bebas Neue, sans-serif', fontSize: 80, color: 'rgba(13,148,136,0.06)', lineHeight: 1, pointerEvents: 'none' }}>{item.num}</span>
-              <div style={{ width: 44, height: 44, background: 'rgba(13,148,136,0.1)', border: '2px solid rgba(13,148,136,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 18 }}>
-                <item.icon style={{ width: 20, height: 20, color: '#0D9488' }} />
-              </div>
-              <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 22, letterSpacing: '0.04em', color: '#0f1117', marginBottom: 10 }}>{item.title}</h3>
-              <p style={{ fontSize: 13, fontWeight: 300, color: 'rgba(15,17,23,0.55)', lineHeight: 1.85 }}>{item.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* ── HOW IT WORKS ── */}
-      <section className="how-section" style={{ padding: '80px 48px', background: '#faf7f2', borderBottom: '3px solid #0f1117' }}>
-        <div style={{ maxWidth: 960, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#0D9488', fontWeight: 600, display: 'block', marginBottom: 12 }}>◆ Simple Process</span>
-            <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(44px,5vw,80px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.9 }}>
-              YOUR WELLNESS<br /><span style={{ color: '#0D9488' }}>JOURNEY STARTS HERE.</span>
-            </h2>
-          </div>
-          <div className="how-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, border: '3px solid #0f1117' }}>
+      <section style={{ background: BG_SOFT, borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, padding: '84px 24px' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <SectionHeading eyebrow="Simple process" title="Your wellness journey starts here" />
+          <div className="how-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}>
             {[
-              { step: '01', title: 'Choose Your Formula', desc: 'Pick the supplement that targets your specific health goal.' },
-              { step: '02', title: 'Order in 60 Seconds', desc: 'Simple checkout — name, phone & address. Done.' },
-              { step: '03', title: 'Pan-India Delivery', desc: 'Delivered across India in 3–5 business days, securely packaged.' },
-              { step: '04', title: 'Feel the Results', desc: '4–6 weeks of consistent use delivers real, measurable results.' },
-            ].map((item, i) => (
-              <div key={i} style={{ padding: '32px 24px', textAlign: 'center', borderRight: i < 3 ? '3px solid #0f1117' : 'none', background: i % 2 === 0 ? '#fff' : '#faf7f2' }}>
-                <div style={{ width: 48, height: 48, background: '#0f1117', border: '2px solid #0f1117', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', boxShadow: '3px 3px 0 #0D9488' }}>
-                  <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 20, color: '#0D9488', letterSpacing: '0.05em' }}>{item.step}</span>
+              { step: '01', title: 'Choose your formula', desc: 'Pick the supplement that targets your specific health goal.' },
+              { step: '02', title: 'Order in 60 seconds', desc: 'Simple checkout — name, phone & address. Done.' },
+              { step: '03', title: 'Pan-India delivery', desc: 'Delivered across India in 3–5 business days, securely packaged.' },
+              { step: '04', title: 'Feel the difference', desc: 'Consistent use over 4–6 weeks supports real, lasting results.' },
+            ].map((item) => (
+              <div key={item.step} style={{ background: '#fff', borderRadius: RADIUS, border: `1px solid ${LINE}`, padding: '28px 24px', boxShadow: CARD_SHADOW }}>
+                <div style={{ width: 44, height: 44, borderRadius: 12, background: ACCENT, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 18 }}>
+                  <span style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>{item.step}</span>
                 </div>
-                <h4 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 18, letterSpacing: '0.04em', color: '#0f1117', marginBottom: 10 }}>{item.title}</h4>
-                <p style={{ fontSize: 12, color: 'rgba(15,17,23,0.55)', lineHeight: 1.7 }}>{item.desc}</p>
+                <h4 style={{ fontSize: 17, fontWeight: 700, color: INK, marginBottom: 9 }}>{item.title}</h4>
+                <p style={{ fontSize: 13.5, color: INK_SOFT, lineHeight: 1.65 }}>{item.desc}</p>
               </div>
             ))}
           </div>
@@ -446,77 +266,66 @@ export default function Homepage() {
       </section>
 
       {/* ── TESTIMONIALS ── */}
-      <section style={{ background: '#fff', borderBottom: '3px solid #0f1117', padding: '80px 32px' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#0D9488', fontWeight: 600, display: 'block', marginBottom: 12 }}>◆ Real Results</span>
-            <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(44px,5vw,80px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.9 }}>
-              WHAT OUR<br /><span style={{ color: '#0D9488' }}>CUSTOMERS SAY.</span>
-            </h2>
-          </div>
+      <section style={{ padding: '84px 24px' }}>
+        <div style={{ maxWidth: 1120, margin: '0 auto' }}>
+          <SectionHeading eyebrow="Real results" title="What our customers say" />
           <Testimonials />
         </div>
       </section>
 
       {/* ── FAQ ── */}
-      <section style={{ padding: '80px 32px', background: '#faf7f2', borderBottom: '3px solid #0f1117' }}>
-        <div style={{ maxWidth: 720, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#0D9488', fontWeight: 600, display: 'block', marginBottom: 12 }}>◆ Got Questions?</span>
-            <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(44px,5vw,80px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.9 }}>
-              FREQUENTLY ASKED<br /><span style={{ color: '#0D9488' }}>QUESTIONS.</span>
-            </h2>
-          </div>
+      <section style={{ background: BG_SOFT, borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, padding: '84px 24px' }}>
+        <div style={{ maxWidth: 760, margin: '0 auto' }}>
+          <SectionHeading eyebrow="Got questions?" title="Frequently asked questions" />
           <HomeFAQ />
         </div>
       </section>
 
       {/* ── BOTTOM CTA ── */}
-      <section style={{ background: 'linear-gradient(135deg,#0D9488 0%,#0a7a6e 100%)', padding: '80px 32px', textAlign: 'center', position: 'relative', overflow: 'hidden', borderTop: '4px solid #0f1117' }}>
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 12px, rgba(255,255,255,0.05) 12px, rgba(255,255,255,0.05) 13px)', pointerEvents: 'none' }} />
-        <div style={{ maxWidth: 640, margin: '0 auto', position: 'relative', zIndex: 2 }}>
-          <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(52px,7vw,100px)', color: '#fff', lineHeight: 0.9, marginBottom: 16 }}>
-            READY TO<br /><span style={{ color: '#ccff00' }}>TRANSFORM</span><br />YOUR HEALTH?
-          </h2>
-          <p style={{ fontSize: 14, fontWeight: 400, color: 'rgba(255,255,255,0.82)', marginBottom: 40, lineHeight: 1.7 }}>
-            Join thousands of Indians who have taken charge of their wellness with Amraj.
-          </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'center', marginBottom: 36 }}>
-            <Link href="/shop" style={{ background: '#fff', color: '#0f1117', padding: '14px 32px', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none' }}>
-              EXPLORE PRODUCTS →
-            </Link>
-            <Link href="/contact" style={{ color: '#fff', padding: '14px 32px', border: '2.5px solid rgba(255,255,255,0.6)', fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', textDecoration: 'none' }}>
-              TALK TO US
-            </Link>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24, flexWrap: 'wrap' }}>
-            {['100% Natural', 'Lab Tested', 'Secure Payment'].map((t) => (
-              <span key={t} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.08em' }}>
-                <Check style={{ width: 12, height: 12, color: '#ccff00' }} /> {t}
-              </span>
-            ))}
+      <section style={{ padding: '84px 24px' }}>
+        <div style={{ maxWidth: 1080, margin: '0 auto', background: 'linear-gradient(135deg,#0D9488 0%,#0a7a6e 100%)', borderRadius: 32, padding: '72px 40px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle at 20% 20%, rgba(255,255,255,0.12), transparent 40%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'relative', zIndex: 2, maxWidth: 620, margin: '0 auto' }}>
+            <HeartHandshake style={{ width: 40, height: 40, color: 'rgba(255,255,255,0.9)', margin: '0 auto 20px' }} />
+            <h2 style={{ fontSize: 'clamp(30px,4vw,48px)', fontWeight: 700, letterSpacing: '-0.025em', color: '#fff', lineHeight: 1.1, marginBottom: 18 }}>
+              Ready to take charge of your health?
+            </h2>
+            <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, marginBottom: 34 }}>
+              Join thousands of Indians who have made Amraj part of their daily wellness routine.
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'center', marginBottom: 34 }}>
+              <Link href="/shop" style={{ background: '#fff', color: INK, padding: '15px 32px', borderRadius: 14, fontSize: 15, fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                Explore products <ArrowRight size={16} />
+              </Link>
+              <Link href="/contact" style={{ background: 'transparent', color: '#fff', padding: '15px 32px', borderRadius: 14, fontSize: 15, fontWeight: 700, textDecoration: 'none', border: '1.5px solid rgba(255,255,255,0.5)' }}>
+                Talk to us
+              </Link>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24, flexWrap: 'wrap' }}>
+              {['100% Natural', 'Lab Tested', 'Secure Payment'].map((t) => (
+                <span key={t} style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 13.5, color: 'rgba(255,255,255,0.85)' }}>
+                  <Check style={{ width: 15, height: 15, color: '#fff' }} strokeWidth={3} /> {t}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       <style>{`
-        @keyframes mq-fwd { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-        @keyframes mq-rev { from { transform: translateX(-50%); } to { transform: translateX(0); } }
         @media (max-width: 900px) {
-          .hero-grid { grid-template-columns: 1fr !important; padding: 40px 20px 48px !important; gap: 32px !important; }
+          .hero-grid { grid-template-columns: 1fr !important; padding: 48px 20px 56px !important; gap: 40px !important; }
           .hero-img-col { display: none !important; }
-          .section-inner { padding: 0 16px !important; }
-          .section-products { padding: 48px 0 !important; }
-          .products-header { flex-direction: column !important; align-items: flex-start !important; gap: 16px !important; }
-          .products-grid { grid-template-columns: 1fr !important; border-left: none !important; }
+          .products-grid { grid-template-columns: 1fr !important; }
           .why-grid { grid-template-columns: 1fr !important; }
-          .how-section { padding: 48px 16px !important; }
           .how-grid { grid-template-columns: 1fr 1fr !important; }
+          .stats-grid { grid-template-columns: 1fr 1fr !important; gap: 32px 20px !important; }
         }
-
-        @media (max-width: 500px) {
+        @media (min-width: 561px) and (max-width: 900px) {
+          .products-grid, .why-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        @media (max-width: 560px) {
           .how-grid { grid-template-columns: 1fr !important; }
-          .how-grid > div { border-right: none !important; border-bottom: 3px solid #0f1117 !important; }
         }
       `}</style>
     </div>

@@ -6,8 +6,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import {
-  Star, ShieldCheck, Truck, Check, Leaf,
-  ChevronRight, Package, Zap, FlaskConical
+  Star, ShieldCheck, Truck, Check, Leaf, ChevronRight, Zap,
+  CreditCard, Sparkles, FlaskConical, Sprout, BadgeCheck, Clock,
+  Sun, Package, HeartHandshake,
 } from 'lucide-react';
 import { StaticProduct, PRODUCTS, HEALTH_DISCLAIMER } from '../../../../lib/products-data';
 import { useCart } from '../../../../lib/cart';
@@ -16,248 +17,122 @@ import { toast } from '../../../../hooks/use-toast';
 const ProductReviews = dynamic(() => import('../../../../components/ProductReviews'), { ssr: false });
 const ProductFAQ = dynamic(() => import('../../../../components/ProductFaq'), { ssr: false });
 
-function StarRating({ rating }: { rating: number }) {
+/* ────────────────────────────────────────────────
+   PREMIUM DESIGN TOKENS
+──────────────────────────────────────────────── */
+const INK = '#17191f';
+const INK_SOFT = '#5c6470';
+const LINE = '#e9eaee';
+const ACCENT = '#0D9488';
+const ACCENT_DK = '#0a7a6e';
+const ACCENT_SOFT = '#eef7f5';
+const BG_SOFT = '#f6f8f7';
+const CARD_SHADOW = '0 2px 16px rgba(16,24,40,0.05)';
+const RADIUS = 20;
+
+function StarRating({ rating, size = 15 }: { rating: number; size?: number }) {
   return (
     <div style={{ display: 'flex', gap: 2 }}>
-      {[1,2,3,4,5].map((i) => (
-        <Star key={i} style={{ width: 14, height: 14, fill: i <= Math.round(rating) ? '#0D9488' : '#e2d9d0', color: i <= Math.round(rating) ? '#0D9488' : '#e2d9d0' }} />
+      {[1, 2, 3, 4, 5].map((i) => (
+        <Star key={i} style={{ width: size, height: size, fill: i <= Math.round(rating) ? '#f5a623' : '#e4e6eb', color: i <= Math.round(rating) ? '#f5a623' : '#e4e6eb' }} />
       ))}
     </div>
   );
 }
 
+/* ── SECTION HEADING ── */
+function SectionHeading({ eyebrow, title, sub, align = 'center' }: { eyebrow?: string; title: string; sub?: string; align?: 'center' | 'left' }) {
+  return (
+    <div style={{ textAlign: align, marginBottom: 40, maxWidth: 680, marginLeft: align === 'center' ? 'auto' : 0, marginRight: align === 'center' ? 'auto' : 0 }}>
+      {eyebrow && (
+        <span style={{ display: 'inline-block', fontSize: 12, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: ACCENT, marginBottom: 12 }}>{eyebrow}</span>
+      )}
+      <h2 style={{ fontSize: 'clamp(28px,3.4vw,40px)', fontWeight: 700, letterSpacing: '-0.02em', color: INK, lineHeight: 1.12 }}>{title}</h2>
+      {sub && <p style={{ fontSize: 15, color: INK_SOFT, lineHeight: 1.7, marginTop: 14 }}>{sub}</p>}
+    </div>
+  );
+}
+
 interface Bundle {
-  packs: number; label: string; pricePerPack: number;
-  totalPrice: number; savings: number; badge?: string;
+  packs: number; label: string; note: string; pricePerServe: number;
+  totalPrice: number; savings: number; discountPct: number; badge?: string;
 }
 
-function getBundles(price: number): Bundle[] {
-  return [
-    { packs: 1, label: '1 Pack', pricePerPack: price, totalPrice: price, savings: 0 },
-    { packs: 2, label: '2 Packs', pricePerPack: Math.round(price * 0.93), totalPrice: Math.round(price * 2 * 0.93), savings: Math.round(price * 2 * 0.07), badge: 'Save 7%' },
-    { packs: 3, label: '3 Packs', pricePerPack: Math.round(price * 0.87), totalPrice: Math.round(price * 3 * 0.87), savings: Math.round(price * 3 * 0.13), badge: 'Best Value' },
-  ];
+function getBundles(price: number, regular: number, capsules: number): Bundle[] {
+  const servingsPerPack = Math.max(1, Math.floor(capsules / 2)); // 2 caps/day
+  const mk = (packs: number, mult: number, badge?: string): Bundle => {
+    const total = Math.round(price * packs * mult);
+    const regularTotal = regular * packs;
+    return {
+      packs,
+      label: `Pack of ${capsules * packs}`,
+      note: `${packs * (capsules)} capsules · ${packs} bottle${packs > 1 ? 's' : ''}`,
+      pricePerServe: Math.round(total / (servingsPerPack * packs)),
+      totalPrice: total,
+      savings: regularTotal - total,
+      discountPct: Math.round(((regularTotal - total) / regularTotal) * 100),
+      badge,
+    };
+  };
+  return [mk(1, 1), mk(2, 0.93, 'Popular'), mk(3, 0.87, 'Best Value')];
 }
 
-function ImageGallery({ images }: { images: string[] }) {
+/* ── IMAGE GALLERY (vertical thumbs + large main) ── */
+function ImageGallery({ images, name }: { images: string[]; name: string }) {
   const [main, setMain] = useState(0);
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <div style={{ position: 'relative', aspectRatio: '1', background: '#f3ede4', overflow: 'hidden', border: '3px solid #0f1117', boxShadow: '6px 6px 0 #0f1117' }}>
-        <Image src={images[main]} alt="Product" fill style={{ objectFit: 'cover', transition: 'opacity 0.3s' }} sizes="(max-width: 1024px) 100vw, 55vw" priority />
-      </div>
+    <div className="gallery-wrap" style={{ display: 'flex', gap: 14 }}>
+      {/* Thumbnails */}
       {images.length > 1 && (
-        <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }}>
+        <div className="gallery-thumbs" style={{ display: 'flex', flexDirection: 'column', gap: 10, width: 74, flexShrink: 0 }}>
           {images.map((src, i) => (
             <button
               key={i}
               onClick={() => setMain(i)}
               style={{
-                position: 'relative', flexShrink: 0, width: 64, height: 64,
-                border: `2.5px solid ${i === main ? '#0D9488' : '#0f1117'}`,
-                boxShadow: i === main ? '2px 2px 0 #0D9488' : '2px 2px 0 rgba(15,17,23,0.2)',
-                overflow: 'hidden', opacity: i === main ? 1 : 0.55,
-                cursor: 'pointer', background: 'none', padding: 0,
-                transition: 'opacity 0.2s, border-color 0.2s',
+                position: 'relative', width: 74, height: 74, borderRadius: 12, overflow: 'hidden',
+                border: `2px solid ${i === main ? ACCENT : LINE}`, cursor: 'pointer', background: BG_SOFT,
+                padding: 0, transition: 'border-color 0.2s', flexShrink: 0,
               }}
             >
-              <Image src={src} alt="" fill style={{ objectFit: 'cover' }} sizes="64px" />
+              <Image src={src} alt={`${name} ${i + 1}`} fill style={{ objectFit: 'cover' }} sizes="74px" />
             </button>
           ))}
         </div>
       )}
-    </div>
-  );
-}
-
-const TABS = ['Benefits', 'Ingredients', 'How to Use', 'Shipping'];
-
-function Tabs({ product }: { product: StaticProduct }) {
-  const [active, setActive] = useState(0);
-  return (
-    <div style={{ marginTop: 40, borderTop: '3px solid #0f1117' }}>
-      <div style={{ display: 'flex', borderBottom: '3px solid #0f1117', overflowX: 'auto' }}>
-        {TABS.map((t, i) => (
-          <button
-            key={i}
-            onClick={() => setActive(i)}
-            style={{
-              padding: '12px 20px', fontSize: 10, fontWeight: 700, letterSpacing: '0.14em',
-              textTransform: 'uppercase', whiteSpace: 'nowrap', cursor: 'pointer',
-              background: i === active ? '#0f1117' : 'transparent',
-              color: i === active ? '#0D9488' : 'rgba(15,17,23,0.45)',
-              border: 'none', borderRight: '2px solid rgba(15,17,23,0.1)',
-              transition: 'background 0.2s, color 0.2s',
-              fontFamily: 'inherit',
-            }}
-          >
-            {t}
-          </button>
-        ))}
-      </div>
-      <div style={{ paddingTop: 24, paddingBottom: 8 }}>
-        {active === 0 && (
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {product.benefits.map((b, i) => (
-              <li key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                <span style={{ width: 20, height: 20, background: '#0D9488', border: '2px solid #0f1117', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
-                  <Check style={{ width: 10, height: 10, color: '#fff' }} />
-                </span>
-                <span style={{ fontSize: 13, color: '#0f1117', lineHeight: 1.65 }}>{b}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-        {active === 1 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {product.ingredients.map((ing, i) => (
-              <div key={i} style={{ display: 'flex', gap: 16, padding: '14px 16px', background: '#faf7f2', border: '2px solid #0f1117', boxShadow: '2px 2px 0 #0f1117' }}>
-                <div style={{ width: 56, textAlign: 'center', flexShrink: 0 }}>
-                  <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 20, color: '#0D9488', lineHeight: 1, letterSpacing: '0.03em' }}>{ing.dose}</p>
-                </div>
-                <div>
-                  <p style={{ fontWeight: 700, fontSize: 13, color: '#0f1117', marginBottom: 3 }}>{ing.name}</p>
-                  <p style={{ fontSize: 11, color: 'rgba(15,17,23,0.5)', letterSpacing: '0.03em' }}>{ing.benefit}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-        {active === 2 && (
-          <div>
-            <div style={{ background: '#faf7f2', border: '2px solid #0f1117', boxShadow: '3px 3px 0 #0f1117', padding: '16px 20px', marginBottom: 12 }}>
-              <p style={{ fontSize: 13, color: '#0f1117', lineHeight: 1.75 }}>{product.howToUse}</p>
-            </div>
-            <div style={{ padding: '12px 16px', background: 'rgba(13,148,136,0.06)', border: '2px solid rgba(13,148,136,0.3)' }}>
-              <p style={{ fontSize: 11, color: '#d95f1a', fontWeight: 600, letterSpacing: '0.04em' }}>
-                Note: Results are best seen with consistent use for 4–6 weeks. Consult a healthcare provider if you have pre-existing conditions.
-              </p>
-            </div>
-          </div>
-        )}
-        {active === 3 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {[
-              { icon: Package, label: 'Dispatch', value: 'Within 24 hours of order confirmation' },
-              { icon: Truck, label: 'Delivery', value: '3–5 business days, pan-India' },
-              { icon: Leaf, label: 'Quality', value: '100% natural & FSSAI certified' },
-              { icon: ShieldCheck, label: 'Packaging', value: 'Tamper-proof, eco-friendly packaging' },
-            ].map((item, i) => (
-              <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '12px 16px', background: '#faf7f2', border: '2px solid #0f1117' }}>
-                <item.icon style={{ width: 16, height: 16, color: '#0D9488', flexShrink: 0 }} />
-                <div>
-                  <p style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.18em', color: 'rgba(15,17,23,0.4)', fontWeight: 600, marginBottom: 2 }}>{item.label}</p>
-                  <p style={{ fontSize: 12, color: '#0f1117', fontWeight: 600 }}>{item.value}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+      {/* Main */}
+      <div style={{ position: 'relative', flex: 1, aspectRatio: '1', borderRadius: RADIUS, overflow: 'hidden', background: BG_SOFT, boxShadow: CARD_SHADOW }}>
+        <Image src={images[main]} alt={name} fill style={{ objectFit: 'cover' }} sizes="(max-width: 1024px) 100vw, 560px" priority />
       </div>
     </div>
   );
 }
 
+/* ── RELATED CARD ── */
 function RelatedCard({ product }: { product: StaticProduct }) {
   const discount = Math.round(((product.regularPrice - product.price) / product.regularPrice) * 100);
   return (
     <Link
       href={`/product/${product.slug}`}
-      style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', background: '#fff', overflow: 'hidden', transition: 'transform 0.2s, box-shadow 0.2s' }}
-      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translate(-2px,-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '6px 6px 0 #0f1117'; }}
-      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = '4px 4px 0 #0f1117'; }}
+      style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', borderRadius: RADIUS, border: `1px solid ${LINE}`, background: '#fff', overflow: 'hidden', boxShadow: CARD_SHADOW, transition: 'transform 0.2s, box-shadow 0.2s' }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 12px 30px rgba(16,24,40,0.1)'; }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = CARD_SHADOW; }}
     >
-      <div style={{ position: 'relative', aspectRatio: '1', background: '#f3ede4', overflow: 'hidden', borderBottom: '2px solid #0f1117' }}>
+      <div style={{ position: 'relative', aspectRatio: '1', background: BG_SOFT, overflow: 'hidden' }}>
         <Image src={product.images[0]} alt={product.name} fill style={{ objectFit: 'cover' }} sizes="300px" />
         {discount > 0 && (
-          <span style={{ position: 'absolute', top: 10, right: 10, background: '#0D9488', color: '#fff', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', padding: '3px 8px', border: '2px solid #0f1117' }}>
-            {discount}% OFF
-          </span>
+          <span style={{ position: 'absolute', top: 12, left: 12, background: ACCENT, color: '#fff', fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 999 }}>{discount}% OFF</span>
         )}
       </div>
-      <div style={{ padding: '14px 16px' }}>
-        <p style={{ fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#0D9488', fontWeight: 600, marginBottom: 4 }}>{product.category}</p>
-        <h4 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 18, color: '#0f1117', marginBottom: 8, lineHeight: 1.1 }}>{product.name}</h4>
+      <div style={{ padding: '16px 18px 18px' }}>
+        <p style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: ACCENT, fontWeight: 600, marginBottom: 6 }}>{product.category}</p>
+        <h4 style={{ fontSize: 17, fontWeight: 700, letterSpacing: '-0.01em', color: INK, marginBottom: 10, lineHeight: 1.25 }}>{product.name}</h4>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-          <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 22, color: '#0f1117' }}>₹{product.price.toLocaleString()}</span>
-          <span style={{ fontSize: 12, color: 'rgba(15,17,23,0.35)', textDecoration: 'line-through' }}>₹{product.regularPrice.toLocaleString()}</span>
+          <span style={{ fontSize: 20, fontWeight: 700, color: INK }}>₹{product.price.toLocaleString()}</span>
+          <span style={{ fontSize: 13, color: '#9aa1ac', textDecoration: 'line-through' }}>₹{product.regularPrice.toLocaleString()}</span>
         </div>
       </div>
     </Link>
-  );
-}
-
-/* ── SECTION HEADING ── */
-function SectionHeading({ eyebrow, line1, line2 }: { eyebrow: string; line1: string; line2: string }) {
-  return (
-    <div style={{ textAlign: 'center', marginBottom: 36 }}>
-      <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#0D9488', fontWeight: 600, display: 'block', marginBottom: 12 }}>◆ {eyebrow}</span>
-      <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(36px,4vw,64px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.9 }}>
-        {line1}<br /><span style={{ color: '#0D9488' }}>{line2}</span>
-      </h2>
-    </div>
-  );
-}
-
-/* ── KEY INGREDIENTS — image slots (fill product.ingredients[].image later) ── */
-function IngredientSpotlight({ product }: { product: StaticProduct }) {
-  if (!product.ingredients.length) return null;
-  return (
-    <section style={{ marginTop: 80 }}>
-      <SectionHeading eyebrow="Inside Every Capsule" line1="KEY" line2="INGREDIENTS." />
-      <div className="ingredient-grid" style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(product.ingredients.length, 3)}, 1fr)`, gap: 20, maxWidth: 1000, margin: '0 auto' }}>
-        {product.ingredients.map((ing, i) => (
-          <div key={i} style={{ display: 'flex', flexDirection: 'column', border: '3px solid #0f1117', boxShadow: '5px 5px 0 #0f1117', background: '#fff', overflow: 'hidden' }}>
-            {/* Image area — shows ing.image when provided, else a styled placeholder */}
-            <div style={{ position: 'relative', aspectRatio: '4 / 3', background: 'linear-gradient(150deg,#f0fdf9,#e3f5f1)', borderBottom: '3px solid #0f1117', overflow: 'hidden' }}>
-              {ing.image ? (
-                <Image src={ing.image} alt={ing.name} fill style={{ objectFit: 'cover' }} sizes="(max-width: 768px) 100vw, 320px" />
-              ) : (
-                <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-                  <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(13,148,136,0.12)', border: '2px solid rgba(13,148,136,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Leaf style={{ width: 24, height: 24, color: '#0D9488' }} />
-                  </div>
-                  <span style={{ fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(15,17,23,0.35)', fontWeight: 600 }}>Herbal Extract</span>
-                </div>
-              )}
-              {/* dose sticker */}
-              <span style={{ position: 'absolute', top: 12, right: 12, background: '#0f1117', color: '#0D9488', fontFamily: 'Bebas Neue, sans-serif', fontSize: 16, letterSpacing: '0.04em', padding: '3px 10px', border: '2px solid #0D9488' }}>
-                {ing.dose}
-              </span>
-            </div>
-            {/* Body */}
-            <div style={{ padding: '18px 18px 20px' }}>
-              <h3 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 20, letterSpacing: '0.03em', color: '#0f1117', lineHeight: 1.05, marginBottom: 8 }}>{ing.name}</h3>
-              <p style={{ fontSize: 12.5, color: 'rgba(15,17,23,0.6)', lineHeight: 1.65 }}>{ing.benefit}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-/* ── LANDING BANNERS — full-width infographic sections (A+ style) ── */
-function BannerSections({ banners, name }: { banners: string[]; name: string }) {
-  if (!banners.length) return null;
-  return (
-    <section style={{ marginTop: 80 }}>
-      <SectionHeading eyebrow="Why It Works" line1="THE FULL" line2="STORY." />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 24, maxWidth: 1000, margin: '0 auto' }}>
-        {banners.map((src, i) => (
-          <div key={i} style={{ position: 'relative', border: '3px solid #0f1117', boxShadow: '6px 6px 0 #0f1117', overflow: 'hidden', background: '#f3ede4' }}>
-            <Image
-              src={src}
-              alt={`${name} — details ${i + 1}`}
-              width={1200}
-              height={1200}
-              sizes="(max-width: 1024px) 100vw, 1000px"
-              style={{ width: '100%', height: 'auto', display: 'block' }}
-            />
-          </div>
-        ))}
-      </div>
-    </section>
   );
 }
 
@@ -266,16 +141,11 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
   const { addToCart } = useCart();
   const reviewsRef = useRef<HTMLDivElement>(null);
 
-  // Split product.images into gallery photos vs infographic banners.
-  const banners = product.images.filter((src) => /Info/i.test(src));
-  const galleryImages = product.images.filter((src) => !/Info/i.test(src));
-  const gallery = galleryImages.length ? galleryImages : product.images;
-
-  const [selectedBundle, setSelectedBundle] = useState(0);
+  const [selectedBundle, setSelectedBundle] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isBuyingNow, setIsBuyingNow] = useState(false);
 
-  const bundles = getBundles(product.price);
+  const bundles = getBundles(product.price, product.regularPrice, product.capsules);
   const bundle = bundles[selectedBundle];
   const discount = Math.round(((product.regularPrice - product.price) / product.regularPrice) * 100);
   const relatedProducts = PRODUCTS.filter((p) => p.slug !== product.slug);
@@ -297,272 +167,333 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
     router.push('/checkout');
   };
 
+  const benefitIcons = [Sparkles, HeartHandshake, ShieldCheck, Leaf, Zap, BadgeCheck];
+
+  const qualityClaims = [
+    { icon: Sprout, title: 'Naturally Sourced', desc: 'Standardised herbal extracts & pure nutraceuticals.' },
+    { icon: FlaskConical, title: 'Lab Tested', desc: 'Every batch screened for purity & heavy metals.' },
+    { icon: Leaf, title: 'Vegetarian Capsules', desc: 'Clean plant-based capsules, no gelatin.' },
+    { icon: ShieldCheck, title: 'No Artificial Fillers', desc: 'No added sugar, colours or preservatives.' },
+    { icon: BadgeCheck, title: 'FSSAI & GMP', desc: 'Made in licensed, GMP-certified facilities.' },
+    { icon: Truck, title: 'Pan-India Delivery', desc: 'Delivered in 3–5 business days, securely packed.' },
+  ];
+
+  const trustRow = [
+    { icon: CreditCard, label: 'Cash on Delivery' },
+    { icon: Truck, label: 'Free Shipping ₹999+' },
+    { icon: Zap, label: 'Fast Dispatch' },
+    { icon: ShieldCheck, label: 'Secure Checkout' },
+  ];
+
   return (
-    <div style={{ minHeight: '100vh', background: '#faf7f2', paddingBottom: 120 }}>
+    <div style={{ minHeight: '100vh', background: '#fff', color: INK, paddingBottom: 100 }}>
 
       {/* Breadcrumb */}
-      <div style={{ borderBottom: '2px solid rgba(15,17,23,0.1)', background: '#fff' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '10px 32px' }}>
-          <nav style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 10, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(15,17,23,0.4)' }}>
-            <Link href="/" style={{ color: 'inherit', textDecoration: 'none' }} onMouseEnter={e => (e.currentTarget.style.color = '#0D9488')} onMouseLeave={e => (e.currentTarget.style.color = 'rgba(15,17,23,0.4)')}>Home</Link>
-            <ChevronRight style={{ width: 12, height: 12 }} />
-            <Link href="/shop" style={{ color: 'inherit', textDecoration: 'none' }} onMouseEnter={e => (e.currentTarget.style.color = '#0D9488')} onMouseLeave={e => (e.currentTarget.style.color = 'rgba(15,17,23,0.4)')}>Shop</Link>
-            <ChevronRight style={{ width: 12, height: 12 }} />
-            <span style={{ color: '#0f1117' }}>{product.shortName}</span>
+      <div style={{ borderBottom: `1px solid ${LINE}`, background: '#fff' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '12px 24px' }}>
+          <nav style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: INK_SOFT }}>
+            <Link href="/" style={{ color: 'inherit', textDecoration: 'none' }}>Home</Link>
+            <ChevronRight style={{ width: 14, height: 14, opacity: 0.5 }} />
+            <Link href="/shop" style={{ color: 'inherit', textDecoration: 'none' }}>Shop</Link>
+            <ChevronRight style={{ width: 14, height: 14, opacity: 0.5 }} />
+            <span style={{ color: INK, fontWeight: 500 }}>{product.shortName}</span>
           </nav>
         </div>
       </div>
 
-      {/* Main layout */}
-      <div className="product-container" style={{ maxWidth: 1280, margin: '0 auto', padding: '40px 32px' }}>
-        <div className="product-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px 64px' }}>
+      {/* ── HERO / BUY ── */}
+      <div className="product-container" style={{ maxWidth: 1200, margin: '0 auto', padding: '36px 24px' }}>
+        <div className="product-grid" style={{ display: 'grid', gridTemplateColumns: '1.05fr 1fr', gap: 56 }}>
 
-          {/* LEFT: Images */}
-          <div className="product-image-sticky" style={{ position: 'sticky', top: 24, alignSelf: 'start' }}>
-            <ImageGallery images={gallery} />
+          {/* LEFT: gallery */}
+          <div className="product-image-sticky" style={{ position: 'sticky', top: 20, alignSelf: 'start' }}>
+            <ImageGallery images={product.images} name={product.name} />
           </div>
 
-          {/* RIGHT: Info */}
+          {/* RIGHT: buy box */}
           <div>
-            {/* Badges */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
-              <span style={{ background: '#faf7f2', color: '#0f1117', fontSize: 9, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', padding: '4px 10px', border: '2px solid #0f1117' }}>
-                {product.category}
-              </span>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
+              <span style={{ background: ACCENT_SOFT, color: ACCENT_DK, fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '5px 12px', borderRadius: 999 }}>{product.category}</span>
               {product.badge && (
-                <span style={{ background: '#0f1117', color: '#0D9488', fontSize: 9, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', padding: '4px 10px', border: '2px solid #0f1117' }}>
-                  {product.badge}
-                </span>
-              )}
-              {discount > 0 && (
-                <span style={{ background: '#0D9488', color: '#fff', fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '4px 10px', border: '2px solid #0f1117', boxShadow: '2px 2px 0 #0f1117' }}>
-                  {discount}% OFF
-                </span>
+                <span style={{ background: '#fff4e6', color: '#c2791b', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '5px 12px', borderRadius: 999 }}>{product.badge}</span>
               )}
             </div>
 
-            {/* Name */}
-            <h1 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(36px,4vw,56px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.95, marginBottom: 14 }}>
-              {product.name}
-            </h1>
+            <h1 style={{ fontSize: 'clamp(30px,3.6vw,44px)', fontWeight: 700, letterSpacing: '-0.025em', lineHeight: 1.08, marginBottom: 14 }}>{product.name}</h1>
 
-            {/* Rating */}
-            <button
-              onClick={() => reviewsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-              style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-            >
+            <button onClick={() => reviewsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
               <StarRating rating={product.rating} />
-              <span style={{ fontSize: 11, color: 'rgba(15,17,23,0.5)', letterSpacing: '0.05em', borderBottom: '1px solid rgba(15,17,23,0.2)' }}>
-                {product.rating.toFixed(1)} ({product.reviewCount} Reviews)
-              </span>
+              <span style={{ fontSize: 13, color: INK_SOFT }}>{product.rating.toFixed(1)} · {product.reviewCount} reviews</span>
             </button>
 
-            {/* Tagline */}
-            <p style={{ fontSize: 13, color: 'rgba(15,17,23,0.55)', lineHeight: 1.75, marginBottom: 20 }}>{product.tagline}</p>
+            <p style={{ fontSize: 15.5, color: INK_SOFT, lineHeight: 1.7, marginBottom: 22 }}>{product.tagline}</p>
 
-            {/* Benefits */}
-            <div style={{ marginBottom: 24, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {/* Benefit bullets */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 11, marginBottom: 26 }}>
               {product.benefits.slice(0, 4).map((b, i) => (
-                <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                  <span style={{ width: 18, height: 18, background: 'rgba(13,148,136,0.1)', border: '2px solid #0D9488', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
-                    <Check style={{ width: 9, height: 9, color: '#0D9488' }} />
+                <div key={i} style={{ display: 'flex', gap: 11, alignItems: 'flex-start' }}>
+                  <span style={{ width: 22, height: 22, borderRadius: 999, background: ACCENT_SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                    <Check style={{ width: 13, height: 13, color: ACCENT_DK }} strokeWidth={3} />
                   </span>
-                  <span style={{ fontSize: 12, color: '#0f1117', lineHeight: 1.6 }}>{b}</span>
+                  <span style={{ fontSize: 14.5, color: INK, lineHeight: 1.55 }}>{b}</span>
                 </div>
               ))}
             </div>
 
             {/* Price */}
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 24, paddingBottom: 24, borderBottom: '3px solid #0f1117' }}>
-              <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 48, color: '#0f1117', lineHeight: 1, letterSpacing: '0.02em' }}>
-                ₹{bundle.totalPrice.toLocaleString()}
-              </span>
-              {product.regularPrice > product.price && bundle.packs === 1 && (
-                <span style={{ fontSize: 16, color: 'rgba(15,17,23,0.35)', textDecoration: 'line-through' }}>₹{product.regularPrice.toLocaleString()}</span>
-              )}
-              {bundle.savings > 0 && (
-                <span style={{ fontSize: 11, fontWeight: 700, color: '#fff', background: '#ccff00', border: '2px solid #0f1117', boxShadow: '2px 2px 0 #0f1117', padding: '3px 8px', letterSpacing: '0.1em' }}>
-                  SAVE ₹{bundle.savings.toLocaleString()}
-                </span>
-              )}
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 6 }}>
+              <span style={{ fontSize: 38, fontWeight: 700, letterSpacing: '-0.02em' }}>₹{bundle.totalPrice.toLocaleString()}</span>
+              <span style={{ fontSize: 18, color: '#9aa1ac', textDecoration: 'line-through' }}>₹{(product.regularPrice * bundle.packs).toLocaleString()}</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#fff', background: ACCENT, padding: '4px 10px', borderRadius: 999 }}>{bundle.discountPct}% OFF</span>
             </div>
+            <p style={{ fontSize: 13, color: INK_SOFT, marginBottom: 22 }}>MRP incl. of all taxes · Just ₹{bundle.pricePerServe}/serving</p>
 
-            {/* Bundle Picker */}
-            <div style={{ marginBottom: 24 }}>
-              <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(15,17,23,0.4)', marginBottom: 12 }}>Choose Your Pack</p>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-                {bundles.map((b, i) => (
+            {/* Pack selector */}
+            <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: INK_SOFT, marginBottom: 12 }}>Choose your pack</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
+              {bundles.map((b, i) => {
+                const sel = i === selectedBundle;
+                return (
                   <button
                     key={i}
                     onClick={() => setSelectedBundle(i)}
                     style={{
-                      position: 'relative', padding: '12px 8px', textAlign: 'center', cursor: 'pointer',
-                      border: `2.5px solid ${i === selectedBundle ? '#0D9488' : '#0f1117'}`,
-                      boxShadow: i === selectedBundle ? '3px 3px 0 #0D9488' : '2px 2px 0 #0f1117',
-                      background: i === selectedBundle ? '#0f1117' : '#fff',
-                      color: i === selectedBundle ? '#fff' : '#0f1117',
-                      transition: 'all 0.15s', fontFamily: 'inherit',
+                      position: 'relative', display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left', cursor: 'pointer',
+                      padding: '15px 18px', borderRadius: 16, background: sel ? ACCENT_SOFT : '#fff',
+                      border: `2px solid ${sel ? ACCENT : LINE}`, transition: 'all 0.15s', fontFamily: 'inherit',
                     }}
                   >
+                    <span style={{ width: 20, height: 20, borderRadius: 999, border: `2px solid ${sel ? ACCENT : '#c7ccd4'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      {sel && <span style={{ width: 10, height: 10, borderRadius: 999, background: ACCENT }} />}
+                    </span>
+                    <span style={{ flex: 1 }}>
+                      <span style={{ display: 'block', fontSize: 15, fontWeight: 700, color: INK }}>{b.label}</span>
+                      <span style={{ display: 'block', fontSize: 12.5, color: INK_SOFT, marginTop: 2 }}>{b.note} · ₹{b.pricePerServe}/serving</span>
+                    </span>
+                    <span style={{ textAlign: 'right', flexShrink: 0 }}>
+                      <span style={{ display: 'block', fontSize: 17, fontWeight: 700, color: INK }}>₹{b.totalPrice.toLocaleString()}</span>
+                      <span style={{ display: 'block', fontSize: 12, color: ACCENT_DK, fontWeight: 600 }}>Save ₹{b.savings.toLocaleString()}</span>
+                    </span>
                     {b.badge && (
-                      <span style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', background: '#0D9488', color: '#fff', fontSize: 8, fontWeight: 700, letterSpacing: '0.1em', padding: '2px 8px', border: '2px solid #0f1117', whiteSpace: 'nowrap' }}>
-                        {b.badge}
-                      </span>
+                      <span style={{ position: 'absolute', top: -10, right: 16, background: INK, color: '#fff', fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '3px 10px', borderRadius: 999 }}>{b.badge}</span>
                     )}
-                    <p style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 16, letterSpacing: '0.05em', marginBottom: 2 }}>{b.label}</p>
-                    <p style={{ fontSize: 10, opacity: 0.6, letterSpacing: '0.05em' }}>₹{b.pricePerPack}/pack</p>
                   </button>
-                ))}
-              </div>
+                );
+              })}
             </div>
 
-            {/* CTA — Desktop */}
-            <div style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
+            {/* CTAs */}
+            <div style={{ display: 'flex', gap: 12, marginBottom: 18 }}>
               <button
                 onClick={handleAddToCart}
                 disabled={isAddingToCart}
-                style={{
-                  flex: 1, padding: '14px 20px', background: '#fff', color: '#0f1117',
-                  border: '2.5px solid #0f1117', boxShadow: '3px 3px 0 #0f1117',
-                  fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase',
-                  cursor: isAddingToCart ? 'not-allowed' : 'pointer', opacity: isAddingToCart ? 0.6 : 1,
-                  transition: 'transform 0.15s, box-shadow 0.15s', fontFamily: 'inherit',
-                }}
-                onMouseEnter={e => { if (!isAddingToCart) { (e.currentTarget as HTMLElement).style.transform = 'translate(-2px,-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '5px 5px 0 #0f1117'; }}}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = '3px 3px 0 #0f1117'; }}
+                style={{ flex: 1, padding: '15px 20px', background: '#fff', color: INK, border: `2px solid ${INK}`, borderRadius: 14, fontSize: 14, fontWeight: 700, cursor: isAddingToCart ? 'default' : 'pointer', fontFamily: 'inherit', transition: 'background 0.15s' }}
+                onMouseEnter={e => { if (!isAddingToCart) (e.currentTarget as HTMLElement).style.background = BG_SOFT; }}
+                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = '#fff')}
               >
-                {isAddingToCart ? 'ADDED ✓' : 'ADD TO CART'}
+                {isAddingToCart ? 'Added ✓' : 'Add to Cart'}
               </button>
               <button
                 onClick={handleBuyNow}
                 disabled={isBuyingNow}
-                style={{
-                  flex: 1, padding: '14px 20px', background: '#0D9488', color: '#fff',
-                  border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117',
-                  fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase',
-                  cursor: isBuyingNow ? 'not-allowed' : 'pointer', opacity: isBuyingNow ? 0.6 : 1,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                  transition: 'transform 0.15s, box-shadow 0.15s', fontFamily: 'inherit',
-                }}
-                onMouseEnter={e => { if (!isBuyingNow) { (e.currentTarget as HTMLElement).style.transform = 'translate(-2px,-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '6px 6px 0 #0f1117'; }}}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = '4px 4px 0 #0f1117'; }}
+                style={{ flex: 1.4, padding: '15px 20px', background: ACCENT, color: '#fff', border: `2px solid ${ACCENT}`, borderRadius: 14, fontSize: 14, fontWeight: 700, cursor: isBuyingNow ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontFamily: 'inherit', boxShadow: '0 8px 20px rgba(13,148,136,0.28)', transition: 'background 0.15s' }}
+                onMouseEnter={e => { if (!isBuyingNow) (e.currentTarget as HTMLElement).style.background = ACCENT_DK; }}
+                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = ACCENT)}
               >
-                <Zap style={{ width: 14, height: 14 }} />
-                {isBuyingNow ? 'PROCESSING...' : `BUY NOW — ₹${bundle.totalPrice.toLocaleString()}`}
+                <Zap style={{ width: 16, height: 16 }} />
+                {isBuyingNow ? 'Processing…' : `Buy Now`}
               </button>
             </div>
 
-            {/* Delivery */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#0f1117', marginBottom: 20, padding: '10px 14px', background: 'rgba(204,255,0,0.15)', border: '2px solid rgba(15,17,23,0.2)' }}>
-              <Truck style={{ width: 14, height: 14, color: '#0f1117', flexShrink: 0 }} />
-              <span><strong>Pan-India delivery</strong> · 3–5 business days</span>
-            </div>
-
-            {/* Trust Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-              {[
-                { icon: ShieldCheck, title: '100% Authentic', sub: 'Genuine Products' },
-                { icon: Leaf, title: '100% Natural', sub: 'No artificial additives' },
-                { icon: Package, title: 'GMP Certified', sub: 'Lab tested quality' },
-                { icon: Truck, title: 'Pan-India Delivery', sub: '3–5 business days' },
-              ].map((item, i) => (
-                <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '10px 12px', background: '#faf7f2', border: '2px solid rgba(15,17,23,0.12)' }}>
-                  <item.icon style={{ width: 14, height: 14, color: '#0D9488', flexShrink: 0, marginTop: 1 }} />
-                  <div>
-                    <p style={{ fontSize: 11, fontWeight: 700, color: '#0f1117', marginBottom: 1 }}>{item.title}</p>
-                    <p style={{ fontSize: 10, color: 'rgba(15,17,23,0.45)' }}>{item.sub}</p>
-                  </div>
+            {/* Trust row */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 8 }}>
+              {trustRow.map((t, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: 13, color: INK, padding: '10px 14px', background: BG_SOFT, borderRadius: 12 }}>
+                  <t.icon style={{ width: 16, height: 16, color: ACCENT, flexShrink: 0 }} />
+                  <span style={{ fontWeight: 500 }}>{t.label}</span>
                 </div>
               ))}
             </div>
-
-            <Tabs product={product} />
           </div>
-        </div>
-
-        {/* Key Ingredients — image slots */}
-        <IngredientSpotlight product={product} />
-
-        {/* Landing banners — infographic sections */}
-        <BannerSections banners={banners} name={product.name} />
-
-        {/* Reviews */}
-        <div ref={reviewsRef} style={{ marginTop: 80, scrollMarginTop: 96 }}>
-          <div style={{ textAlign: 'center', marginBottom: 36 }}>
-            <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#0D9488', fontWeight: 600, display: 'block', marginBottom: 12 }}>◆ Verified Reviews</span>
-            <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(36px,4vw,64px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.9 }}>
-              WHAT CUSTOMERS<br /><span style={{ color: '#0D9488' }}>ARE SAYING.</span>
-            </h2>
-          </div>
-          <ProductReviews productId={product.id} productName={product.name} />
-        </div>
-
-        {/* FAQ */}
-        <div style={{ marginTop: 80 }}>
-          <div style={{ textAlign: 'center', marginBottom: 36 }}>
-            <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#0D9488', fontWeight: 600, display: 'block', marginBottom: 12 }}>◆ Got Questions?</span>
-            <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(36px,4vw,64px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.9 }}>
-              FREQUENTLY ASKED<br /><span style={{ color: '#0D9488' }}>QUESTIONS.</span>
-            </h2>
-          </div>
-          <div style={{ maxWidth: 720, margin: '0 auto' }}>
-            <ProductFAQ productSlug={product.slug} productName={product.name} />
-          </div>
-        </div>
-
-        {/* Related Products */}
-        {relatedProducts.length > 0 && (
-          <div style={{ marginTop: 80 }}>
-            <div style={{ textAlign: 'center', marginBottom: 36 }}>
-              <span style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#0D9488', fontWeight: 600, display: 'block', marginBottom: 12 }}>◆ You May Also Like</span>
-              <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: 'clamp(36px,4vw,64px)', letterSpacing: '0.02em', color: '#0f1117', lineHeight: 0.9 }}>
-                RELATED<br /><span style={{ color: '#0D9488' }}>PRODUCTS.</span>
-              </h2>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24, maxWidth: 640, margin: '0 auto' }}>
-              {relatedProducts.map((p) => <RelatedCard key={p.id} product={p} />)}
-            </div>
-          </div>
-        )}
-
-        {/* Compliance disclaimer */}
-        <div style={{ marginTop: 72, maxWidth: 900, margin: '72px auto 0', display: 'flex', gap: 12, alignItems: 'flex-start', padding: '18px 20px', background: '#fff', border: '2px solid rgba(15,17,23,0.15)' }}>
-          <FlaskConical style={{ width: 16, height: 16, color: 'rgba(15,17,23,0.35)', flexShrink: 0, marginTop: 2 }} />
-          <p style={{ fontSize: 11, color: 'rgba(15,17,23,0.5)', lineHeight: 1.7, letterSpacing: '0.01em' }}>{HEALTH_DISCLAIMER}</p>
         </div>
       </div>
 
-      {/* Mobile Sticky Bottom — hidden on desktop via CSS */}
-      <div className="mobile-cta-outer" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#fff', borderTop: '3px solid #0f1117', padding: '12px 16px', zIndex: 500, boxShadow: '0 -4px 0 rgba(15,17,23,0.08)', display: 'none' }}>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button
-            onClick={handleAddToCart}
-            disabled={isAddingToCart}
-            style={{ background: '#fff', color: '#0f1117', padding: '14px 18px', border: '2.5px solid #0f1117', boxShadow: '3px 3px 0 #0f1117', fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}
-          >
-            {isAddingToCart ? '✓ ADDED' : 'ADD TO CART'}
-          </button>
+      {/* ── BENEFIT CARDS ── */}
+      <section style={{ background: BG_SOFT, borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, padding: '72px 24px', marginTop: 40 }}>
+        <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+          <SectionHeading eyebrow="Why it works" title={`What ${product.shortName} does for you`} sub="A focused, science-led formula designed to support your everyday wellness goals." />
+          <div className="benefit-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }}>
+            {product.benefits.map((b, i) => {
+              const Icon = benefitIcons[i % benefitIcons.length];
+              return (
+                <div key={i} style={{ background: '#fff', borderRadius: RADIUS, border: `1px solid ${LINE}`, padding: '26px 24px', boxShadow: CARD_SHADOW }}>
+                  <div style={{ width: 46, height: 46, borderRadius: 14, background: ACCENT_SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                    <Icon style={{ width: 22, height: 22, color: ACCENT_DK }} />
+                  </div>
+                  <p style={{ fontSize: 15, color: INK, lineHeight: 1.6, fontWeight: 500 }}>{b}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── KEY INGREDIENTS (image slots) ── */}
+      <section style={{ padding: '80px 24px' }}>
+        <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+          <SectionHeading eyebrow="Inside every capsule" title="The active ingredients" sub="Each ingredient is included at a meaningful dose — no proprietary-blend guesswork." />
+          <div className="ingredient-grid" style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(product.ingredients.length, 3)}, 1fr)`, gap: 22 }}>
+            {product.ingredients.map((ing, i) => (
+              <div key={i} style={{ display: 'flex', flexDirection: 'column', borderRadius: RADIUS, border: `1px solid ${LINE}`, background: '#fff', overflow: 'hidden', boxShadow: CARD_SHADOW }}>
+                {/* Image slot — fill product.ingredients[].image later */}
+                <div style={{ position: 'relative', aspectRatio: '16 / 11', background: 'linear-gradient(150deg,#f0fdf9,#e6f3ef)', overflow: 'hidden' }}>
+                  {ing.image ? (
+                    <Image src={ing.image} alt={ing.name} fill style={{ objectFit: 'cover' }} sizes="(max-width: 768px) 100vw, 340px" />
+                  ) : (
+                    <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+                      <div style={{ width: 54, height: 54, borderRadius: 999, background: 'rgba(13,148,136,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Leaf style={{ width: 26, height: 26, color: ACCENT }} />
+                      </div>
+                      <span style={{ fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(15,17,23,0.35)', fontWeight: 600 }}>Herbal Extract</span>
+                    </div>
+                  )}
+                  <span style={{ position: 'absolute', top: 14, right: 14, background: '#fff', color: ACCENT_DK, fontSize: 13, fontWeight: 700, padding: '5px 12px', borderRadius: 999, boxShadow: '0 2px 8px rgba(16,24,40,0.12)' }}>{ing.dose}</span>
+                </div>
+                <div style={{ padding: '20px 22px 24px' }}>
+                  <h3 style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.01em', color: INK, marginBottom: 8, lineHeight: 1.25 }}>{ing.name}</h3>
+                  <p style={{ fontSize: 13.5, color: INK_SOFT, lineHeight: 1.65 }}>{ing.benefit}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── HOW TO USE ── */}
+      <section style={{ background: BG_SOFT, borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, padding: '72px 24px' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <SectionHeading eyebrow="Simple daily ritual" title="How to use it" />
+          <div className="usage-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }}>
+            {[
+              { icon: Package, title: 'How much', desc: 'Take 2 capsules daily with a glass of water.' },
+              { icon: Sun, title: 'When', desc: 'Best taken with a meal, or as directed by your healthcare provider.' },
+              { icon: Clock, title: 'How long', desc: 'Use consistently for 4–6 weeks as part of a balanced lifestyle.' },
+            ].map((s, i) => (
+              <div key={i} style={{ background: '#fff', borderRadius: RADIUS, border: `1px solid ${LINE}`, padding: '30px 26px', textAlign: 'center', boxShadow: CARD_SHADOW }}>
+                <div style={{ width: 54, height: 54, borderRadius: 16, background: ACCENT_SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
+                  <s.icon style={{ width: 26, height: 26, color: ACCENT_DK }} />
+                </div>
+                <h3 style={{ fontSize: 18, fontWeight: 700, color: INK, marginBottom: 10 }}>{s.title}</h3>
+                <p style={{ fontSize: 14, color: INK_SOFT, lineHeight: 1.65 }}>{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── QUALITY CLAIMS ── */}
+      <section style={{ padding: '80px 24px' }}>
+        <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+          <SectionHeading eyebrow="Made right" title="Quality you can trust" />
+          <div className="quality-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }}>
+            {qualityClaims.map((q, i) => (
+              <div key={i} style={{ display: 'flex', gap: 16, alignItems: 'flex-start', padding: '22px 22px', borderRadius: RADIUS, border: `1px solid ${LINE}`, background: '#fff', boxShadow: CARD_SHADOW }}>
+                <div style={{ width: 44, height: 44, borderRadius: 12, background: ACCENT_SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <q.icon style={{ width: 21, height: 21, color: ACCENT_DK }} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: INK, marginBottom: 5 }}>{q.title}</h3>
+                  <p style={{ fontSize: 13.5, color: INK_SOFT, lineHeight: 1.6 }}>{q.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CERTIFICATIONS ── */}
+      <section style={{ background: BG_SOFT, borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, padding: '56px 24px' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
+          <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: INK_SOFT, marginBottom: 28 }}>Certified & Compliant</p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: '24px 40px' }}>
+            {[1, 2, 3, 4, 5, 6].map((n) => (
+              <div key={n} style={{ position: 'relative', width: 76, height: 76, opacity: 0.85 }}>
+                <Image src={`/certificates/${n}.jpg`} alt="Certification" fill style={{ objectFit: 'contain' }} sizes="76px" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── REVIEWS ── */}
+      <section ref={reviewsRef} style={{ padding: '80px 24px', scrollMarginTop: 90 }}>
+        <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+          <SectionHeading eyebrow="Verified reviews" title="What customers are saying" />
+          <ProductReviews productId={product.id} productName={product.name} />
+        </div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section style={{ background: BG_SOFT, borderTop: `1px solid ${LINE}`, padding: '80px 24px' }}>
+        <div style={{ maxWidth: 760, margin: '0 auto' }}>
+          <SectionHeading eyebrow="Good to know" title="Frequently asked questions" />
+          <ProductFAQ productSlug={product.slug} productName={product.name} />
+        </div>
+      </section>
+
+      {/* ── RELATED ── */}
+      {relatedProducts.length > 0 && (
+        <section style={{ padding: '80px 24px' }}>
+          <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+            <SectionHeading eyebrow="You may also like" title="Complete your routine" />
+            <div className="related-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24, maxWidth: 680, margin: '0 auto' }}>
+              {relatedProducts.map((p) => <RelatedCard key={p.id} product={p} />)}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── DISCLAIMER ── */}
+      <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 24px 40px' }}>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '18px 20px', background: BG_SOFT, borderRadius: 14, border: `1px solid ${LINE}` }}>
+          <FlaskConical style={{ width: 16, height: 16, color: '#9aa1ac', flexShrink: 0, marginTop: 2 }} />
+          <p style={{ fontSize: 12, color: INK_SOFT, lineHeight: 1.7 }}>{HEALTH_DISCLAIMER}</p>
+        </div>
+      </div>
+
+      {/* ── MOBILE STICKY CTA ── */}
+      <div className="mobile-cta-outer" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#fff', borderTop: `1px solid ${LINE}`, padding: '10px 16px', zIndex: 500, boxShadow: '0 -6px 24px rgba(16,24,40,0.08)', display: 'none' }}>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <div style={{ flexShrink: 0 }}>
+            <p style={{ fontSize: 18, fontWeight: 700, color: INK, lineHeight: 1 }}>₹{bundle.totalPrice.toLocaleString()}</p>
+            <p style={{ fontSize: 11, color: INK_SOFT }}>{bundle.discountPct}% off</p>
+          </div>
           <button
             onClick={handleBuyNow}
             disabled={isBuyingNow}
-            style={{ flex: 1, background: '#0D9488', color: '#fff', padding: '14px 16px', border: '2.5px solid #0f1117', boxShadow: '4px 4px 0 #0f1117', fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontFamily: 'inherit' }}
+            style={{ flex: 1, background: ACCENT, color: '#fff', padding: '14px 16px', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontFamily: 'inherit' }}
           >
-            <Zap style={{ width: 14, height: 14 }} />
-            {isBuyingNow ? 'PROCESSING...' : `BUY NOW — ₹${bundle.totalPrice.toLocaleString()}`}
+            <Zap style={{ width: 15, height: 15 }} />
+            {isBuyingNow ? 'Processing…' : 'Buy Now'}
           </button>
         </div>
       </div>
 
       <style>{`
-        @media (max-width: 768px) {
-          .mobile-cta-outer { display: block !important; }
-          .product-container { padding: 20px 16px 40px !important; }
-          .product-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+        @media (max-width: 900px) {
+          .product-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
           .product-image-sticky { position: relative !important; top: auto !important; }
+          .benefit-grid, .usage-grid, .quality-grid { grid-template-columns: 1fr !important; }
           .ingredient-grid { grid-template-columns: 1fr !important; }
+          .mobile-cta-outer { display: block !important; }
         }
-        @media (min-width: 769px) and (max-width: 1024px) {
-          .ingredient-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        @media (min-width: 561px) and (max-width: 900px) {
+          .benefit-grid, .quality-grid, .ingredient-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        @media (max-width: 560px) {
+          .gallery-wrap { flex-direction: column-reverse !important; }
+          .gallery-thumbs { flex-direction: row !important; width: auto !important; overflow-x: auto; }
+          .related-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </div>
