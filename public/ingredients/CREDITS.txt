@@ -1,0 +1,15 @@
+Ingredient images — sources & licenses (for attribution compliance)
+
+saw-palmetto.jpg    Serenoa repens — Wikimedia Commons (CC BY-SA)
+beta-sitosterol.jpg Pumpkin seeds macro — Wikimedia Commons (CC BY-SA)
+nettle.jpg          Urtica dioica — Wikimedia Commons (CC BY-SA)
+milk-thistle.jpg    Silybum marianum — Wikimedia Commons (CC BY-SA)
+garcinia.jpg        Garcinia gummi-gutta fruit — Wikimedia Commons (CC BY-SA)
+green-coffee.png    Green coffee beans — Wikimedia Commons (CC BY-SA)
+tudca.png           Tauroursodeoxycholic acid structure — Wikimedia Commons (public domain / chemical structure)
+nac.png             Acetylcysteine structure — Wikimedia Commons (public domain / chemical structure)
+l-carnitine.jpg     L-Carnitine 3D model — Wikimedia Commons (public domain / chemical structure)
+
+Note: CC BY-SA photos technically require visible attribution for commercial use.
+Recommended: replace with your own studio ingredient photography when available —
+just drop a file with the same name into /public/ingredients/ (no code change needed).

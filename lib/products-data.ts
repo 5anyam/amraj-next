@@ -58,9 +58,9 @@ export const PRODUCTS: StaticProduct[] = [
       'No artificial fillers — 60 pure vegetarian capsules',
     ],
     ingredients: [
-      { name: 'Saw Palmetto Extract', dose: '320mg', benefit: 'Traditionally used to support prostate & urinary health', image: '' },
-      { name: 'Beta-Sitosterol', dose: '100mg', benefit: 'Plant sterol that supports normal urinary function', image: '' },
-      { name: 'Stinging Nettle Root', dose: '200mg', benefit: 'Herbal root with natural antioxidant properties', image: '' },
+      { name: 'Saw Palmetto Extract', dose: '320mg', benefit: 'Traditionally used to support prostate & urinary health', image: '/ingredients/saw-palmetto.jpg' },
+      { name: 'Beta-Sitosterol', dose: '100mg', benefit: 'Plant sterol that supports normal urinary function', image: '/ingredients/beta-sitosterol.jpg' },
+      { name: 'Stinging Nettle Root', dose: '200mg', benefit: 'Herbal root with natural antioxidant properties', image: '/ingredients/nettle.jpg' },
     ],
     howToUse:
       'Take 2 capsules daily with meals, or as directed by your healthcare provider. For best results, use consistently as part of a balanced lifestyle.',
@@ -93,9 +93,9 @@ export const PRODUCTS: StaticProduct[] = [
       'No artificial fillers — 60 pure vegetarian capsules',
     ],
     ingredients: [
-      { name: 'Milk Thistle (Silymarin 80%)', dose: '300mg', benefit: 'Supports healthy liver function & cell protection', image: '' },
-      { name: 'TUDCA', dose: '250mg', benefit: 'Supports healthy bile flow & liver cell wellness', image: '' },
-      { name: 'N-Acetyl L-Cysteine (NAC)', dose: '200mg', benefit: 'Supports glutathione, the body’s master antioxidant', image: '' },
+      { name: 'Milk Thistle (Silymarin 80%)', dose: '300mg', benefit: 'Supports healthy liver function & cell protection', image: '/ingredients/milk-thistle.jpg' },
+      { name: 'TUDCA', dose: '250mg', benefit: 'Supports healthy bile flow & liver cell wellness', image: '/ingredients/tudca.png' },
+      { name: 'N-Acetyl L-Cysteine (NAC)', dose: '200mg', benefit: 'Supports glutathione, the body’s master antioxidant', image: '/ingredients/nac.png' },
     ],
     howToUse:
       'Take 2 capsules daily with meals, or as directed by your healthcare provider. For best results, use consistently for at least 30 days as part of a balanced lifestyle.',
@@ -128,9 +128,9 @@ export const PRODUCTS: StaticProduct[] = [
       'No artificial fillers — 60 pure vegetarian capsules',
     ],
     ingredients: [
-      { name: 'Garcinia Cambogia (60% HCA)', dose: '400mg', benefit: 'Herbal extract that supports a healthy appetite', image: '' },
-      { name: 'Green Coffee Extract (50% CGA)', dose: '300mg', benefit: 'Antioxidant that supports metabolism', image: '' },
-      { name: 'L-Carnitine Tartrate', dose: '200mg', benefit: 'Amino acid that supports energy metabolism', image: '' },
+      { name: 'Garcinia Cambogia (60% HCA)', dose: '400mg', benefit: 'Herbal extract that supports a healthy appetite', image: '/ingredients/garcinia.jpg' },
+      { name: 'Green Coffee Extract (50% CGA)', dose: '300mg', benefit: 'Antioxidant that supports metabolism', image: '/ingredients/green-coffee.png' },
+      { name: 'L-Carnitine Tartrate', dose: '200mg', benefit: 'Amino acid that supports energy metabolism', image: '/ingredients/l-carnitine.jpg' },
     ],
     howToUse:
       'Take 2 capsules 30 minutes before meals with a glass of water. Best used alongside a balanced diet and regular exercise.',
