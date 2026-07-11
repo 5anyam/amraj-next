@@ -14,23 +14,23 @@ const HomeFAQ: React.FC = () => {
   const faqs: FAQ[] = [
     {
       question: "What makes Amraj different from others?",
-      answer: "We blend ancient Ayurvedic wisdom with modern science. Unlike generic supplements, our formulas deliver result-driven wellness backed by premium, clinically proven ingredients."
+      answer: "We blend traditional herbal wisdom with modern nutraceutical science. Our formulas use well-researched, standardised ingredients at meaningful, clearly labelled doses — no proprietary-blend guesswork."
     },
     {
-      question: "Are your products truly effective?",
-      answer: "Yes. Every formula is crafted with scientifically backed extracts in therapeutic dosages. You don't just feel better; you can track real progress within 2-4 weeks."
+      question: "What quality standards do you follow?",
+      answer: "Every formula uses standardised herbal extracts and pure nutraceuticals, manufactured in GMP-certified, ISO-approved and FSSAI-licensed facilities, with every batch lab-tested for purity."
     },
     {
       question: "What defines your 'Premium' quality?",
-      answer: "We source standardized herbal extracts (ensuring active compounds), combine them with pure nutraceuticals, and manufacture in GMP-certified, ISO-approved facilities for unmatched potency."
+      answer: "We source standardised herbal extracts (for consistent active compounds), pair them with pure nutraceuticals, and manufacture in GMP-certified, ISO-approved facilities to a high quality standard."
     },
     {
-      question: "Is it safe for long-term use?",
-      answer: "Absolutely. All products are 100% vegetarian, non-hormonal, steroid-free, and heavy metal tested. They are designed for safety in long-term wellness routines."
+      question: "Is it safe for regular use?",
+      answer: "Our products are 100% vegetarian, non-hormonal, steroid-free and heavy-metal tested. Use as directed on the label, and consult a healthcare professional if you are pregnant, nursing, on medication or have a health condition."
     },
     {
-      question: "How soon will I see results?",
-      answer: "Most users notice changes in energy and digestion within 2-4 weeks. For complete transformation, we recommend a consistent 90-day program."
+      question: "When might I notice a difference?",
+      answer: "Dietary supplements support the body gradually and results vary from person to person. For best results, use consistently as part of a balanced lifestyle. These products are not intended to diagnose, treat, cure or prevent any disease."
     },
     {
       question: "Do you ship Pan-India?",

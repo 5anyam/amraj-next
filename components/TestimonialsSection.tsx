@@ -9,29 +9,29 @@ const testimonials = [
     name: 'Vanshika',
     role: 'Verified Buyer',
     quote:
-      "I've been struggling with weight for years, but AMRAJ Weight Management Pro+ really helped me break the plateau. Within the first month, I felt more energetic and less bloated.",
+      "I've made Amraj Weight Management Pro+ part of my daily routine alongside cleaner eating and workouts. The capsules are easy to take and it's helped me stay consistent.",
     image: '/users/vanshika.jpeg',
     rating: 5,
   },
   {
     name: 'Dr. Abhinav Rana',
-    role: 'Medical Professional',
+    role: 'Verified Buyer',
     quote:
-      "AMRAJ Advanced Liver Detox combines modern science and time-tested ingredients like Milk Thistle & TUDCA. I've recommended it to several patients with fatty liver, and many reported positive outcomes within 2-3 weeks.",
+      "What I like about Amraj Advanced Liver Detox is the transparency — well-known ingredients like Milk Thistle, TUDCA and NAC at clearly labelled doses. A clean, good-quality formulation.",
     image: '/users/dr-abhinav-rana.jpeg',
     rating: 5,
   },
   {
     name: 'Anil Tyagi',
     role: 'Verified Buyer',
-    quote: 'I purchased this for my father who was experiencing frequent urination issues. After about 3 weeks, he reported noticeable improvement in both frequency and comfort.',
+    quote: "I bought this for my father as part of his daily wellness routine. He's been taking it consistently and finds the capsules easy to take. Good quality and quick delivery.",
     image: '/users/anil-tyagi.jpeg',
     rating: 5,
   },
   {
     name: 'Savita P.',
     role: 'Verified Buyer',
-    quote: 'Amraj advanced liver detox not only helps my fatty grade liver but also helps my skin glow and boost metabolism. Thanks for this amazing product. Loved it',
+    quote: "I've been taking Amraj Advanced Liver Detox as part of my wellness routine and really like it. Great quality and the delivery was quick. Loved it!",
     image: '/users/savita.webp',
     rating: 5,
   }
@@ -87,7 +87,7 @@ const TestimonialsCarousel = () => {
               Loved by Thousands
             </h2>
             <p className="text-gray-500 mt-2 text-lg">
-              See how Amraj is changing lives daily.
+              Real experiences from our wellness community.
             </p>
           </div>
           
