@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -8,7 +8,7 @@ import dynamic from 'next/dynamic';
 import {
   Star, ShieldCheck, Truck, Check, Leaf, ChevronRight, Zap,
   CreditCard, Sparkles, FlaskConical, Sprout, BadgeCheck, Clock,
-  Sun, Package, HeartHandshake, Lock,
+  Sun, Package, HeartHandshake,
 } from 'lucide-react';
 import { StaticProduct, PRODUCTS, HEALTH_DISCLAIMER } from '../../../../lib/products-data';
 import { useCart } from '../../../../lib/cart';
@@ -77,85 +77,70 @@ function getBundles(price: number, regular: number, capsules: number): Bundle[] 
   return [mk(1, 1), mk(2, 0.93, 'Popular'), mk(3, 0.87, 'Best Value')];
 }
 
-/* ── IMAGE GALLERY (vertical thumbs + large main) ──
-   `packImage` (from the selected pack size) becomes the main image; browsing a
-   thumbnail temporarily overrides it until another pack is picked. */
-function ImageGallery({ images, name, packImage }: { images: string[]; name: string; packImage?: string }) {
+/* ── IMAGE GALLERY (vertical thumbs + large main) ── */
+function ImageGallery({ images, name }: { images: string[]; name: string }) {
   const [main, setMain] = useState(0);
-  const [showPack, setShowPack] = useState(true);
-  // Whenever the selected pack changes, jump the big image back to the pack shot.
-  useEffect(() => { setShowPack(true); }, [packImage]);
-
-  const mainSrc = showPack && packImage ? packImage : images[main];
-
   return (
     <div className="gallery-wrap" style={{ display: 'flex', gap: 14 }}>
       {/* Thumbnails */}
       {images.length > 1 && (
         <div className="gallery-thumbs" style={{ display: 'flex', flexDirection: 'column', gap: 10, width: 74, flexShrink: 0 }}>
-          {images.map((src, i) => {
-            const active = !showPack && i === main;
-            return (
-              <button
-                key={i}
-                onClick={() => { setShowPack(false); setMain(i); }}
-                style={{
-                  position: 'relative', width: 74, height: 74, borderRadius: 12, overflow: 'hidden',
-                  border: `2px solid ${active ? ACCENT : LINE}`, cursor: 'pointer', background: BG_SOFT,
-                  padding: 0, transition: 'border-color 0.2s', flexShrink: 0,
-                }}
-              >
-                <Image src={src} alt={`${name} ${i + 1}`} fill style={{ objectFit: 'cover' }} sizes="74px" />
-              </button>
-            );
-          })}
+          {images.map((src, i) => (
+            <button
+              key={i}
+              onClick={() => setMain(i)}
+              style={{
+                position: 'relative', width: 74, height: 74, borderRadius: 12, overflow: 'hidden',
+                border: `2px solid ${i === main ? ACCENT : LINE}`, cursor: 'pointer', background: BG_SOFT,
+                padding: 0, transition: 'border-color 0.2s', flexShrink: 0,
+              }}
+            >
+              <Image src={src} alt={`${name} ${i + 1}`} fill style={{ objectFit: 'cover' }} sizes="74px" />
+            </button>
+          ))}
         </div>
       )}
       {/* Main */}
       <div className="gallery-main" style={{ position: 'relative', flex: 1, width: '100%', aspectRatio: '1', borderRadius: RADIUS, overflow: 'hidden', background: BG_SOFT, boxShadow: CARD_SHADOW }}>
-        <Image src={mainSrc} alt={name} fill style={{ objectFit: 'cover' }} sizes="(max-width: 1024px) 100vw, 560px" priority />
+        <Image src={images[main]} alt={name} fill style={{ objectFit: 'cover' }} sizes="(max-width: 1024px) 100vw, 560px" priority />
       </div>
     </div>
   );
 }
 
-/* ── PAYMENT METHODS ── */
-function PaymentMethods() {
-  const chip: React.CSSProperties = {
-    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 30, minWidth: 46,
-    padding: '0 10px', background: '#fff', border: `1px solid ${LINE}`, borderRadius: 8,
-    fontSize: 12, fontWeight: 800, letterSpacing: '-0.01em',
+/* ── MINI SUPPLEMENT BOTTLE ICON (shows pack quantity: 1 / 2 / 3) ── */
+function BottleIcon({ color = ACCENT_DK }: { color?: string }) {
+  return (
+    <svg width="13" height="19" viewBox="0 0 13 19" fill="none" aria-hidden style={{ flexShrink: 0 }}>
+      <rect x="4" y="0.6" width="5" height="3" rx="1" fill={color} />
+      <rect x="1.4" y="3.4" width="10.2" height="15" rx="2.4" fill="#fff" stroke={color} strokeWidth="1.4" />
+      <rect x="1.4" y="8.6" width="10.2" height="4.4" fill={color} fillOpacity="0.16" />
+    </svg>
+  );
+}
+
+function BottleCount({ n, active }: { n: number; active: boolean }) {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'flex-end', gap: 2 }}>
+      {Array.from({ length: n }).map((_, i) => (
+        <BottleIcon key={i} color={active ? ACCENT_DK : '#8a93a0'} />
+      ))}
+    </span>
+  );
+}
+
+/* ── MINI PAYMENT LOGOS (inside the Buy Now button) ── */
+function MiniPayLogos() {
+  const pill: React.CSSProperties = {
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 17,
+    padding: '0 5px', background: '#fff', borderRadius: 4, fontSize: 9, fontWeight: 800, lineHeight: 1, letterSpacing: '-0.01em',
   };
   return (
-    <div style={{ marginTop: 16 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 10 }}>
-        <Lock style={{ width: 14, height: 14, color: ACCENT }} />
-        <span style={{ fontSize: 12.5, color: INK_SOFT, fontWeight: 500 }}>100% secure payments · UPI, cards & wallets</span>
-      </div>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-        {/* UPI */}
-        <span style={chip} title="UPI"><span style={{ color: '#0B8A3D' }}>UP</span><span style={{ color: '#F26B21' }}>I</span></span>
-        {/* Google Pay */}
-        <span style={{ ...chip, gap: 3 }} title="Google Pay">
-          <span style={{ color: '#4285F4' }}>G</span><span style={{ color: '#5F6368', fontWeight: 700 }}>Pay</span>
-        </span>
-        {/* Paytm */}
-        <span style={chip} title="Paytm"><span style={{ color: '#002970' }}>Pay</span><span style={{ color: '#00BAF2' }}>tm</span></span>
-        {/* PhonePe */}
-        <span style={{ ...chip, color: '#5F259F' }} title="PhonePe">PhonePe</span>
-        {/* Visa */}
-        <span style={{ ...chip, fontStyle: 'italic', color: '#1A1F71' }} title="Visa">VISA</span>
-        {/* Mastercard */}
-        <span style={{ ...chip, gap: 0, padding: '0 12px' }} title="Mastercard">
-          <svg width="30" height="19" viewBox="0 0 30 19" aria-hidden>
-            <circle cx="11" cy="9.5" r="8" fill="#EB001B" />
-            <circle cx="19" cy="9.5" r="8" fill="#F79E1B" fillOpacity="0.9" />
-          </svg>
-        </span>
-        {/* RuPay */}
-        <span style={chip} title="RuPay"><span style={{ color: '#0C3F7A' }}>Ru</span><span style={{ color: '#F58220' }}>Pay</span></span>
-      </div>
-    </div>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+      <span style={pill}><span style={{ color: '#0B8A3D' }}>UP</span><span style={{ color: '#F26B21' }}>I</span></span>
+      <span style={{ ...pill, gap: 1 }}><span style={{ color: '#4285F4' }}>G</span><span style={{ color: '#5F6368', fontWeight: 700 }}>Pay</span></span>
+      <span style={pill}><span style={{ color: '#002970' }}>Pay</span><span style={{ color: '#00BAF2' }}>tm</span></span>
+    </span>
   );
 }
 
@@ -258,7 +243,7 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
 
           {/* LEFT: gallery */}
           <div className="product-image-sticky" style={{ position: 'sticky', top: 20, alignSelf: 'start' }}>
-            <ImageGallery images={product.images} name={product.name} packImage={product.packImages?.[selectedBundle]} />
+            <ImageGallery images={product.images} name={product.name} />
           </div>
 
           {/* RIGHT: buy box */}
@@ -317,6 +302,9 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
                     <span style={{ width: 20, height: 20, borderRadius: 999, border: `2px solid ${sel ? ACCENT : '#c7ccd4'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       {sel && <span style={{ width: 10, height: 10, borderRadius: 999, background: ACCENT }} />}
                     </span>
+                    <span style={{ width: 48, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', flexShrink: 0 }}>
+                      <BottleCount n={b.packs} active={sel} />
+                    </span>
                     <span style={{ flex: 1 }}>
                       <span style={{ display: 'block', fontSize: 15, fontWeight: 700, color: INK }}>{b.label}</span>
                       <span style={{ display: 'block', fontSize: 12.5, color: INK_SOFT, marginTop: 2 }}>{b.note} · ₹{b.pricePerServe}/serving</span>
@@ -352,12 +340,10 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
                 onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = ACCENT)}
               >
                 <Zap style={{ width: 16, height: 16 }} />
-                {isBuyingNow ? 'Processing…' : `Buy Now`}
+                {isBuyingNow ? 'Processing…' : 'Buy Now'}
+                {!isBuyingNow && <MiniPayLogos />}
               </button>
             </div>
-
-            {/* Payment methods */}
-            <PaymentMethods />
 
             {/* Trust row */}
             <div className="trust-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 8 }}>

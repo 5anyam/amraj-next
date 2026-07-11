@@ -19,9 +19,6 @@ export interface StaticProduct {
   /** Product photos + infographic banners. Any URL containing "Info" is treated as a
    *  full-width landing banner; the rest render as gallery photos. */
   images: string[];
-  /** Pack-size photos shown when a pack is selected: [1-bottle, 2-bottle, 3-bottle].
-   *  Files live in /public/packs — replace the -2 / -3 files to show real multi-bottle shots. */
-  packImages?: string[];
   benefits: string[];
   ingredients: ProductIngredient[];
   howToUse: string;
@@ -53,7 +50,6 @@ export const PRODUCTS: StaticProduct[] = [
       'https://cms.amraj.in/wp-content/uploads/2025/07/Info-3-1-scaled.jpg',
       'https://cms.amraj.in/wp-content/uploads/2025/07/Info-2-1-scaled.jpg',
     ],
-    packImages: ['/packs/advanced-prostate-care-1.jpg', '/packs/advanced-prostate-care-2.jpg', '/packs/advanced-prostate-care-3.jpg'],
     benefits: [
       'Supports healthy urinary flow and everyday comfort',
       'Made with Saw Palmetto extract at a 320mg serving',
@@ -89,7 +85,6 @@ export const PRODUCTS: StaticProduct[] = [
       'https://cms.amraj.in/wp-content/uploads/2025/07/Info-3-2-scaled.jpg',
       'https://cms.amraj.in/wp-content/uploads/2025/07/Info-4-1-scaled.jpg',
     ],
-    packImages: ['/packs/advanced-liver-detox-1.jpg', '/packs/advanced-liver-detox-2.jpg', '/packs/advanced-liver-detox-3.jpg'],
     benefits: [
       'Milk Thistle (Silymarin) supports healthy liver function',
       'TUDCA helps support healthy bile flow',
@@ -125,7 +120,6 @@ export const PRODUCTS: StaticProduct[] = [
       'https://cms.amraj.in/wp-content/uploads/2025/07/Info-3-scaled.jpg',
       'https://cms.amraj.in/wp-content/uploads/2025/07/Info-4-scaled.jpg',
     ],
-    packImages: ['/packs/weight-management-pro-1.jpg', '/packs/weight-management-pro-2.jpg', '/packs/weight-management-pro-3.jpg'],
     benefits: [
       'Garcinia Cambogia to help support a healthy appetite',
       'Green Coffee extract to support metabolism',
