@@ -68,10 +68,17 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    // Only lock vertical scroll — leave the body's `overflow-x: hidden` intact,
-    // otherwise off-screen fixed drawers (nav / cart) create a horizontal scroll.
-    document.body.style.overflowY = mobileMenuOpen ? 'hidden' : '';
-    return () => { document.body.style.overflowY = ''; };
+    // Lock vertical scroll when the drawer is open, and compensate for the
+    // scrollbar width so the page doesn't shift sideways when it hides.
+    if (mobileMenuOpen) {
+      const sw = window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.overflowY = 'hidden';
+      if (sw > 0) document.body.style.paddingRight = `${sw}px`;
+    } else {
+      document.body.style.overflowY = '';
+      document.body.style.paddingRight = '';
+    }
+    return () => { document.body.style.overflowY = ''; document.body.style.paddingRight = ''; };
   }, [mobileMenuOpen]);
 
   function handleSearch(e: React.FormEvent) {

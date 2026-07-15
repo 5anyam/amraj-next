@@ -322,10 +322,29 @@ export default function Homepage() {
           .stats-grid { grid-template-columns: 1fr 1fr !important; gap: 32px 20px !important; }
         }
         @media (min-width: 561px) and (max-width: 900px) {
-          .products-grid, .why-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .why-grid { grid-template-columns: repeat(2, 1fr) !important; }
         }
-        @media (max-width: 560px) {
+        @media (min-width: 601px) and (max-width: 900px) {
+          .products-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        /* Phones: products become a swipeable horizontal carousel */
+        @media (max-width: 600px) {
           .how-grid { grid-template-columns: 1fr !important; }
+          .products-grid {
+            display: flex !important;
+            grid-template-columns: none !important;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            gap: 14px !important;
+            padding-bottom: 6px !important;
+            scrollbar-width: none;
+          }
+          .products-grid::-webkit-scrollbar { display: none; }
+          .products-grid > a {
+            flex: 0 0 80% !important;
+            scroll-snap-align: start;
+          }
         }
       `}</style>
     </div>

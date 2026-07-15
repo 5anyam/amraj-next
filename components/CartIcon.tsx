@@ -39,12 +39,18 @@ export default function CartIcon() {
     }
   }, [count]);
 
-  // Lock scroll when cart is open — only touch overflow-Y so the body's
-  // `overflow-x: hidden` (which clips the off-screen drawer) always stays on,
-  // otherwise the closed drawer causes a horizontal scroll.
+  // Lock scroll when cart is open. Compensate for the scrollbar width with
+  // padding-right so hiding it doesn't shift the whole page sideways.
   useEffect(() => {
-    document.body.style.overflowY = isOpen ? 'hidden' : '';
-    return () => { document.body.style.overflowY = ''; };
+    if (isOpen) {
+      const sw = window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.overflowY = 'hidden';
+      if (sw > 0) document.body.style.paddingRight = `${sw}px`;
+    } else {
+      document.body.style.overflowY = '';
+      document.body.style.paddingRight = '';
+    }
+    return () => { document.body.style.overflowY = ''; document.body.style.paddingRight = ''; };
   }, [isOpen]);
 
   return (

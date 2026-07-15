@@ -46,6 +46,7 @@ interface RazorpayOptions {
   key: string;
   amount: number;
   currency: string;
+  order_id?: string;
   name: string;
   description: string;
   image?: string;
@@ -265,11 +266,41 @@ export default function Checkout() {
 
       wooOrder = await createWooOrder(orderData);
 
-      // Open Razorpay Magic Checkout
+      const amountPaise = Math.round(finalTotal * 100);
+
+      // Create a Razorpay order server-side (recommended, reliable flow). If the
+      // Razorpay secret isn't configured yet, this returns { configured:false }
+      // and we fall back to the amount-only checkout so nothing breaks.
+      let rzpOrderId: string | undefined;
+      let rzpKey = RAZORPAY_KEY;
+      try {
+        const rzpRes = await fetch('/api/razorpay/create-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: amountPaise,
+            receipt: `wc_${wooOrder.id}`,
+            notes: { wc_order_id: String(wooOrder.id), customer_phone: form.phone.trim() },
+          }),
+        });
+        const rzpData = await rzpRes.json();
+        if (rzpRes.ok && rzpData.configured && rzpData.orderId) {
+          rzpOrderId = rzpData.orderId;
+          if (rzpData.keyId) rzpKey = rzpData.keyId;
+        } else if (!rzpRes.ok) {
+          throw new Error(rzpData.error || 'Could not start payment. Please try again.');
+        }
+      } catch (err) {
+        // Network / server error creating the Razorpay order — surface it, cancel WC order.
+        if (err instanceof Error && err.message !== 'Failed to fetch') throw err;
+      }
+
+      // Open Razorpay Checkout
       const rzpOptions: RazorpayOptions = {
-        key: RAZORPAY_KEY,
-        amount: Math.round(finalTotal * 100),
+        key: rzpKey,
+        amount: amountPaise,
         currency: 'INR',
+        ...(rzpOrderId ? { order_id: rzpOrderId } : {}),
         name: 'Amraj Wellness',
         description: `Order #${wooOrder.id}`,
         image: '/amraj-logo.jpg',
@@ -290,6 +321,28 @@ export default function Checkout() {
         },
         handler: async (response: RazorpayResponse) => {
           try {
+            // Verify the payment signature server-side (skipped automatically if
+            // no secret configured, i.e. amount-only fallback).
+            if (rzpOrderId) {
+              const vr = await fetch('/api/razorpay/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
+                }),
+              });
+              const vd = await vr.json().catch(() => ({ valid: false }));
+              if (!vr.ok || !vd.valid) {
+                await updateWooOrder(wooOrder!.id, 'failed').catch(() => {});
+                setLoading(false);
+                router.push(
+                  `/order-confirmation/failed?orderId=${wooOrder!.id}&error=${encodeURIComponent('Payment verification failed')}`
+                );
+                return;
+              }
+            }
             await updateWooOrder(wooOrder!.id, 'processing', response);
             clear();
             router.push(
