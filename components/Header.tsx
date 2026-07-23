@@ -98,7 +98,7 @@ export default function Header() {
   return (
     <>
       {/* ── HEADER ── */}
-      <header style={{ borderBottom: `1px solid ${LINE}`, background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', position: 'sticky', top: 0, zIndex: 500 }}>
+      <header style={{ borderBottom: `1px solid ${LINE}`, background: '#ffffff', position: 'sticky', top: 0, zIndex: 500, boxShadow: '0 1px 3px rgba(16,24,40,0.04)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 66 }}>
 

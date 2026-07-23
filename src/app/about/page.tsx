@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from 'react';
-import { X, Sprout, FlaskConical, HeartHandshake, Award, Check, Sparkles } from 'lucide-react';
+import { X, Sprout, FlaskConical, HeartHandshake, Award, Check, Sparkles, Leaf, ShieldCheck, BadgeCheck } from 'lucide-react';
 
 const INK = '#17191f';
 const INK_SOFT = '#5c6470';
@@ -78,6 +78,35 @@ export default function AboutPage() {
           <p style={{ fontSize: 17, color: INK_SOFT, lineHeight: 1.75, maxWidth: 560, margin: '0 auto' }}>
             An innovative fusion of modern nutraceuticals and ancient herbal wisdom — for wellness results you can feel.
           </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '10px 12px', marginTop: 28 }}>
+            {[
+              { icon: Award, label: 'FSSAI Licensed' },
+              { icon: ShieldCheck, label: 'GMP Certified' },
+              { icon: Leaf, label: '100% Natural' },
+              { icon: FlaskConical, label: 'Lab Tested' },
+            ].map(({ icon: Icon, label }) => (
+              <span key={label} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: '#fff', border: `1px solid ${LINE}`, borderRadius: 999, padding: '8px 14px', fontSize: 13, fontWeight: 500, color: INK }}>
+                <Icon style={{ width: 15, height: 15, color: ACCENT }} /> {label}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Stats band */}
+      <section style={{ background: '#fff', borderBottom: `1px solid ${LINE}` }}>
+        <div className="about-stats" style={{ maxWidth: 1000, margin: '0 auto', padding: '40px 24px', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+          {[
+            { num: '10,000+', label: 'Happy customers' },
+            { num: '4.8★', label: 'Average rating' },
+            { num: '3', label: 'Focused formulas' },
+            { num: '100%', label: 'Vegetarian & natural' },
+          ].map((s) => (
+            <div key={s.label} style={{ textAlign: 'center' }}>
+              <p style={{ fontSize: 'clamp(26px,3vw,36px)', fontWeight: 700, letterSpacing: '-0.02em', color: ACCENT_DK, lineHeight: 1 }}>{s.num}</p>
+              <p style={{ fontSize: 13, color: INK_SOFT, marginTop: 8 }}>{s.label}</p>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -85,9 +114,14 @@ export default function AboutPage() {
 
         {/* Mission */}
         <section className="about-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center', marginBottom: 96 }}>
-          <div style={{ borderRadius: 24, background: 'linear-gradient(150deg,#0D9488,#0a7a6e)', display: 'flex', alignItems: 'center', justifyContent: 'center', aspectRatio: '4/3', boxShadow: '0 20px 50px rgba(13,148,136,0.2)' }}>
-            <div style={{ textAlign: 'center', padding: 32, color: '#fff' }}>
-              <p style={{ fontSize: 34, fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.15 }}>Nature<br />+ Science</p>
+          <div style={{ position: 'relative', borderRadius: 24, background: 'linear-gradient(150deg,#0D9488,#0a7a6e)', display: 'flex', alignItems: 'center', justifyContent: 'center', aspectRatio: '4/3', boxShadow: '0 20px 50px rgba(13,148,136,0.22)', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle at 78% 22%, rgba(255,255,255,0.16), transparent 45%), radial-gradient(circle at 15% 85%, rgba(255,255,255,0.1), transparent 40%)', pointerEvents: 'none' }} />
+            <div style={{ textAlign: 'center', padding: 32, color: '#fff', position: 'relative', zIndex: 2 }}>
+              <div style={{ width: 56, height: 56, borderRadius: 16, background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
+                <Leaf style={{ width: 28, height: 28, color: '#fff' }} />
+              </div>
+              <p style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.15 }}>Nature <span style={{ opacity: 0.72 }}>+</span> Science</p>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.82)', marginTop: 8 }}>The heart of every Amraj formula</p>
             </div>
           </div>
           <div>
@@ -135,18 +169,26 @@ export default function AboutPage() {
               </p>
             </div>
           </div>
-          <div style={{ borderRadius: 24, background: 'linear-gradient(150deg,#17191f,#2a2e3a)', display: 'flex', alignItems: 'center', justifyContent: 'center', aspectRatio: '4/3', boxShadow: '0 20px 50px rgba(16,24,40,0.18)' }}>
-            <div style={{ textAlign: 'center', padding: 32 }}>
-              <p style={{ fontSize: 34, fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.15, color: '#fff' }}>Trusted<br /><span style={{ color: ACCENT }}>quality</span></p>
+          <div style={{ position: 'relative', borderRadius: 24, background: 'linear-gradient(150deg,#17191f,#2a2e3a)', display: 'flex', alignItems: 'center', justifyContent: 'center', aspectRatio: '4/3', boxShadow: '0 20px 50px rgba(16,24,40,0.18)', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle at 80% 20%, rgba(13,148,136,0.28), transparent 45%)', pointerEvents: 'none' }} />
+            <div style={{ textAlign: 'center', padding: 32, position: 'relative', zIndex: 2 }}>
+              <div style={{ width: 56, height: 56, borderRadius: 16, background: 'rgba(13,148,136,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
+                <BadgeCheck style={{ width: 28, height: 28, color: ACCENT }} />
+              </div>
+              <p style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.15, color: '#fff' }}>Trusted <span style={{ color: ACCENT }}>quality</span></p>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', marginTop: 8 }}>FSSAI-licensed · GMP-certified · lab-tested</p>
             </div>
           </div>
         </section>
 
         {/* Edge / checklist */}
         <section className="about-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center', marginBottom: 96 }}>
-          <div style={{ borderRadius: 24, background: 'linear-gradient(150deg,#f0fdf9,#e6f3ef)', border: `1px solid ${LINE}`, display: 'flex', alignItems: 'center', justifyContent: 'center', aspectRatio: '4/3' }}>
-            <div style={{ textAlign: 'center', padding: 32 }}>
-              <p style={{ fontSize: 30, fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.2, color: INK }}>Ancient <span style={{ color: ACCENT }}>wisdom.</span><br />Modern <span style={{ color: ACCENT }}>results.</span></p>
+          <div style={{ position: 'relative', borderRadius: 24, background: 'linear-gradient(150deg,#f0fdf9,#e6f3ef)', border: `1px solid ${LINE}`, display: 'flex', alignItems: 'center', justifyContent: 'center', aspectRatio: '4/3', overflow: 'hidden' }}>
+            <div style={{ textAlign: 'center', padding: 32, position: 'relative', zIndex: 2 }}>
+              <div style={{ width: 56, height: 56, borderRadius: 16, background: '#fff', boxShadow: CARD_SHADOW, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
+                <Sparkles style={{ width: 28, height: 28, color: ACCENT_DK }} />
+              </div>
+              <p style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.2, color: INK }}>Ancient <span style={{ color: ACCENT }}>wisdom.</span><br />Modern <span style={{ color: ACCENT }}>results.</span></p>
             </div>
           </div>
           <div>
@@ -193,6 +235,7 @@ export default function AboutPage() {
         }
         @media (max-width: 560px) {
           .about-4col { grid-template-columns: 1fr !important; }
+          .about-stats { grid-template-columns: 1fr 1fr !important; gap: 28px 20px !important; }
         }
       `}</style>
     </main>
