@@ -52,7 +52,7 @@ interface RazorpayOptions {
   image?: string;
   handler: (r: RazorpayResponse) => void;
   modal?: { ondismiss?: () => void };
-  prefill?: { name?: string; contact?: string };
+  prefill?: { name?: string; email?: string; contact?: string };
   theme?: { color?: string };
   config?: { display?: { blocks?: Record<string, unknown>; sequence?: string[]; preferences?: Record<string, unknown> } };
   retry?: { enabled: boolean; max_count?: number };
@@ -176,7 +176,7 @@ export default function Checkout() {
   const delivery = subtotal >= 500 ? 0 : 50;
   const finalTotal = subtotal + delivery;
 
-  const [form, setForm] = useState({ name: '', phone: '', address: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', address: '' });
   const [errors, setErrors] = useState<Partial<typeof form>>({});
   const [loading, setLoading] = useState(false);
   const [rzpLoaded, setRzpLoaded] = useState(false);
@@ -203,6 +203,8 @@ export default function Checkout() {
   function validate(): boolean {
     const e: Partial<typeof form> = {};
     if (!form.name.trim()) e.name = 'Full name is required';
+    if (!form.email.trim()) e.email = 'Email is required';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) e.email = 'Enter a valid email address';
     if (!form.phone.trim()) e.phone = 'Phone number is required';
     else if (!/^[6-9]\d{9}$/.test(form.phone.trim())) e.phone = 'Enter a valid 10-digit Indian mobile number';
     if (!form.address.trim()) e.address = 'Delivery address is required';
@@ -236,7 +238,7 @@ export default function Checkout() {
           state: '',
           postcode: '',
           country: 'IN',
-          email: `${form.phone.trim()}@orders.amraj.in`,
+          email: form.email.trim(),
           phone: form.phone.trim(),
         },
         shipping: {
@@ -256,9 +258,10 @@ export default function Checkout() {
           delivery > 0
             ? [{ method_id: 'flat_rate', method_title: 'Standard Delivery', total: delivery.toString() }]
             : [],
-        customer_note: `Name: ${form.name}\nPhone: ${form.phone}\nAddress: ${form.address}`,
+        customer_note: `Name: ${form.name}\nEmail: ${form.email}\nPhone: ${form.phone}\nAddress: ${form.address}`,
         meta_data: [
           { key: 'customer_name', value: form.name.trim() },
+          { key: 'customer_email', value: form.email.trim() },
           { key: 'customer_phone', value: form.phone.trim() },
           { key: 'delivery_address', value: form.address.trim() },
         ],
@@ -306,6 +309,7 @@ export default function Checkout() {
         image: '/amraj-logo.jpg',
         prefill: {
           name: form.name.trim(),
+          email: form.email.trim(),
           contact: form.phone.trim(),
         },
         theme: { color: '#0D9488' },
@@ -429,6 +433,20 @@ export default function Checkout() {
                       style={{ width: '100%', padding: '13px 16px', border: `1.5px solid ${errors.name ? ERR : LINE}`, background: '#fff', color: INK, fontSize: 14, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', borderRadius: 12, transition: 'border-color 0.2s' }}
                     />
                     {errors.name && <p style={{ color: ERR, fontSize: 12.5, marginTop: 6, fontWeight: 500 }}>{errors.name}</p>}
+                  </div>
+
+                  {/* Email */}
+                  <div style={{ marginBottom: 20 }}>
+                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: INK, marginBottom: 7 }}>Email address *</label>
+                    <input
+                      type="email"
+                      value={form.email}
+                      onChange={(e) => { setForm((f) => ({ ...f, email: e.target.value })); if (errors.email) setErrors((er) => ({ ...er, email: undefined })); }}
+                      placeholder="you@example.com"
+                      style={{ width: '100%', padding: '13px 16px', border: `1.5px solid ${errors.email ? ERR : LINE}`, background: '#fff', color: INK, fontSize: 14, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', borderRadius: 12, transition: 'border-color 0.2s' }}
+                    />
+                    {errors.email && <p style={{ color: ERR, fontSize: 12.5, marginTop: 6, fontWeight: 500 }}>{errors.email}</p>}
+                    <p style={{ fontSize: 12.5, color: INK_SOFT, marginTop: 6 }}>Your order confirmation will be emailed here</p>
                   </div>
 
                   {/* Phone */}
