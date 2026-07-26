@@ -11,8 +11,9 @@ const KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || "";
 export async function POST(request: NextRequest) {
   try {
     if (!KEY_SECRET) {
-      // Secret not set — tell the client to use the fallback flow.
-      return NextResponse.json({ configured: false });
+      // Secret not set — tell the client to use the fallback flow, but still
+      // hand back the (env-driven) key id so an updated key takes effect.
+      return NextResponse.json({ configured: false, keyId: KEY_ID });
     }
 
     const { amount, receipt, notes } = await request.json();

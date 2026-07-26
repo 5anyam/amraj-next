@@ -284,10 +284,10 @@ export default function Checkout() {
           }),
         });
         const rzpData = await rzpRes.json();
-        if (rzpRes.ok && rzpData.configured && rzpData.orderId) {
-          rzpOrderId = rzpData.orderId;
-          if (rzpData.keyId) rzpKey = rzpData.keyId;
-        } else if (!rzpRes.ok) {
+        if (rzpRes.ok) {
+          if (rzpData.keyId) rzpKey = rzpData.keyId; // env-driven public key
+          if (rzpData.configured && rzpData.orderId) rzpOrderId = rzpData.orderId;
+        } else {
           throw new Error(rzpData.error || 'Could not start payment. Please try again.');
         }
       } catch (err) {
