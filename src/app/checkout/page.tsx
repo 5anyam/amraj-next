@@ -9,7 +9,7 @@ import { useCart } from '../../../lib/cart';
 import { toast } from '../../../hooks/use-toast';
 import { ShieldCheck, Truck, ChevronRight, Lock, Zap } from 'lucide-react';
 
-const RAZORPAY_KEY = 'rzp_live_RJVNEePx4007GD';
+const RAZORPAY_KEY = 'rzp_live_TIPy0wH8mg5QJa';
 
 // ── Premium tokens ──
 const INK = '#17191f';

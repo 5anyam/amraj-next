@@ -5,7 +5,7 @@
 // safely falls back to the amount-only flow (nothing breaks).
 import { NextRequest, NextResponse } from "next/server";
 
-const KEY_ID = process.env.RAZORPAY_KEY_ID || "rzp_live_RJVNEePx4007GD";
+const KEY_ID = process.env.RAZORPAY_KEY_ID || "rzp_live_TIPy0wH8mg5QJa";
 const KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || "";
 
 export async function POST(request: NextRequest) {
