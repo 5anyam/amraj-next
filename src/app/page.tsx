@@ -48,12 +48,13 @@ function ProductCard({ product }: { product: StaticProduct }) {
   return (
     <Link
       href={`/product/${product.slug}`}
+      className="pcard"
       style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', borderRadius: RADIUS, border: `1px solid ${LINE}`, background: '#fff', overflow: 'hidden', boxShadow: CARD_SHADOW, transition: 'transform 0.25s cubic-bezier(.16,1,.3,1), box-shadow 0.25s' }}
       onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-6px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 18px 40px rgba(16,24,40,0.12)'; }}
       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = CARD_SHADOW; }}
     >
       <div style={{ position: 'relative', aspectRatio: '1', background: BG_SOFT, overflow: 'hidden' }}>
-        <Image src={product.images[0]} alt={product.name} fill style={{ objectFit: 'cover' }} sizes="(max-width: 768px) 100vw, 33vw" />
+        <Image src={product.images[0]} alt={product.name} fill style={{ objectFit: 'cover' }} sizes="(max-width: 900px) 50vw, 33vw" />
         {product.badge && (
           <span style={{ position: 'absolute', top: 14, left: 14, background: '#fff', color: INK, fontSize: 11, fontWeight: 600, letterSpacing: '0.04em', padding: '5px 12px', borderRadius: 999, boxShadow: '0 2px 8px rgba(16,24,40,0.1)' }}>{product.badge}</span>
         )}
@@ -61,20 +62,20 @@ function ProductCard({ product }: { product: StaticProduct }) {
           <span style={{ position: 'absolute', top: 14, right: 14, background: ACCENT, color: '#fff', fontSize: 12, fontWeight: 700, padding: '5px 11px', borderRadius: 999 }}>{discount}% OFF</span>
         )}
       </div>
-      <div style={{ padding: '22px 24px 24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <p style={{ fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: ACCENT, marginBottom: 8, fontWeight: 600 }}>{product.category}</p>
-        <h3 style={{ fontSize: 21, fontWeight: 700, letterSpacing: '-0.015em', color: INK, marginBottom: 8, lineHeight: 1.2 }}>{product.name}</h3>
-        <p style={{ fontSize: 14, color: INK_SOFT, marginBottom: 14, lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{product.tagline}</p>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
+      <div className="pcard-body" style={{ padding: '22px 24px 24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <p className="pcard-cat" style={{ fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: ACCENT, marginBottom: 8, fontWeight: 600 }}>{product.category}</p>
+        <h3 className="pcard-title" style={{ fontSize: 21, fontWeight: 700, letterSpacing: '-0.015em', color: INK, marginBottom: 8, lineHeight: 1.2 }}>{product.name}</h3>
+        <p className="pcard-tagline" style={{ fontSize: 14, color: INK_SOFT, marginBottom: 14, lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{product.tagline}</p>
+        <div className="pcard-rating" style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
           <StarRating rating={product.rating} size={14} />
           <span style={{ fontSize: 12.5, color: INK_SOFT }}>{product.rating.toFixed(1)} ({product.reviewCount})</span>
         </div>
         <div style={{ marginTop: 'auto' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 16 }}>
+          <div className="pcard-price" style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 16 }}>
             <span style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.02em', color: INK }}>₹{product.price.toLocaleString()}</span>
             <span style={{ fontSize: 15, color: '#9aa1ac', textDecoration: 'line-through' }}>₹{product.regularPrice.toLocaleString()}</span>
           </div>
-          <div style={{ background: ACCENT, color: '#fff', textAlign: 'center', padding: '13px 16px', fontSize: 14, fontWeight: 700, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'background 0.2s' }}
+          <div className="pcard-btn" style={{ background: ACCENT, color: '#fff', textAlign: 'center', padding: '13px 16px', fontSize: 14, fontWeight: 700, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'background 0.2s' }}
             onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = ACCENT_DK)}
             onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = ACCENT)}
           >
@@ -313,38 +314,42 @@ export default function Homepage() {
       </section>
 
       <style>{`
+        /* Tablet & below: 2 products on top, 3rd centred underneath */
         @media (max-width: 900px) {
           .hero-grid { grid-template-columns: 1fr !important; padding: 48px 20px 56px !important; gap: 40px !important; }
           .hero-img-col { display: none !important; }
-          .products-grid { grid-template-columns: 1fr !important; }
           .why-grid { grid-template-columns: 1fr !important; }
           .how-grid { grid-template-columns: 1fr 1fr !important; }
           .stats-grid { grid-template-columns: 1fr 1fr !important; gap: 32px 20px !important; }
+          .products-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 20px !important; }
+          .products-grid > .pcard:nth-child(odd):last-child {
+            grid-column: 1 / -1;
+            width: calc(50% - 10px);
+            margin: 0 auto;
+          }
         }
         @media (min-width: 561px) and (max-width: 900px) {
           .why-grid { grid-template-columns: repeat(2, 1fr) !important; }
         }
-        @media (min-width: 601px) and (max-width: 900px) {
-          .products-grid { grid-template-columns: repeat(2, 1fr) !important; }
-        }
-        /* Phones: products become a swipeable horizontal carousel */
+        /* Phones: same 2 + 1 layout, compact card */
         @media (max-width: 600px) {
           .how-grid { grid-template-columns: 1fr !important; }
-          .products-grid {
-            display: flex !important;
-            grid-template-columns: none !important;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            gap: 14px !important;
-            padding-bottom: 6px !important;
-            scrollbar-width: none;
-          }
-          .products-grid::-webkit-scrollbar { display: none; }
-          .products-grid > a {
-            flex: 0 0 80% !important;
-            scroll-snap-align: start;
-          }
+          .products-grid { gap: 14px !important; }
+          .products-grid > .pcard:nth-child(odd):last-child { width: calc(50% - 7px); }
+          .pcard-body { padding: 14px 14px 16px !important; }
+          .pcard-cat { font-size: 9.5px !important; margin-bottom: 5px !important; }
+          .pcard-title { font-size: 15px !important; margin-bottom: 5px !important; }
+          .pcard-tagline { font-size: 12px !important; margin-bottom: 9px !important; line-height: 1.45 !important; }
+          .pcard-rating { margin-bottom: 10px !important; gap: 5px !important; }
+          .pcard-rating span { font-size: 11px !important; }
+          .pcard-price { margin-bottom: 10px !important; gap: 6px !important; }
+          .pcard-price span:first-child { font-size: 18px !important; }
+          .pcard-price span:last-child { font-size: 12px !important; }
+          .pcard-btn { padding: 10px 10px !important; font-size: 12.5px !important; gap: 5px !important; border-radius: 10px !important; }
+        }
+        /* Very narrow phones: 3rd card full width so it isn't a sliver */
+        @media (max-width: 380px) {
+          .products-grid > .pcard:nth-child(odd):last-child { width: 100%; }
         }
       `}</style>
     </div>
