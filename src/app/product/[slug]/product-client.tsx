@@ -6,9 +6,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import {
-  Star, ShieldCheck, Truck, Check, Leaf, ChevronLeft, ChevronRight, Zap,
-  CreditCard, Sparkles, FlaskConical, BadgeCheck, Clock,
-  Sun, Package, HeartHandshake,
+  Star, ShieldCheck, Check, Leaf, ChevronLeft, ChevronRight, Zap,
+  Sparkles, FlaskConical, BadgeCheck, HeartHandshake,
 } from 'lucide-react';
 import { StaticProduct, PRODUCTS, HEALTH_DISCLAIMER } from '../../../../lib/products-data';
 import Reveal from '../../../../components/Reveal';
@@ -306,10 +305,10 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
   ];
 
   const trustRow = [
-    { icon: CreditCard, label: 'Cash on Delivery' },
-    { icon: Truck, label: 'Free Shipping ₹999+' },
-    { icon: Zap, label: 'Fast Dispatch' },
-    { icon: ShieldCheck, label: 'Secure Checkout' },
+    { image: '/icons/cash-on-delivery.svg', label: 'Cash on Delivery' },
+    { image: '/icons/shipping.svg', label: 'Free Shipping ₹999+' },
+    { image: '/icons/fast-dispatch.svg', label: 'Fast Dispatch' },
+    { image: '/icons/secure-checkout.svg', label: 'Secure Checkout' },
   ];
 
   return (
@@ -440,7 +439,7 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
             <div className="trust-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 8 }}>
               {trustRow.map((t, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: 13, color: INK, padding: '10px 14px', background: BG_SOFT, borderRadius: 12 }}>
-                  <t.icon style={{ width: 16, height: 16, color: ACCENT, flexShrink: 0 }} />
+                  <Image src={t.image} alt="" aria-hidden width={18} height={18} style={{ width: 18, height: 18, flexShrink: 0 }} />
                   <span style={{ fontWeight: 500 }}>{t.label}</span>
                 </div>
               ))}
@@ -456,12 +455,22 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
           <Reveal variant="stagger" className="benefit-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }}>
             {product.benefits.map((b, i) => {
               const Icon = benefitIcons[i % benefitIcons.length];
+              const photo = product.benefitImages?.[i];
               return (
-                <div key={i} style={{ background: '#fff', borderRadius: RADIUS, border: `1px solid ${LINE}`, padding: '26px 24px', boxShadow: CARD_SHADOW }}>
-                  <div style={{ width: 46, height: 46, borderRadius: 14, background: ACCENT_SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
-                    <Icon style={{ width: 22, height: 22, color: ACCENT_DK }} />
+                <div key={i} style={{ background: '#fff', borderRadius: RADIUS, border: `1px solid ${LINE}`, boxShadow: CARD_SHADOW, overflow: 'hidden' }}>
+                  {photo && (
+                    <div style={{ position: 'relative', aspectRatio: '16 / 9', background: BG_SOFT }}>
+                      <Image src={photo} alt="" aria-hidden fill style={{ objectFit: 'cover' }} sizes="(max-width: 900px) 100vw, 340px" />
+                    </div>
+                  )}
+                  <div style={{ padding: '26px 24px' }}>
+                    {!photo && (
+                      <div style={{ width: 46, height: 46, borderRadius: 14, background: ACCENT_SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                        <Icon style={{ width: 22, height: 22, color: ACCENT_DK }} />
+                      </div>
+                    )}
+                    <p style={{ fontSize: 15, color: INK, lineHeight: 1.6, fontWeight: 500 }}>{b}</p>
                   </div>
-                  <p style={{ fontSize: 15, color: INK, lineHeight: 1.6, fontWeight: 500 }}>{b}</p>
                 </div>
               );
             })}
@@ -510,13 +519,13 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
           <SectionHeading eyebrow="Simple daily ritual" title="How to use it" />
           <Reveal variant="stagger" className="usage-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }}>
             {[
-              { icon: Package, title: 'How much', desc: 'Take 2 capsules daily with a glass of water.' },
-              { icon: Sun, title: 'When', desc: 'Best taken with a meal, or as directed by your healthcare provider.' },
-              { icon: Clock, title: 'How long', desc: 'Use consistently for 4–6 weeks as part of a balanced lifestyle.' },
+              { image: '/icons/usage-dose.svg', title: 'How much', desc: 'Take 2 capsules daily with a glass of water.' },
+              { image: '/icons/usage-when.svg', title: 'When', desc: 'Best taken with a meal, or as directed by your healthcare provider.' },
+              { image: '/icons/usage-duration.svg', title: 'How long', desc: 'Use consistently for 4–6 weeks as part of a balanced lifestyle.' },
             ].map((s, i) => (
               <div key={i} style={{ background: '#fff', borderRadius: RADIUS, border: `1px solid ${LINE}`, padding: '30px 26px', textAlign: 'center', boxShadow: CARD_SHADOW }}>
                 <div style={{ width: 54, height: 54, borderRadius: 16, background: ACCENT_SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
-                  <s.icon style={{ width: 26, height: 26, color: ACCENT_DK }} />
+                  <Image src={s.image} alt="" aria-hidden width={29} height={29} style={{ width: 29, height: 29 }} />
                 </div>
                 <h3 style={{ fontSize: 18, fontWeight: 700, color: INK, marginBottom: 10 }}>{s.title}</h3>
                 <p style={{ fontSize: 14, color: INK_SOFT, lineHeight: 1.65 }}>{s.desc}</p>

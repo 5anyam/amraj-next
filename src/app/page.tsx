@@ -90,14 +90,16 @@ function ProductCard({ product }: { product: StaticProduct }) {
 }
 
 
-/* ── WHY AMRAJ ── */
+/* ── WHY AMRAJ ──
+   Drop a photo path into `image` (a /public path or a https://cms.amraj.in/... URL) and the card
+   swaps its icon tile for a full-width photo strip. Left empty, the icon tile is used. */
 const whyItems = [
-  { icon: FlaskConical, title: 'Research-led formulas', desc: 'Every ingredient is chosen based on published research at meaningful dosages.' },
-  { icon: Leaf, title: 'Pure & natural', desc: 'No artificial fillers or GMOs — only standardised herbal extracts & nutraceuticals.' },
-  { icon: BadgeCheck, title: 'GMP certified', desc: 'Manufactured in ISO-approved, GMP-certified facilities with strict quality controls.' },
-  { icon: ShieldCheck, title: 'Heavy-metal tested', desc: 'Every batch is screened for purity, potency and freedom from contaminants.' },
-  { icon: Truck, title: 'Pan-India delivery', desc: 'Delivered across India in 3–5 business days, securely packaged to stay fresh.' },
-  { icon: Award, title: 'FSSAI licensed', desc: 'Made to the highest Indian quality and safety standards.' },
+  { icon: FlaskConical, image: '', title: 'Research-led formulas', desc: 'Every ingredient is chosen based on published research at meaningful dosages.' },
+  { icon: Leaf, image: '', title: 'Pure & natural', desc: 'No artificial fillers or GMOs — only standardised herbal extracts & nutraceuticals.' },
+  { icon: BadgeCheck, image: '', title: 'GMP certified', desc: 'Manufactured in ISO-approved, GMP-certified facilities with strict quality controls.' },
+  { icon: ShieldCheck, image: '', title: 'Heavy-metal tested', desc: 'Every batch is screened for purity, potency and freedom from contaminants.' },
+  { icon: Truck, image: '', title: 'Pan-India delivery', desc: 'Delivered across India in 3–5 business days, securely packaged to stay fresh.' },
+  { icon: Award, image: '', title: 'FSSAI licensed', desc: 'Made to the highest Indian quality and safety standards.' },
 ];
 
 export default function Homepage() {
@@ -110,14 +112,14 @@ export default function Homepage() {
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '18px 24px' }}>
           <Reveal variant="stagger" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px 40px', alignItems: 'center' }}>
             {[
-              { icon: Award, label: 'FSSAI Certified' },
-              { icon: ShieldCheck, label: 'GMP Lab Tested' },
-              { emoji: '🇮🇳', label: 'Made in India' },
-              { icon: Leaf, label: '100% Natural' },
-              { icon: FlaskConical, label: 'Heavy-Metal Tested' },
+              { image: '/icons/fssai.svg', label: 'FSSAI Certified' },
+              { image: '/icons/gmp.svg', label: 'GMP Lab Tested' },
+              { image: '/icons/made-in-india.svg', label: 'Made in India' },
+              { image: '/icons/natural.svg', label: '100% Natural' },
+              { image: '/icons/lab-tested.svg', label: 'Heavy-Metal Tested' },
             ].map((item, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: 13.5, fontWeight: 500, color: INK }}>
-                {item.emoji ? <span style={{ fontSize: 17 }}>{item.emoji}</span> : item.icon && <item.icon style={{ width: 16, height: 16, color: ACCENT }} />}
+                <Image src={item.image} alt="" aria-hidden width={19} height={19} style={{ width: 19, height: 19, flexShrink: 0 }} />
                 {item.label}
               </div>
             ))}
@@ -163,12 +165,21 @@ export default function Homepage() {
           <SectionHeading eyebrow="The Amraj difference" title="Better made, better lived" sub="We hold every formula to a higher standard — from sourcing to the capsule in your hand." />
           <Reveal variant="stagger" className="why-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
             {whyItems.map((item, i) => (
-              <div key={i} style={{ background: '#fff', borderRadius: RADIUS, border: `1px solid ${LINE}`, padding: '28px 26px', boxShadow: CARD_SHADOW }}>
-                <div style={{ width: 48, height: 48, borderRadius: 14, background: ACCENT_SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 18 }}>
-                  <item.icon style={{ width: 23, height: 23, color: ACCENT_DK }} />
+              <div key={i} style={{ background: '#fff', borderRadius: RADIUS, border: `1px solid ${LINE}`, boxShadow: CARD_SHADOW, overflow: 'hidden' }}>
+                {item.image && (
+                  <div style={{ position: 'relative', aspectRatio: '16 / 9', background: BG_SOFT }}>
+                    <Image src={item.image} alt="" aria-hidden fill style={{ objectFit: 'cover' }} sizes="(max-width: 900px) 100vw, 360px" />
+                  </div>
+                )}
+                <div style={{ padding: '28px 26px' }}>
+                  {!item.image && (
+                    <div style={{ width: 48, height: 48, borderRadius: 14, background: ACCENT_SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 18 }}>
+                      <item.icon style={{ width: 23, height: 23, color: ACCENT_DK }} />
+                    </div>
+                  )}
+                  <h3 style={{ fontSize: 19, fontWeight: 700, letterSpacing: '-0.01em', color: INK, marginBottom: 10 }}>{item.title}</h3>
+                  <p style={{ fontSize: 14.5, color: INK_SOFT, lineHeight: 1.7 }}>{item.desc}</p>
                 </div>
-                <h3 style={{ fontSize: 19, fontWeight: 700, letterSpacing: '-0.01em', color: INK, marginBottom: 10 }}>{item.title}</h3>
-                <p style={{ fontSize: 14.5, color: INK_SOFT, lineHeight: 1.7 }}>{item.desc}</p>
               </div>
             ))}
           </Reveal>

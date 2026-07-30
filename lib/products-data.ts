@@ -22,6 +22,9 @@ export interface StaticProduct {
    *  in order, between the benefit / ingredient / usage sections. */
   banners?: { src: string; alt: string }[];
   benefits: string[];
+  /** Optional photo per benefit, index-matched to `benefits`. Where a path is given the
+   *  benefit card shows a photo strip instead of its icon tile. */
+  benefitImages?: string[];
   ingredients: ProductIngredient[];
   howToUse: string;
   category: string;

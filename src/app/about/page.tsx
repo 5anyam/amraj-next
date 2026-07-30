@@ -1,5 +1,6 @@
 "use client"
 import React, { useState } from 'react';
+import Image from 'next/image';
 import Reveal from '../../../components/Reveal';
 import { X, Sprout, FlaskConical, HeartHandshake, Award, Check, Sparkles, Leaf, ShieldCheck, BadgeCheck } from 'lucide-react';
 
@@ -138,18 +139,28 @@ export default function AboutPage() {
         <section style={{ marginBottom: 96 }}>
           <SectionHeading eyebrow="Our advantages" title="Why choose Amraj?" />
           <Reveal variant="stagger" className="about-4col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 18 }}>
+            {/* Fill `image` with a photo path to swap the icon tile for a photo strip. */}
             {[
-              { icon: Sprout, title: 'Ancient wisdom', desc: 'Traditional herbal knowledge passed down through generations.' },
-              { icon: FlaskConical, title: 'Modern science', desc: 'Research-backed formulations at meaningful, effective dosages.' },
-              { icon: HeartHandshake, title: 'Honest care', desc: 'Clear labels, real ingredients — no proprietary-blend guesswork.' },
-              { icon: Award, title: 'Premium quality', desc: 'FSSAI-licensed, GMP-certified sourcing and manufacturing.' },
+              { icon: Sprout, image: '', title: 'Ancient wisdom', desc: 'Traditional herbal knowledge passed down through generations.' },
+              { icon: FlaskConical, image: '', title: 'Modern science', desc: 'Research-backed formulations at meaningful, effective dosages.' },
+              { icon: HeartHandshake, image: '', title: 'Honest care', desc: 'Clear labels, real ingredients — no proprietary-blend guesswork.' },
+              { icon: Award, image: '', title: 'Premium quality', desc: 'FSSAI-licensed, GMP-certified sourcing and manufacturing.' },
             ].map((item, i) => (
-              <div key={i} style={{ background: '#fff', borderRadius: RADIUS, border: `1px solid ${LINE}`, padding: '28px 24px', boxShadow: CARD_SHADOW }}>
-                <div style={{ width: 48, height: 48, borderRadius: 14, background: ACCENT_SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
-                  <item.icon style={{ width: 23, height: 23, color: ACCENT_DK }} />
+              <div key={i} style={{ background: '#fff', borderRadius: RADIUS, border: `1px solid ${LINE}`, boxShadow: CARD_SHADOW, overflow: 'hidden' }}>
+                {item.image && (
+                  <div style={{ position: 'relative', aspectRatio: '16 / 9', background: BG_SOFT }}>
+                    <Image src={item.image} alt="" aria-hidden fill style={{ objectFit: 'cover' }} sizes="(max-width: 900px) 100vw, 260px" />
+                  </div>
+                )}
+                <div style={{ padding: '28px 24px' }}>
+                  {!item.image && (
+                    <div style={{ width: 48, height: 48, borderRadius: 14, background: ACCENT_SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                      <item.icon style={{ width: 23, height: 23, color: ACCENT_DK }} />
+                    </div>
+                  )}
+                  <h3 style={{ fontSize: 18, fontWeight: 700, color: INK, marginBottom: 9 }}>{item.title}</h3>
+                  <p style={{ fontSize: 14, color: INK_SOFT, lineHeight: 1.65 }}>{item.desc}</p>
                 </div>
-                <h3 style={{ fontSize: 18, fontWeight: 700, color: INK, marginBottom: 9 }}>{item.title}</h3>
-                <p style={{ fontSize: 14, color: INK_SOFT, lineHeight: 1.65 }}>{item.desc}</p>
               </div>
             ))}
           </Reveal>
