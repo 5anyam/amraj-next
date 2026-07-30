@@ -623,7 +623,7 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
 
       <style>{`
         /* Full-width infographic banners */
-        .product-banner-section { padding: 0 24px 8px; }
+        .product-banner-section { padding: 56px 24px 8px; }
         .product-banner {
           position: relative;
           max-width: 1080px;
@@ -638,7 +638,7 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
         .product-banner-bleed { object-fit: cover; transform: scale(1.2); filter: blur(30px) saturate(1.1); }
         .product-banner-img { object-fit: contain; }
         @media (max-width: 768px) {
-          .product-banner-section { padding: 0 16px 4px; }
+          .product-banner-section { padding: 36px 16px 4px; }
           .product-banner { border-radius: 14px; }
         }
 
