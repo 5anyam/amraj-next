@@ -136,15 +136,17 @@ export default function HeroCarousel() {
         .hero-carousel-slide {
           position: relative;
           flex: 0 0 100%;
-          aspect-ratio: 1600 / 560;
+          aspect-ratio: 1600 / 620;
           scroll-snap-align: start;
           scroll-snap-stop: always;
           overflow: hidden;
         }
+        /* Blurred hard enough to read as a plain colour wash. A lighter blur left recognisable
+           smears against the banner edge, which made the artwork look cropped. */
         .hero-carousel-bleed {
           object-fit: cover;
-          transform: scale(1.2);
-          filter: blur(34px) saturate(1.15);
+          transform: scale(1.8);
+          filter: blur(64px) saturate(1.25) brightness(1.04);
         }
         .hero-carousel-img { object-fit: contain; }
 
@@ -204,7 +206,7 @@ export default function HeroCarousel() {
         @media (max-width: 600px) {
           .hero-carousel-section { padding: 10px 12px 18px; }
           .hero-carousel { border-radius: 14px; }
-          .hero-carousel-slide { aspect-ratio: 1600 / 600; }
+          .hero-carousel-slide { aspect-ratio: 1600 / 680; }
           .hero-carousel-dots { bottom: 9px; }
           .hero-carousel-dot { width: 6px; height: 6px; }
           .hero-carousel-dot[aria-current='true'] { width: 20px; }
