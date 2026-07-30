@@ -58,10 +58,18 @@ interface Bundle {
   totalPrice: number; savings: number; discountPct: number; badge?: string;
 }
 
+/* Bundle discount ladder. Tuned so a ₹785 bottle lands at ₹1,249 (2-pack) and ₹1,799 (3-pack),
+   while keeping the per-bottle price falling as pack size grows — ₹785 → ₹624 → ₹600. */
+const BUNDLE_MULTIPLIER = { 2: 0.795, 3: 0.764 } as const;
+
+/** Snaps a computed total to a retail-friendly price ending in 9 (nearest ₹50 − ₹1). */
+const retailRound = (n: number) => Math.round(n / 50) * 50 - 1;
+
 function getBundles(price: number, regular: number, capsules: number): Bundle[] {
   const servingsPerPack = Math.max(1, Math.floor(capsules / 2)); // 2 caps/day
   const mk = (packs: number, mult: number, badge?: string): Bundle => {
-    const total = Math.round(price * packs * mult);
+    // Single bottle always sells at the product's own price — never re-rounded.
+    const total = packs === 1 ? price : retailRound(price * packs * mult);
     const regularTotal = regular * packs;
     return {
       packs,
@@ -74,7 +82,7 @@ function getBundles(price: number, regular: number, capsules: number): Bundle[] 
       badge,
     };
   };
-  return [mk(1, 1), mk(2, 0.93, 'Popular'), mk(3, 0.87, 'Best Value')];
+  return [mk(1, 1), mk(2, BUNDLE_MULTIPLIER[2], 'Popular'), mk(3, BUNDLE_MULTIPLIER[3], 'Best Value')];
 }
 
 /* ── IMAGE GALLERY (vertical thumbs + swipeable main carousel) ── */
