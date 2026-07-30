@@ -41,7 +41,7 @@ export const PRODUCTS: StaticProduct[] = [
     name: 'Advanced Prostate Care',
     shortName: 'Prostate Care',
     tagline: 'Herbal & nutraceutical formula that supports prostate health and everyday urinary comfort',
-    price: 999,
+    price: 785,
     regularPrice: 1849,
     images: [
       'https://cms.amraj.in/wp-content/uploads/2025/06/prostate1-2-scaled.jpg',
@@ -76,7 +76,7 @@ export const PRODUCTS: StaticProduct[] = [
     name: 'Advanced Liver Detox',
     shortName: 'Liver Detox',
     tagline: 'Herbal formula with Milk Thistle to support healthy liver function and everyday wellness',
-    price: 699,
+    price: 585,
     regularPrice: 1599,
     images: [
       'https://cms.amraj.in/wp-content/uploads/2025/07/IMG_6762-scaled.jpg',
@@ -111,7 +111,7 @@ export const PRODUCTS: StaticProduct[] = [
     name: 'Weight Management Pro+',
     shortName: 'Weight Pro+',
     tagline: 'Herbal metabolism formula to support your healthy weight management journey',
-    price: 699,
+    price: 585,
     regularPrice: 2499,
     images: [
       'https://cms.amraj.in/wp-content/uploads/2025/06/IMG_6768-1-scaled.jpg',
