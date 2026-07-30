@@ -57,9 +57,7 @@ function ProductCard({ product }: { product: StaticProduct }) {
     >
       <div style={{ position: 'relative', aspectRatio: '1', background: BG_SOFT, overflow: 'hidden' }}>
         <Image src={product.images[0]} alt={product.name} fill style={{ objectFit: 'cover' }} sizes="(max-width: 900px) 50vw, 33vw" />
-        {product.badge && (
-          <span style={{ position: 'absolute', top: 14, left: 14, background: '#fff', color: INK, fontSize: 11, fontWeight: 600, letterSpacing: '0.04em', padding: '5px 12px', borderRadius: 999, boxShadow: '0 2px 8px rgba(16,24,40,0.1)' }}>{product.badge}</span>
-        )}
+        {/* Only the discount pill here — the "Best Seller" badge collided with it on narrow cards. */}
         {discount > 0 && (
           <span style={{ position: 'absolute', top: 14, right: 14, background: ACCENT, color: '#fff', fontSize: 12, fontWeight: 700, padding: '5px 11px', borderRadius: 999 }}>{discount}% OFF</span>
         )}
