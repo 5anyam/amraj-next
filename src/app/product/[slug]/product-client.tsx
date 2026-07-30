@@ -6,8 +6,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import {
-  Star, ShieldCheck, Truck, Check, Leaf, ChevronRight, Zap,
-  CreditCard, Sparkles, FlaskConical, Sprout, BadgeCheck, Clock,
+  Star, ShieldCheck, Truck, Check, Leaf, ChevronLeft, ChevronRight, Zap,
+  CreditCard, Sparkles, FlaskConical, BadgeCheck, Clock,
   Sun, Package, HeartHandshake,
 } from 'lucide-react';
 import { StaticProduct, PRODUCTS, HEALTH_DISCLAIMER } from '../../../../lib/products-data';
@@ -77,18 +77,36 @@ function getBundles(price: number, regular: number, capsules: number): Bundle[] 
   return [mk(1, 1), mk(2, 0.93, 'Popular'), mk(3, 0.87, 'Best Value')];
 }
 
-/* ── IMAGE GALLERY (vertical thumbs + large main) ── */
+/* ── IMAGE GALLERY (vertical thumbs + swipeable main carousel) ── */
 function ImageGallery({ images, name }: { images: string[]; name: string }) {
   const [main, setMain] = useState(0);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const multi = images.length > 1;
+
+  const goTo = (i: number) => {
+    const next = (i + images.length) % images.length;
+    setMain(next);
+    trackRef.current?.scrollTo({ left: trackRef.current.clientWidth * next, behavior: 'smooth' });
+  };
+
+  const onScroll = () => {
+    const el = trackRef.current;
+    if (!el || !el.clientWidth) return;
+    const i = Math.max(0, Math.min(images.length - 1, Math.round(el.scrollLeft / el.clientWidth)));
+    setMain((prev) => (prev === i ? prev : i));
+  };
+
   return (
     <div className="gallery-wrap" style={{ display: 'flex', gap: 14 }}>
       {/* Thumbnails */}
-      {images.length > 1 && (
+      {multi && (
         <div className="gallery-thumbs" style={{ display: 'flex', flexDirection: 'column', gap: 10, width: 74, flexShrink: 0 }}>
           {images.map((src, i) => (
             <button
               key={i}
-              onClick={() => setMain(i)}
+              type="button"
+              aria-label={`View image ${i + 1}`}
+              onClick={() => goTo(i)}
               style={{
                 position: 'relative', width: 74, height: 74, borderRadius: 12, overflow: 'hidden',
                 border: `2px solid ${i === main ? ACCENT : LINE}`, cursor: 'pointer', background: BG_SOFT,
@@ -100,9 +118,58 @@ function ImageGallery({ images, name }: { images: string[]; name: string }) {
           ))}
         </div>
       )}
-      {/* Main */}
+      {/* Main — horizontal swipe / scroll carousel */}
       <div className="gallery-main" style={{ position: 'relative', flex: 1, width: '100%', aspectRatio: '1', borderRadius: RADIUS, overflow: 'hidden', background: BG_SOFT, boxShadow: CARD_SHADOW }}>
-        <Image src={images[main]} alt={name} fill style={{ objectFit: 'cover' }} sizes="(max-width: 1024px) 100vw, 560px" priority />
+        <div
+          ref={trackRef}
+          className="gallery-track"
+          onScroll={onScroll}
+          style={{
+            display: 'flex', height: '100%', width: '100%', overflowX: 'auto', overflowY: 'hidden',
+            scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none',
+          }}
+        >
+          {images.map((src, i) => (
+            <div key={i} style={{ position: 'relative', flex: '0 0 100%', height: '100%', scrollSnapAlign: 'start', scrollSnapStop: 'always' }}>
+              <Image src={src} alt={`${name} ${i + 1}`} fill style={{ objectFit: 'cover' }} sizes="(max-width: 1024px) 100vw, 560px" priority={i === 0} />
+            </div>
+          ))}
+        </div>
+
+        {multi && (
+          <>
+            <button
+              type="button"
+              aria-label="Previous image"
+              className="gallery-arrow"
+              onClick={() => goTo(main - 1)}
+              style={{ left: 12 }}
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button
+              type="button"
+              aria-label="Next image"
+              className="gallery-arrow"
+              onClick={() => goTo(main + 1)}
+              style={{ right: 12 }}
+            >
+              <ChevronRight size={20} />
+            </button>
+            <div style={{ position: 'absolute', bottom: 12, left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: 6, pointerEvents: 'none' }}>
+              {images.map((_, i) => (
+                <span
+                  key={i}
+                  style={{
+                    width: i === main ? 18 : 6, height: 6, borderRadius: 999,
+                    background: i === main ? ACCENT : 'rgba(255,255,255,0.75)',
+                    boxShadow: '0 1px 3px rgba(16,24,40,0.25)', transition: 'width 0.25s, background 0.25s',
+                  }}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
@@ -205,13 +272,14 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
 
   const benefitIcons = [Sparkles, HeartHandshake, ShieldCheck, Leaf, Zap, BadgeCheck];
 
+  /* Swap any `image` path below to change a claim's artwork — files live in /public/quality. */
   const qualityClaims = [
-    { icon: Sprout, title: 'Naturally Sourced', desc: 'Standardised herbal extracts & pure nutraceuticals.' },
-    { icon: FlaskConical, title: 'Lab Tested', desc: 'Every batch screened for purity & heavy metals.' },
-    { icon: Leaf, title: 'Vegetarian Capsules', desc: 'Clean plant-based capsules, no gelatin.' },
-    { icon: ShieldCheck, title: 'No Artificial Fillers', desc: 'No added sugar, colours or preservatives.' },
-    { icon: BadgeCheck, title: 'FSSAI & GMP', desc: 'Made in licensed, GMP-certified facilities.' },
-    { icon: Truck, title: 'Pan-India Delivery', desc: 'Delivered in 3–5 business days, securely packed.' },
+    { image: '/quality/naturally-sourced.svg', title: 'Naturally Sourced', desc: 'Standardised herbal extracts & pure nutraceuticals.' },
+    { image: '/quality/lab-tested.svg', title: 'Lab Tested', desc: 'Every batch screened for purity & heavy metals.' },
+    { image: '/quality/vegetarian-capsules.svg', title: 'Vegetarian Capsules', desc: 'Clean plant-based capsules, no gelatin.' },
+    { image: '/quality/no-artificial-fillers.svg', title: 'No Artificial Fillers', desc: 'No added sugar, colours or preservatives.' },
+    { image: '/quality/fssai-gmp.svg', title: 'FSSAI & GMP', desc: 'Made in licensed, GMP-certified facilities.' },
+    { image: '/quality/pan-india-delivery.svg', title: 'Pan-India Delivery', desc: 'Delivered in 3–5 business days, securely packed.' },
   ];
 
   const trustRow = [
@@ -438,9 +506,7 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
           <div className="quality-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }}>
             {qualityClaims.map((q, i) => (
               <div key={i} style={{ display: 'flex', gap: 16, alignItems: 'flex-start', padding: '22px 22px', borderRadius: RADIUS, border: `1px solid ${LINE}`, background: '#fff', boxShadow: CARD_SHADOW }}>
-                <div style={{ width: 44, height: 44, borderRadius: 12, background: ACCENT_SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <q.icon style={{ width: 21, height: 21, color: ACCENT_DK }} />
-                </div>
+                <Image src={q.image} alt="" aria-hidden width={56} height={56} className="quality-icon" style={{ width: 56, height: 56, borderRadius: 14, flexShrink: 0 }} />
                 <div>
                   <h3 style={{ fontSize: 16, fontWeight: 700, color: INK, marginBottom: 5 }}>{q.title}</h3>
                   <p style={{ fontSize: 13.5, color: INK_SOFT, lineHeight: 1.6 }}>{q.desc}</p>
@@ -520,6 +586,32 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
       </div>
 
       <style>{`
+        /* Gallery carousel */
+        .gallery-track::-webkit-scrollbar { display: none; }
+        .gallery-arrow {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 38px;
+          height: 38px;
+          border-radius: 999px;
+          border: 1px solid rgba(16,24,40,0.08);
+          background: rgba(255,255,255,0.92);
+          color: #1a1f27;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          padding: 0;
+          box-shadow: 0 4px 14px rgba(16,24,40,0.14);
+          transition: background 0.2s, transform 0.2s;
+          z-index: 2;
+        }
+        .gallery-arrow:hover { background: #fff; }
+        .gallery-arrow:active { transform: translateY(-50%) scale(0.94); }
+        @media (hover: none) {
+          .gallery-arrow { display: none; }
+        }
         @media (max-width: 900px) {
           .product-grid { grid-template-columns: 1fr !important; gap: 26px !important; }
           .product-image-sticky { position: relative !important; top: auto !important; }
