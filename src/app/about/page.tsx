@@ -1,5 +1,6 @@
 "use client"
 import React, { useState } from 'react';
+import Reveal from '../../../components/Reveal';
 import { X, Sprout, FlaskConical, HeartHandshake, Award, Check, Sparkles, Leaf, ShieldCheck, BadgeCheck } from 'lucide-react';
 
 const INK = '#17191f';
@@ -54,11 +55,11 @@ function ConsultationModal() {
 
 function SectionHeading({ eyebrow, title, sub }: { eyebrow: string; title: string; sub?: string }) {
   return (
-    <div style={{ textAlign: 'center', maxWidth: 680, margin: '0 auto 44px' }}>
+    <Reveal variant="blur" style={{ textAlign: 'center', maxWidth: 680, margin: '0 auto 44px' }}>
       <span style={{ display: 'inline-block', fontSize: 12, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: ACCENT, marginBottom: 12 }}>{eyebrow}</span>
       <h2 style={{ fontSize: 'clamp(28px,3.6vw,42px)', fontWeight: 700, letterSpacing: '-0.025em', color: INK, lineHeight: 1.12 }}>{title}</h2>
       {sub && <p style={{ fontSize: 15.5, color: INK_SOFT, lineHeight: 1.7, marginTop: 14 }}>{sub}</p>}
-    </div>
+    </Reveal>
   );
 }
 
@@ -95,7 +96,7 @@ export default function AboutPage() {
 
       {/* Stats band */}
       <section style={{ background: '#fff', borderBottom: `1px solid ${LINE}` }}>
-        <div className="about-stats" style={{ maxWidth: 1000, margin: '0 auto', padding: '40px 24px', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+        <Reveal variant="stagger" className="about-stats" style={{ maxWidth: 1000, margin: '0 auto', padding: '40px 24px', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
           {[
             { num: '10,000+', label: 'Happy customers' },
             { num: '4.8★', label: 'Average rating' },
@@ -107,7 +108,7 @@ export default function AboutPage() {
               <p style={{ fontSize: 13, color: INK_SOFT, marginTop: 8 }}>{s.label}</p>
             </div>
           ))}
-        </div>
+        </Reveal>
       </section>
 
       <div className="about-container" style={{ maxWidth: 1080, margin: '0 auto', padding: '80px 24px' }}>
@@ -136,7 +137,7 @@ export default function AboutPage() {
         {/* Why Choose */}
         <section style={{ marginBottom: 96 }}>
           <SectionHeading eyebrow="Our advantages" title="Why choose Amraj?" />
-          <div className="about-4col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 18 }}>
+          <Reveal variant="stagger" className="about-4col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 18 }}>
             {[
               { icon: Sprout, title: 'Ancient wisdom', desc: 'Traditional herbal knowledge passed down through generations.' },
               { icon: FlaskConical, title: 'Modern science', desc: 'Research-backed formulations at meaningful, effective dosages.' },
@@ -151,7 +152,7 @@ export default function AboutPage() {
                 <p style={{ fontSize: 14, color: INK_SOFT, lineHeight: 1.65 }}>{item.desc}</p>
               </div>
             ))}
-          </div>
+          </Reveal>
         </section>
 
         {/* Vision */}

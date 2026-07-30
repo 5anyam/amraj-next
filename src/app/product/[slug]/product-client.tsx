@@ -11,6 +11,7 @@ import {
   Sun, Package, HeartHandshake,
 } from 'lucide-react';
 import { StaticProduct, PRODUCTS, HEALTH_DISCLAIMER } from '../../../../lib/products-data';
+import Reveal from '../../../../components/Reveal';
 import { useCart } from '../../../../lib/cart';
 import { toast } from '../../../../hooks/use-toast';
 
@@ -43,13 +44,13 @@ function StarRating({ rating, size = 15 }: { rating: number; size?: number }) {
 /* ── SECTION HEADING ── */
 function SectionHeading({ eyebrow, title, sub, align = 'center' }: { eyebrow?: string; title: string; sub?: string; align?: 'center' | 'left' }) {
   return (
-    <div style={{ textAlign: align, marginBottom: 40, maxWidth: 680, marginLeft: align === 'center' ? 'auto' : 0, marginRight: align === 'center' ? 'auto' : 0 }}>
+    <Reveal variant="blur" style={{ textAlign: align, marginBottom: 40, maxWidth: 680, marginLeft: align === 'center' ? 'auto' : 0, marginRight: align === 'center' ? 'auto' : 0 }}>
       {eyebrow && (
         <span style={{ display: 'inline-block', fontSize: 12, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: ACCENT, marginBottom: 12 }}>{eyebrow}</span>
       )}
       <h2 style={{ fontSize: 'clamp(28px,3.4vw,40px)', fontWeight: 700, letterSpacing: '-0.02em', color: INK, lineHeight: 1.12 }}>{title}</h2>
       {sub && <p style={{ fontSize: 15, color: INK_SOFT, lineHeight: 1.7, marginTop: 14 }}>{sub}</p>}
-    </div>
+    </Reveal>
   );
 }
 
@@ -180,6 +181,20 @@ function ImageGallery({ images, name }: { images: string[]; name: string }) {
         )}
       </div>
     </div>
+  );
+}
+
+/* ── FULL-WIDTH INFOGRAPHIC BANNER ──
+   Banners are wide (~2.7:1) and carry their own copy, so they're never cropped — a blurred
+   copy of the same art fills the letterbox instead. */
+function ProductBanner({ src, alt }: { src: string; alt: string }) {
+  return (
+    <section className="product-banner-section">
+      <Reveal className="product-banner">
+        <Image src={src} alt="" aria-hidden className="product-banner-bleed" fill sizes="100vw" />
+        <Image src={src} alt={alt} className="product-banner-img" fill sizes="(max-width: 1080px) 100vw, 1080px" />
+      </Reveal>
+    </section>
   );
 }
 
@@ -438,7 +453,7 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
       <section style={{ background: BG_SOFT, borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, padding: '72px 24px', marginTop: 40 }}>
         <div style={{ maxWidth: 1080, margin: '0 auto' }}>
           <SectionHeading eyebrow="Why it works" title={`What ${product.shortName} does for you`} sub="A focused, science-led formula designed to support your everyday wellness goals." />
-          <div className="benefit-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }}>
+          <Reveal variant="stagger" className="benefit-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }}>
             {product.benefits.map((b, i) => {
               const Icon = benefitIcons[i % benefitIcons.length];
               return (
@@ -450,15 +465,17 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
                 </div>
               );
             })}
-          </div>
+          </Reveal>
         </div>
       </section>
+
+      {product.banners?.[0] && <ProductBanner {...product.banners[0]} />}
 
       {/* ── KEY INGREDIENTS (image slots) ── */}
       <section style={{ padding: '80px 24px' }}>
         <div style={{ maxWidth: 1080, margin: '0 auto' }}>
           <SectionHeading eyebrow="Inside every capsule" title="The active ingredients" sub="Each ingredient is included at a meaningful dose — no proprietary-blend guesswork." />
-          <div className="ingredient-grid" style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(product.ingredients.length, 3)}, 1fr)`, gap: 22 }}>
+          <Reveal variant="stagger" className="ingredient-grid" style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(product.ingredients.length, 3)}, 1fr)`, gap: 22 }}>
             {product.ingredients.map((ing, i) => (
               <div key={i} style={{ display: 'flex', flexDirection: 'column', borderRadius: RADIUS, border: `1px solid ${LINE}`, background: '#fff', overflow: 'hidden', boxShadow: CARD_SHADOW }}>
                 {/* Image slot — fill product.ingredients[].image later */}
@@ -481,15 +498,17 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
                 </div>
               </div>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
+
+      {product.banners?.[1] && <ProductBanner {...product.banners[1]} />}
 
       {/* ── HOW TO USE ── */}
       <section style={{ background: BG_SOFT, borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, padding: '72px 24px' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <SectionHeading eyebrow="Simple daily ritual" title="How to use it" />
-          <div className="usage-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }}>
+          <Reveal variant="stagger" className="usage-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }}>
             {[
               { icon: Package, title: 'How much', desc: 'Take 2 capsules daily with a glass of water.' },
               { icon: Sun, title: 'When', desc: 'Best taken with a meal, or as directed by your healthcare provider.' },
@@ -503,7 +522,7 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
                 <p style={{ fontSize: 14, color: INK_SOFT, lineHeight: 1.65 }}>{s.desc}</p>
               </div>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 
@@ -511,7 +530,7 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
       <section style={{ padding: '80px 24px' }}>
         <div style={{ maxWidth: 1080, margin: '0 auto' }}>
           <SectionHeading eyebrow="Made right" title="Quality you can trust" />
-          <div className="quality-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }}>
+          <Reveal variant="stagger" className="quality-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }}>
             {qualityClaims.map((q, i) => (
               <div key={i} style={{ display: 'flex', gap: 16, alignItems: 'flex-start', padding: '22px 22px', borderRadius: RADIUS, border: `1px solid ${LINE}`, background: '#fff', boxShadow: CARD_SHADOW }}>
                 <Image src={q.image} alt="" aria-hidden width={56} height={56} className="quality-icon" style={{ width: 56, height: 56, borderRadius: 14, flexShrink: 0 }} />
@@ -521,7 +540,7 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
                 </div>
               </div>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 
@@ -594,6 +613,26 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
       </div>
 
       <style>{`
+        /* Full-width infographic banners */
+        .product-banner-section { padding: 0 24px 8px; }
+        .product-banner {
+          position: relative;
+          max-width: 1080px;
+          margin: 0 auto;
+          aspect-ratio: 1600 / 592;
+          border-radius: 20px;
+          overflow: hidden;
+          border: 1px solid #e9eaee;
+          box-shadow: 0 2px 16px rgba(16,24,40,0.05);
+          background: #fff;
+        }
+        .product-banner-bleed { object-fit: cover; transform: scale(1.2); filter: blur(30px) saturate(1.1); }
+        .product-banner-img { object-fit: contain; }
+        @media (max-width: 768px) {
+          .product-banner-section { padding: 0 16px 4px; }
+          .product-banner { border-radius: 14px; }
+        }
+
         /* Gallery carousel */
         .gallery-track::-webkit-scrollbar { display: none; }
         .gallery-arrow {

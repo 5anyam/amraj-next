@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { StaticProduct } from '../../../lib/products-data';
+import Reveal from '../../../components/Reveal';
 import { Star, Search, ArrowRight, Sparkles } from 'lucide-react';
 
 interface Props {
@@ -132,9 +133,9 @@ export default function ShopPageClient({ products }: Props) {
             </button>
           </div>
         ) : (
-          <div className="shop-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+          <Reveal variant="stagger" className="shop-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
             {filtered.map((p) => <ProductCard key={p.id} product={p} />)}
-          </div>
+          </Reveal>
         )}
       </div>
 

@@ -1,14 +1,16 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PRODUCTS, StaticProduct } from '../../lib/products-data';
 import Testimonials from '../../components/TestimonialsSection';
 import HomeFAQ from '../../components/HomeFaq';
+import HeroCarousel from '../../components/HeroCarousel';
+import Reveal from '../../components/Reveal';
 import {
-  Star, ShieldCheck, Truck, Award, Check, ChevronRight, Leaf,
-  FlaskConical, BadgeCheck, Sparkles, HeartHandshake, ArrowRight,
+  Star, ShieldCheck, Truck, Award, Check, Leaf,
+  FlaskConical, BadgeCheck, HeartHandshake, ArrowRight,
 } from 'lucide-react';
 
 /* ── PREMIUM TOKENS ── */
@@ -34,11 +36,11 @@ function StarRating({ rating, size = 15 }: { rating: number; size?: number }) {
 
 function SectionHeading({ eyebrow, title, sub }: { eyebrow: string; title: React.ReactNode; sub?: string }) {
   return (
-    <div style={{ textAlign: 'center', marginBottom: 44, maxWidth: 680, margin: '0 auto 44px' }}>
+    <Reveal variant="blur" style={{ textAlign: 'center', marginBottom: 44, maxWidth: 680, margin: '0 auto 44px' }}>
       <span style={{ display: 'inline-block', fontSize: 12, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: ACCENT, marginBottom: 12 }}>{eyebrow}</span>
       <h2 style={{ fontSize: 'clamp(30px,3.6vw,44px)', fontWeight: 700, letterSpacing: '-0.025em', color: INK, lineHeight: 1.1 }}>{title}</h2>
       {sub && <p style={{ fontSize: 15.5, color: INK_SOFT, lineHeight: 1.7, marginTop: 16 }}>{sub}</p>}
-    </div>
+    </Reveal>
   );
 }
 
@@ -87,76 +89,6 @@ function ProductCard({ product }: { product: StaticProduct }) {
   );
 }
 
-/* ── HERO ── */
-function HeroSection() {
-  const [active, setActive] = useState(0);
-  const images = PRODUCTS.map(p => p.images[0]);
-  useEffect(() => {
-    const t = setInterval(() => setActive((p) => (p + 1) % images.length), 3500);
-    return () => clearInterval(t);
-  }, [images.length]);
-
-  return (
-    <section style={{ background: 'linear-gradient(170deg,#ffffff 0%,#f2faf8 55%,#f6f8f7 100%)', position: 'relative', overflow: 'hidden' }}>
-      <div className="hero-grid" style={{ maxWidth: 1200, margin: '0 auto', padding: '76px 24px 84px', display: 'grid', gridTemplateColumns: '1.05fr 1fr', gap: 56, alignItems: 'center' }}>
-        {/* Left */}
-        <div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: ACCENT_SOFT, color: ACCENT_DK, fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', padding: '7px 14px', borderRadius: 999, marginBottom: 26 }}>
-            <Sparkles size={14} /> Science-led wellness, made in India
-          </div>
-          <h1 style={{ fontSize: 'clamp(40px,5.4vw,68px)', fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.04, color: INK, marginBottom: 22 }}>
-            Feel your best,<br />every single day.
-          </h1>
-          <p style={{ fontSize: 17, color: INK_SOFT, lineHeight: 1.75, maxWidth: 440, marginBottom: 32 }}>
-            Precision-formulated supplements rooted in traditional wisdom and modern research — real ingredients, honest formulations, meaningful doses.
-          </p>
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 36 }}>
-            <Link href="/shop" style={{ background: ACCENT, color: '#fff', padding: '15px 28px', borderRadius: 14, fontSize: 15, fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 10px 24px rgba(13,148,136,0.28)' }}>
-              Shop Products <ChevronRight size={16} />
-            </Link>
-            <Link href="/about" style={{ background: '#fff', color: INK, padding: '15px 28px', borderRadius: 14, fontSize: 15, fontWeight: 700, textDecoration: 'none', border: `1.5px solid ${LINE}` }}>
-              Our Story
-            </Link>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <div style={{ display: 'flex' }}>
-              {['/users/vanshika.jpeg', '/users/dr-abhinav-rana.jpeg', '/users/savita.webp', '/users/anil-tyagi.jpeg'].map((src, i) => (
-                <div key={i} style={{ width: 38, height: 38, borderRadius: '50%', border: '2.5px solid #fff', overflow: 'hidden', marginLeft: i > 0 ? -12 : 0, flexShrink: 0, position: 'relative', boxShadow: '0 2px 6px rgba(16,24,40,0.12)' }}>
-                  <Image src={src} alt="Customer" fill style={{ objectFit: 'cover' }} sizes="38px" />
-                </div>
-              ))}
-            </div>
-            <div>
-              <StarRating rating={5} size={13} />
-              <p style={{ fontSize: 13, color: INK_SOFT, marginTop: 3 }}>Trusted by <strong style={{ color: INK }}>10,000+</strong> customers</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Right — product image */}
-        <div className="hero-img-col" style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
-          <div style={{ position: 'relative', width: 380, height: 440, borderRadius: 28, overflow: 'hidden', background: BG_SOFT, boxShadow: '0 30px 70px rgba(16,24,40,0.16)' }}>
-            {images.map((src, i) => (
-              <div key={i} style={{ position: 'absolute', inset: 0, opacity: i === active ? 1 : 0, transition: 'opacity 0.7s ease' }}>
-                <Image src={src} alt={PRODUCTS[i].name} fill style={{ objectFit: 'cover' }} sizes="380px" priority={i === 0} />
-              </div>
-            ))}
-          </div>
-          {/* Floating chip */}
-          <div style={{ position: 'absolute', bottom: 24, left: 8, background: '#fff', borderRadius: 16, padding: '12px 16px', boxShadow: '0 12px 30px rgba(16,24,40,0.16)', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 38, height: 38, borderRadius: 12, background: ACCENT_SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <BadgeCheck style={{ width: 20, height: 20, color: ACCENT_DK }} />
-            </div>
-            <div>
-              <p style={{ fontSize: 13, fontWeight: 700, color: INK }}>FSSAI & GMP</p>
-              <p style={{ fontSize: 11.5, color: INK_SOFT }}>Lab-tested quality</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 /* ── WHY AMRAJ ── */
 const whyItems = [
@@ -171,12 +103,12 @@ const whyItems = [
 export default function Homepage() {
   return (
     <div style={{ minHeight: '100vh', background: '#fff', color: INK }}>
-      <HeroSection />
+      <HeroCarousel />
 
       {/* ── TRUST BAR ── */}
       <section style={{ background: '#fff', borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}` }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '18px 24px' }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px 40px', alignItems: 'center' }}>
+          <Reveal variant="stagger" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px 40px', alignItems: 'center' }}>
             {[
               { icon: Award, label: 'FSSAI Certified' },
               { icon: ShieldCheck, label: 'GMP Lab Tested' },
@@ -189,7 +121,7 @@ export default function Homepage() {
                 {item.label}
               </div>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 
@@ -197,20 +129,20 @@ export default function Homepage() {
       <section style={{ padding: '84px 24px' }} id="products">
         <div style={{ maxWidth: 1120, margin: '0 auto' }}>
           <SectionHeading eyebrow="Our bestsellers" title="Targeted health solutions" sub="Three focused formulas for the goals that matter most — prostate care, liver health and weight management." />
-          <div className="products-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+          <Reveal variant="stagger" className="products-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
             {PRODUCTS.map((product) => <ProductCard key={product.id} product={product} />)}
-          </div>
-          <div style={{ textAlign: 'center', marginTop: 44 }}>
+          </Reveal>
+          <Reveal style={{ textAlign: 'center', marginTop: 44 }}>
             <Link href="/shop" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#fff', color: INK, padding: '14px 28px', borderRadius: 14, fontSize: 15, fontWeight: 700, textDecoration: 'none', border: `1.5px solid ${INK}` }}>
               View all products <ArrowRight size={16} />
             </Link>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* ── STATS ── */}
       <section style={{ background: BG_SOFT, borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, padding: '56px 24px' }}>
-        <div style={{ maxWidth: 1000, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }} className="stats-grid">
+        <Reveal variant="stagger" style={{ maxWidth: 1000, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }} className="stats-grid">
           {[
             { num: '10,000+', label: 'Happy customers' },
             { num: '4.8★', label: 'Average rating' },
@@ -222,14 +154,14 @@ export default function Homepage() {
               <p style={{ fontSize: 13.5, color: INK_SOFT, marginTop: 8 }}>{s.label}</p>
             </div>
           ))}
-        </div>
+        </Reveal>
       </section>
 
       {/* ── WHY AMRAJ ── */}
       <section style={{ padding: '84px 24px' }} id="why">
         <div style={{ maxWidth: 1120, margin: '0 auto' }}>
           <SectionHeading eyebrow="The Amraj difference" title="Better made, better lived" sub="We hold every formula to a higher standard — from sourcing to the capsule in your hand." />
-          <div className="why-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+          <Reveal variant="stagger" className="why-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
             {whyItems.map((item, i) => (
               <div key={i} style={{ background: '#fff', borderRadius: RADIUS, border: `1px solid ${LINE}`, padding: '28px 26px', boxShadow: CARD_SHADOW }}>
                 <div style={{ width: 48, height: 48, borderRadius: 14, background: ACCENT_SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 18 }}>
@@ -239,7 +171,7 @@ export default function Homepage() {
                 <p style={{ fontSize: 14.5, color: INK_SOFT, lineHeight: 1.7 }}>{item.desc}</p>
               </div>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 
@@ -247,7 +179,7 @@ export default function Homepage() {
       <section style={{ background: BG_SOFT, borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, padding: '84px 24px' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <SectionHeading eyebrow="Simple process" title="Your wellness journey starts here" />
-          <div className="how-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}>
+          <Reveal variant="stagger" className="how-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}>
             {[
               { step: '01', title: 'Choose your formula', desc: 'Pick the supplement that targets your specific health goal.' },
               { step: '02', title: 'Order in 60 seconds', desc: 'Simple checkout — name, phone & address. Done.' },
@@ -262,7 +194,7 @@ export default function Homepage() {
                 <p style={{ fontSize: 13.5, color: INK_SOFT, lineHeight: 1.65 }}>{item.desc}</p>
               </div>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 
@@ -270,7 +202,7 @@ export default function Homepage() {
       <section style={{ padding: '84px 24px' }}>
         <div style={{ maxWidth: 1120, margin: '0 auto' }}>
           <SectionHeading eyebrow="Real results" title="What our customers say" />
-          <Testimonials />
+          <Reveal><Testimonials /></Reveal>
         </div>
       </section>
 
@@ -278,7 +210,7 @@ export default function Homepage() {
       <section style={{ background: BG_SOFT, borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, padding: '84px 24px' }}>
         <div style={{ maxWidth: 760, margin: '0 auto' }}>
           <SectionHeading eyebrow="Got questions?" title="Frequently asked questions" />
-          <HomeFAQ />
+          <Reveal><HomeFAQ /></Reveal>
         </div>
       </section>
 
@@ -286,7 +218,7 @@ export default function Homepage() {
       <section style={{ padding: '84px 24px' }}>
         <div style={{ maxWidth: 1080, margin: '0 auto', background: 'linear-gradient(135deg,#0D9488 0%,#0a7a6e 100%)', borderRadius: 32, padding: '72px 40px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle at 20% 20%, rgba(255,255,255,0.12), transparent 40%)', pointerEvents: 'none' }} />
-          <div style={{ position: 'relative', zIndex: 2, maxWidth: 620, margin: '0 auto' }}>
+          <Reveal variant="blur" style={{ position: 'relative', zIndex: 2, maxWidth: 620, margin: '0 auto' }}>
             <HeartHandshake style={{ width: 40, height: 40, color: 'rgba(255,255,255,0.9)', margin: '0 auto 20px' }} />
             <h2 style={{ fontSize: 'clamp(30px,4vw,48px)', fontWeight: 700, letterSpacing: '-0.025em', color: '#fff', lineHeight: 1.1, marginBottom: 18 }}>
               Ready to take charge of your health?
@@ -309,15 +241,13 @@ export default function Homepage() {
                 </span>
               ))}
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       <style>{`
         /* Tablet & below: 2 products on top, 3rd centred underneath */
         @media (max-width: 900px) {
-          .hero-grid { grid-template-columns: 1fr !important; padding: 48px 20px 56px !important; gap: 40px !important; }
-          .hero-img-col { display: none !important; }
           .why-grid { grid-template-columns: 1fr !important; }
           .how-grid { grid-template-columns: 1fr 1fr !important; }
           .stats-grid { grid-template-columns: 1fr 1fr !important; gap: 32px 20px !important; }

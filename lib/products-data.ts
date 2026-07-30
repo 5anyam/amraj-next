@@ -16,9 +16,11 @@ export interface StaticProduct {
   tagline: string;
   price: number;
   regularPrice: number;
-  /** Product photos + infographic banners. Any URL containing "Info" is treated as a
-   *  full-width landing banner; the rest render as gallery photos. */
+  /** Square-ish product photos for the gallery carousel. */
   images: string[];
+  /** Optional wide infographic banners rendered full-width down the product page,
+   *  in order, between the benefit / ingredient / usage sections. */
+  banners?: { src: string; alt: string }[];
   benefits: string[];
   ingredients: ProductIngredient[];
   howToUse: string;
@@ -49,6 +51,16 @@ export const PRODUCTS: StaticProduct[] = [
       'https://cms.amraj.in/wp-content/uploads/2025/06/Info-1-Copy-scaled.jpg',
       'https://cms.amraj.in/wp-content/uploads/2025/07/Info-3-1-scaled.jpg',
       'https://cms.amraj.in/wp-content/uploads/2025/07/Info-2-1-scaled.jpg',
+    ],
+    banners: [
+      {
+        src: 'https://cms.amraj.in/wp-content/uploads/2025/10/1-scaled.jpg',
+        alt: 'Who is it for — frequent urination, urinary discomfort or burning, and interrupted flow',
+      },
+      {
+        src: 'https://cms.amraj.in/wp-content/uploads/2025/10/2-scaled.jpg',
+        alt: 'From struggle to strength — results in 3 months',
+      },
     ],
     benefits: [
       'Supports healthy urinary flow and everyday comfort',
