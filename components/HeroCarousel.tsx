@@ -4,10 +4,13 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-/* Banner artwork already carries its own headline — nothing is overlaid on top of it. */
+/* Banner artwork already carries its own headline — nothing is overlaid on top of it.
+   Both files are 1600×592 so every slide fills the frame edge to edge with no matting.
+   The first one is a local copy of the CMS banner (originally 1600×480) padded top and
+   bottom with its own paper texture — no artwork was cropped or scaled to do it. */
 const BANNERS = [
   {
-    src: 'https://cms.amraj.in/wp-content/uploads/2025/06/Amraj-Bg-Photo_20250623_113828_0000-scaled.jpg',
+    src: '/banners/hero-soil-to-homes.jpg',
     alt: 'Amraj — from our soil to our homes, backed by science',
   },
   {
@@ -74,8 +77,6 @@ export default function HeroCarousel() {
               aria-roledescription="slide"
               aria-label={`${i + 1} of ${BANNERS.length}`}
             >
-              {/* Blurred copy fills the letterbox so the two different banner ratios both sit cleanly. */}
-              <Image src={banner.src} alt="" aria-hidden className="hero-carousel-bleed" fill sizes="100vw" priority={i === 0} />
               <Image
                 src={banner.src}
                 alt={banner.alt}
@@ -133,22 +134,16 @@ export default function HeroCarousel() {
           scrollbar-width: none;
         }
         .hero-carousel-track::-webkit-scrollbar { display: none; }
+        /* Matches the banner files exactly, so cover crops nothing. */
         .hero-carousel-slide {
           position: relative;
           flex: 0 0 100%;
-          aspect-ratio: 1600 / 620;
+          aspect-ratio: 1600 / 592;
           scroll-snap-align: start;
           scroll-snap-stop: always;
           overflow: hidden;
         }
-        /* Blurred hard enough to read as a plain colour wash. A lighter blur left recognisable
-           smears against the banner edge, which made the artwork look cropped. */
-        .hero-carousel-bleed {
-          object-fit: cover;
-          transform: scale(1.8);
-          filter: blur(64px) saturate(1.25) brightness(1.04);
-        }
-        .hero-carousel-img { object-fit: contain; }
+        .hero-carousel-img { object-fit: cover; }
 
         .hero-carousel-nav {
           position: absolute;
@@ -206,7 +201,6 @@ export default function HeroCarousel() {
         @media (max-width: 600px) {
           .hero-carousel-section { padding: 10px 12px 18px; }
           .hero-carousel { border-radius: 14px; }
-          .hero-carousel-slide { aspect-ratio: 1600 / 680; }
           .hero-carousel-dots { bottom: 9px; }
           .hero-carousel-dot { width: 6px; height: 6px; }
           .hero-carousel-dot[aria-current='true'] { width: 20px; }
