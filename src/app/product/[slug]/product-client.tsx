@@ -484,27 +484,29 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
       <section style={{ padding: '80px 24px' }}>
         <div style={{ maxWidth: 1080, margin: '0 auto' }}>
           <SectionHeading eyebrow="Inside every capsule" title="The active ingredients" sub="Each ingredient is included at a meaningful dose — no proprietary-blend guesswork." />
-          <Reveal variant="stagger" className="ingredient-grid" style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(product.ingredients.length, 3)}, 1fr)`, gap: 22 }}>
+          <Reveal variant="stagger" style={{ display: 'flex', flexDirection: 'column', gap: 14, maxWidth: 860, margin: '0 auto' }}>
             {product.ingredients.map((ing, i) => (
-              <div key={i} style={{ display: 'flex', flexDirection: 'column', borderRadius: RADIUS, border: `1px solid ${LINE}`, background: '#fff', overflow: 'hidden', boxShadow: CARD_SHADOW }}>
-                {/* Image slot — fill product.ingredients[].image later */}
-                <div style={{ position: 'relative', aspectRatio: '16 / 11', background: 'linear-gradient(150deg,#f0fdf9,#e6f3ef)', overflow: 'hidden' }}>
+              <div key={i} className="ingredient-row" style={{ display: 'flex', alignItems: 'center', gap: 22, background: '#fff', borderRadius: RADIUS, border: `1px solid ${LINE}`, boxShadow: CARD_SHADOW, padding: 14 }}>
+                {/* Small side image — fill product.ingredients[].image */}
+                <div className="ingredient-img" style={{ position: 'relative', width: 108, height: 108, borderRadius: 14, overflow: 'hidden', flexShrink: 0, background: 'linear-gradient(150deg,#f0fdf9,#e6f3ef)' }}>
                   {ing.image ? (
-                    <Image src={ing.image} alt={ing.name} fill style={{ objectFit: 'cover' }} sizes="(max-width: 768px) 100vw, 340px" />
+                    <Image src={ing.image} alt={ing.name} fill style={{ objectFit: 'cover' }} sizes="108px" />
                   ) : (
-                    <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-                      <div style={{ width: 54, height: 54, borderRadius: 999, background: 'rgba(13,148,136,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Leaf style={{ width: 26, height: 26, color: ACCENT }} />
-                      </div>
-                      <span style={{ fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(15,17,23,0.35)', fontWeight: 600 }}>Herbal Extract</span>
+                    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Leaf style={{ width: 30, height: 30, color: ACCENT }} />
                     </div>
                   )}
-                  <span style={{ position: 'absolute', top: 14, right: 14, background: '#fff', color: ACCENT_DK, fontSize: 13, fontWeight: 700, padding: '5px 12px', borderRadius: 999, boxShadow: '0 2px 8px rgba(16,24,40,0.12)' }}>{ing.dose}</span>
                 </div>
-                <div style={{ padding: '20px 22px 24px' }}>
-                  <h3 style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.01em', color: INK, marginBottom: 8, lineHeight: 1.25 }}>{ing.name}</h3>
-                  <p style={{ fontSize: 13.5, color: INK_SOFT, lineHeight: 1.65 }}>{ing.benefit}</p>
+                <div style={{ flex: 1, minWidth: 0, padding: '4px 0' }}>
+                  <div className="ingredient-head" style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6, flexWrap: 'wrap' }}>
+                    <h3 style={{ fontSize: 17.5, fontWeight: 700, letterSpacing: '-0.01em', color: INK, lineHeight: 1.25 }}>{ing.name}</h3>
+                    <span style={{ background: ACCENT_SOFT, color: ACCENT_DK, fontSize: 12.5, fontWeight: 700, padding: '3px 11px', borderRadius: 999, flexShrink: 0 }}>{ing.dose}</span>
+                  </div>
+                  <p style={{ fontSize: 14, color: INK_SOFT, lineHeight: 1.6 }}>{ing.benefit}</p>
                 </div>
+                <span className="ingredient-num" style={{ fontSize: 30, fontWeight: 700, letterSpacing: '-0.02em', color: '#eef0f3', paddingRight: 14, flexShrink: 0, userSelect: 'none' }}>
+                  {String(i + 1).padStart(2, '0')}
+                </span>
               </div>
             ))}
           </Reveal>
@@ -534,6 +536,8 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
           </Reveal>
         </div>
       </section>
+
+      {product.banners?.[2] && <ProductBanner {...product.banners[2]} />}
 
       {/* ── QUALITY CLAIMS ── */}
       <section style={{ padding: '80px 24px' }}>
@@ -672,11 +676,10 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
           .product-grid { grid-template-columns: 1fr !important; gap: 26px !important; }
           .product-image-sticky { position: relative !important; top: auto !important; }
           .benefit-grid, .usage-grid, .quality-grid { grid-template-columns: 1fr !important; }
-          .ingredient-grid { grid-template-columns: 1fr !important; }
           .mobile-cta-outer { display: block !important; }
         }
         @media (min-width: 601px) and (max-width: 900px) {
-          .benefit-grid, .quality-grid, .ingredient-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .benefit-grid, .quality-grid { grid-template-columns: repeat(2, 1fr) !important; }
         }
         /* Tablet & down: tighten section spacing */
         @media (max-width: 768px) {
@@ -686,6 +689,9 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
         }
         /* Phones: stack gallery, shrink everything a touch */
         @media (max-width: 600px) {
+          .ingredient-row { gap: 14px !important; }
+          .ingredient-img { width: 84px !important; height: 84px !important; }
+          .ingredient-num { display: none; }
           .gallery-wrap { flex-direction: column !important; gap: 10px !important; }
           .gallery-main { flex: none !important; width: 100% !important; }
           .gallery-thumbs { flex-direction: row !important; width: 100% !important; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }

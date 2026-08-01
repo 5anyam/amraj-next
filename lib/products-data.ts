@@ -68,6 +68,11 @@ export const PRODUCTS: StaticProduct[] = [
         src: 'https://cms.amraj.in/wp-content/uploads/2025/10/2-scaled.jpg',
         alt: 'From struggle to strength — results in 3 months',
       },
+      // Placeholder brand creative (generated) — swap src for a real lifestyle/brand shot when ready.
+      {
+        src: '/banners/creative-placeholder.jpg',
+        alt: 'Rooted in tradition, backed by science — the soil we trust',
+      },
     ],
     benefits: [
       'Supports healthy urinary flow and everyday comfort',
