@@ -15,7 +15,8 @@ import { useCart } from '../../../../lib/cart';
 import { toast } from '../../../../hooks/use-toast';
 
 const ProductReviews = dynamic(() => import('../../../../components/ProductReviews'), { ssr: false });
-const ProductFAQ = dynamic(() => import('../../../../components/ProductFaq'), { ssr: false });
+// FAQ stays statically imported: its Q&A copy is core SEO content and must be in the server HTML.
+import ProductFAQ from '../../../../components/ProductFaq';
 
 /* ────────────────────────────────────────────────
    PREMIUM DESIGN TOKENS
@@ -272,7 +273,6 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
 
   const bundles = getBundles(product.price, product.regularPrice, product.capsules);
   const bundle = bundles[selectedBundle];
-  const discount = Math.round(((product.regularPrice - product.price) / product.regularPrice) * 100);
   const relatedProducts = PRODUCTS.filter((p) => p.slug !== product.slug);
 
   const handleAddToCart = () => {

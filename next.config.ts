@@ -1,10 +1,16 @@
 import type { NextConfig } from "next";
+import path from "node:path";
 
 const nextConfig: NextConfig = {
+  // A stray package-lock.json in the home directory makes Next infer the wrong
+  // workspace root, which breaks PostCSS/Tailwind resolution. Pin it here.
+  turbopack: { root: path.join(__dirname) },
   images: {
-    domains: ["images.unsplash.com","cms.amraj.in","images.remotePatterns"],
+    remotePatterns: [
+      { protocol: "https", hostname: "cms.amraj.in" },
+      { protocol: "https", hostname: "images.unsplash.com" },
+    ],
   },
-  /* config options here */
   reactStrictMode: true,
 };
 

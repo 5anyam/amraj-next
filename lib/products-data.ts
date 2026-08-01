@@ -29,6 +29,10 @@ export interface StaticProduct {
   howToUse: string;
   category: string;
   badge?: string;
+  /** Search-result title/description. Written per product to target its ranking
+   *  keywords; page falls back to name/tagline when absent. */
+  seoTitle?: string;
+  seoDescription?: string;
   rating: number;
   reviewCount: number;
   capsules: number;
@@ -81,6 +85,9 @@ export const PRODUCTS: StaticProduct[] = [
       'Take 2 capsules daily with meals, or as directed by your healthcare provider. For best results, use consistently as part of a balanced lifestyle.',
     category: "Men's Health",
     badge: 'Best Seller',
+    seoTitle: 'Advanced Prostate Care — Saw Palmetto 320mg Prostate Supplement for Men',
+    seoDescription:
+      'Amraj Advanced Prostate Care supplement with Saw Palmetto 320mg, Beta-Sitosterol & Nettle Root supports prostate health and urinary comfort. FSSAI-certified, lab-tested, 60 veg capsules. COD & free shipping across India.',
     rating: 4.8,
     reviewCount: 342,
     capsules: 60,
@@ -115,6 +122,9 @@ export const PRODUCTS: StaticProduct[] = [
     howToUse:
       'Take 2 capsules daily with meals, or as directed by your healthcare provider. For best results, use consistently for at least 30 days as part of a balanced lifestyle.',
     category: 'Liver Health',
+    seoTitle: 'Advanced Liver Detox — Milk Thistle, TUDCA & NAC Liver Supplement',
+    seoDescription:
+      'Amraj Advanced Liver Detox with Milk Thistle (Silymarin 80%), TUDCA 250mg & NAC supports healthy liver function and detox. FSSAI-certified, lab-tested, 60 veg capsules. COD & free shipping across India.',
     badge: 'Trending',
     rating: 4.7,
     reviewCount: 218,
@@ -150,6 +160,9 @@ export const PRODUCTS: StaticProduct[] = [
     howToUse:
       'Take 2 capsules 30 minutes before meals with a glass of water. Best used alongside a balanced diet and regular exercise.',
     category: 'Weight Management',
+    seoTitle: 'Weight Management Pro+ — Garcinia Cambogia & Green Coffee Capsules',
+    seoDescription:
+      'Amraj Weight Management Pro+ with Garcinia Cambogia (60% HCA), Green Coffee & L-Carnitine supports metabolism and healthy weight management. FSSAI-certified, 60 veg capsules. COD & free shipping across India.',
     badge: 'Top Value',
     rating: 4.6,
     reviewCount: 189,

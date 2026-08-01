@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import ProductClient from './product-client';
 import { PRODUCTS, getProductBySlug } from '../../../../lib/products-data';
+import { getFaqsForSlug } from '../../../../lib/faq-data';
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -17,20 +18,28 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!product) {
     return {
-      title: 'Product Not Found | Amraj',
+      title: 'Product Not Found',
       robots: { index: false, follow: false },
     };
   }
 
-  const title = `${product.name} – ${product.tagline} | Amraj`;
-  const description = `Buy ${product.name} online at ₹${product.price}. ${product.tagline}. FSSAI certified, GMP tested. Pan-India delivery.`;
+  // Layout's title template appends "| Amraj" — don't add it here too.
+  const title = product.seoTitle ?? `${product.name} – ${product.tagline}`;
+  const description = product.seoDescription
+    ?? `Buy ${product.name} online at ₹${product.price}. ${product.tagline}. FSSAI certified, GMP tested. Pan-India delivery.`;
   const imageUrl = product.images[0];
   const canonical = `https://www.amraj.in/product/${product.slug}`;
 
   return {
     title,
     description,
-    keywords: [product.name, product.category, 'supplement', 'India', 'buy online'],
+    keywords: [
+      product.name,
+      `${product.shortName.toLowerCase()} supplement`,
+      product.category,
+      ...product.ingredients.map((i) => i.name),
+      'supplement', 'India', 'buy online',
+    ],
     alternates: { canonical },
     openGraph: {
       type: 'website',
@@ -99,11 +108,39 @@ export default async function Page({ params }: Props) {
     },
   };
 
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: getFaqsForSlug(product.slug).map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: { '@type': 'Answer', text: f.answer },
+    })),
+  };
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.amraj.in/' },
+      { '@type': 'ListItem', position: 2, name: 'Shop', item: 'https://www.amraj.in/shop' },
+      { '@type': 'ListItem', position: 3, name: product.name, item: canonical },
+    ],
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <ProductClient product={product} />
     </>

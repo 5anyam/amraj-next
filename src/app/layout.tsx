@@ -12,8 +12,52 @@ import Loading from './loading'; // Import the new loading component
 import { AuthProvider } from '../../lib/auth-context';
 
 export const metadata = {
-  title: 'Amraj - Rooted in Tradition, Backed by Science',
-  description: 'An innovative fusion of modern nutraceuticals and ancient herbal wisdom—for results you can feel.',
+  metadataBase: new URL('https://www.amraj.in'),
+  title: {
+    default: 'Amraj — Ayurvedic & Nutraceutical Wellness Supplements, Made in India',
+    template: '%s | Amraj',
+  },
+  description:
+    'Amraj blends ancient herbal wisdom with modern nutraceuticals — FSSAI-certified, GMP-made, lab-tested supplements for prostate care, liver detox and weight management. COD & pan-India delivery.',
+  alternates: { canonical: '/' },
+  openGraph: {
+    type: 'website',
+    siteName: 'Amraj',
+    url: 'https://www.amraj.in',
+    title: 'Amraj — Ayurvedic & Nutraceutical Wellness Supplements',
+    description:
+      'FSSAI-certified, lab-tested supplements for prostate care, liver detox and weight management. Rooted in tradition, backed by science.',
+    locale: 'en_IN',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Amraj — Ayurvedic & Nutraceutical Wellness Supplements',
+    description:
+      'FSSAI-certified, lab-tested supplements for prostate care, liver detox and weight management.',
+  },
+  robots: { index: true, follow: true },
+};
+
+/* Sitewide entity data for search engines. Rendered once in <head>. */
+const ORG_JSONLD = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': 'https://www.amraj.in/#org',
+  name: 'Amraj Wellness',
+  url: 'https://www.amraj.in',
+  logo: 'https://www.amraj.in/amraj-logo.svg',
+  slogan: 'Rooted in Tradition, Backed by Science',
+  email: 'mailto:care@amraj.in',
+  telephone: '+91-92116-19009',
+  address: { '@type': 'PostalAddress', addressCountry: 'IN' },
+};
+
+const WEBSITE_JSONLD = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Amraj',
+  url: 'https://www.amraj.in',
+  publisher: { '@id': 'https://www.amraj.in/#org' },
 };
 
 export const viewport = {
@@ -29,6 +73,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
+        <link rel="preconnect" href="https://cms.amraj.in" />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_JSONLD) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_JSONLD) }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
