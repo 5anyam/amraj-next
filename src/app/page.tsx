@@ -193,7 +193,7 @@ export default function Homepage() {
               { step: '01', title: 'Choose your formula', desc: 'Pick the supplement that targets your specific health goal.' },
               { step: '02', title: 'Order in 60 seconds', desc: 'Simple checkout — name, phone & address. Done.' },
               { step: '03', title: 'Pan-India delivery', desc: 'Delivered across India in 3–5 business days, securely packaged.' },
-              { step: '04', title: 'Feel the difference', desc: 'Consistent use over 4–6 weeks supports real, lasting results.' },
+              { step: '04', title: 'Feel the difference', desc: 'Real results take time — use consistently for at least 3 months to support lasting change.' },
             ].map((item) => (
               <div key={item.step} style={{ background: '#fff', borderRadius: RADIUS, border: `1px solid ${LINE}`, padding: '28px 24px', boxShadow: CARD_SHADOW }}>
                 <div style={{ width: 44, height: 44, borderRadius: 12, background: ACCENT, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 18 }}>

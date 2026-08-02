@@ -38,7 +38,7 @@ export const faqData: Record<string, FAQ[]> = {
     },
     {
       question: "When might I notice a difference?",
-      answer: "Dietary supplements work gradually and results vary from person to person. Many people use it consistently for 8–12 weeks alongside a healthy lifestyle. This product is not intended to diagnose, treat, cure or prevent any disease."
+      answer: "Dietary supplements work gradually and results vary from person to person. Herbal formulas like this are best used consistently for at least 3 months alongside a healthy lifestyle — that's when steady routines show their real value. This product is not intended to diagnose, treat, cure or prevent any disease."
     },
     {
       question: "Is it vegetarian and quality-tested?",
@@ -138,7 +138,7 @@ export const defaultFAQs: FAQ[] = [
   },
   {
     question: "How long before I see results?",
-    answer: "Results may vary, but most customers notice benefits within 2-4 weeks of consistent use. For best results, use for at least 8-12 weeks."
+    answer: "Results may vary from person to person. For best results, use consistently for at least 3 months as part of a balanced lifestyle."
   },
   {
     question: "Are there any side effects?",

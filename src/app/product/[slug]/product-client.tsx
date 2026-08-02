@@ -306,7 +306,7 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
 
   const trustRow = [
     { image: '/icons/cash-on-delivery.svg', label: 'Cash on Delivery' },
-    { image: '/icons/shipping.svg', label: 'Free Shipping ₹999+' },
+    { image: '/icons/shipping.svg', label: 'Free Delivery' },
     { image: '/icons/fast-dispatch.svg', label: 'Fast Dispatch' },
     { image: '/icons/secure-checkout.svg', label: 'Secure Checkout' },
   ];
@@ -522,8 +522,8 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
           <Reveal variant="stagger" className="usage-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }}>
             {[
               { image: '/icons/usage-dose.svg', title: 'How much', desc: 'Take 2 capsules daily with a glass of water.' },
-              { image: '/icons/usage-when.svg', title: 'When', desc: 'Best taken with a meal, or as directed by your healthcare provider.' },
-              { image: '/icons/usage-duration.svg', title: 'How long', desc: 'Use consistently for 4–6 weeks as part of a balanced lifestyle.' },
+              { image: '/icons/usage-when.svg', title: 'When', desc: 'With your meals, morning & evening — one capsule with lunch, one with dinner.' },
+              { image: '/icons/usage-duration.svg', title: 'How long', desc: 'Real results take time — use consistently for at least 3 months as part of a balanced lifestyle.' },
             ].map((s, i) => (
               <div key={i} style={{ background: '#fff', borderRadius: RADIUS, border: `1px solid ${LINE}`, padding: '30px 26px', textAlign: 'center', boxShadow: CARD_SHADOW }}>
                 <div style={{ width: 54, height: 54, borderRadius: 16, background: ACCENT_SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
