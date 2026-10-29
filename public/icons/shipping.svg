@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" role="img" aria-label="Free shipping">
+  <rect x="1.4" y="5.6" width="12.2" height="10.4" rx="2.2" fill="#0D9488"/>
+  <path d="M13.6 8.8h3.7a2 2 0 0 1 1.5.7l2.9 3.3a2 2 0 0 1 .5 1.3V16h-8.6z" fill="#0a7a6e"/>
+  <circle cx="6.5" cy="18.2" r="2.7" fill="#0a7a6e"/>
+  <circle cx="6.5" cy="18.2" r="1" fill="#fff"/>
+  <circle cx="17.6" cy="18.2" r="2.7" fill="#0a7a6e"/>
+  <circle cx="17.6" cy="18.2" r="1" fill="#fff"/>
+</svg>

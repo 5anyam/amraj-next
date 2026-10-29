@@ -1,0 +1,180 @@
+export interface ProductIngredient {
+  name: string;
+  dose: string;
+  benefit: string;
+  /** Optional ingredient image. Add a WordPress URL (https://cms.amraj.in/...) or a
+   *  local path in /public (e.g. '/ingredients/saw-palmetto.jpg'). Falls back to a
+   *  styled gradient placeholder when empty. */
+  image?: string;
+}
+
+export interface StaticProduct {
+  id: number;
+  slug: string;
+  name: string;
+  shortName: string;
+  tagline: string;
+  price: number;
+  regularPrice: number;
+  /** Square-ish product photos for the gallery carousel. */
+  images: string[];
+  /** Optional wide infographic banners rendered full-width down the product page,
+   *  in order, between the benefit / ingredient / usage sections. */
+  banners?: { src: string; alt: string }[];
+  benefits: string[];
+  /** Optional photo per benefit, index-matched to `benefits`. Where a path is given the
+   *  benefit card shows a photo strip instead of its icon tile. */
+  benefitImages?: string[];
+  ingredients: ProductIngredient[];
+  howToUse: string;
+  category: string;
+  badge?: string;
+  /** Search-result title/description. Written per product to target its ranking
+   *  keywords; page falls back to name/tagline when absent. */
+  seoTitle?: string;
+  seoDescription?: string;
+  rating: number;
+  reviewCount: number;
+  capsules: number;
+}
+
+/** Compliance disclaimer shown on every product page. Keeps copy within
+ *  Google Merchant Center health & supplement policy. */
+export const HEALTH_DISCLAIMER =
+  'This is a dietary supplement and is not intended to diagnose, treat, cure, or prevent any disease. Results may vary from person to person. Always consult a qualified healthcare professional before use, especially if you are pregnant, nursing, under medication, or have a pre-existing medical condition.';
+
+export const PRODUCTS: StaticProduct[] = [
+  {
+    id: 86,
+    slug: 'advanced-prostate-care',
+    name: 'Advanced Prostate Care',
+    shortName: 'Prostate Care',
+    tagline: 'Herbal & nutraceutical formula that supports prostate health and everyday urinary comfort',
+    price: 785,
+    regularPrice: 1849,
+    images: [
+      'https://cms.amraj.in/wp-content/uploads/2025/06/prostate1-2-scaled.jpg',
+      'https://cms.amraj.in/wp-content/uploads/2025/06/IMG_6765-1-scaled.jpg',
+      'https://cms.amraj.in/wp-content/uploads/2025/06/Info-1-Copy-scaled.jpg',
+      'https://cms.amraj.in/wp-content/uploads/2025/07/Info-3-1-scaled.jpg',
+      'https://cms.amraj.in/wp-content/uploads/2025/07/Info-2-1-scaled.jpg',
+    ],
+    banners: [
+      {
+        src: 'https://cms.amraj.in/wp-content/uploads/2025/10/1-scaled.jpg',
+        alt: 'Who is it for — frequent urination, urinary discomfort or burning, and interrupted flow',
+      },
+      {
+        src: 'https://cms.amraj.in/wp-content/uploads/2025/10/2-scaled.jpg',
+        alt: 'From struggle to strength — results in 3 months',
+      },
+      // Placeholder brand creative (generated) — swap src for a real lifestyle/brand shot when ready.
+      {
+        src: '/banners/creative-placeholder.jpg',
+        alt: 'Rooted in tradition, backed by science — the soil we trust',
+      },
+    ],
+    benefits: [
+      'Supports healthy urinary flow and everyday comfort',
+      'Made with Saw Palmetto extract at a 320mg serving',
+      'Includes Beta-Sitosterol to support normal prostate function',
+      'Formulated with herbal extracts for men’s wellness',
+      'No artificial fillers — 60 pure vegetarian capsules',
+    ],
+    ingredients: [
+      { name: 'Saw Palmetto Extract', dose: '320mg', benefit: 'Traditionally used to support prostate & urinary health', image: '/ingredients/saw-palmetto.jpg' },
+      { name: 'Beta-Sitosterol', dose: '330mg', benefit: 'Plant sterol that supports normal urinary function', image: '/ingredients/beta-sitosterol.jpg' },
+      { name: 'Stinging Nettle Root', dose: '180mg', benefit: 'Herbal root with natural antioxidant properties', image: '/ingredients/nettle.jpg' },
+    ],
+    howToUse:
+      'Take 2 capsules daily with meals, or as directed by your healthcare provider. For best results, use consistently as part of a balanced lifestyle.',
+    category: "Men's Health",
+    badge: 'Best Seller',
+    seoTitle: 'Advanced Prostate Care — Saw Palmetto 320mg Prostate Supplement for Men',
+    seoDescription:
+      'Amraj Advanced Prostate Care supplement with Saw Palmetto 320mg, Beta-Sitosterol & Nettle Root supports prostate health and urinary comfort. FSSAI-certified, lab-tested, 60 veg capsules. COD & free shipping across India.',
+    rating: 4.8,
+    reviewCount: 342,
+    capsules: 60,
+  },
+  {
+    id: 85,
+    slug: 'advanced-liver-detox',
+    name: 'Advanced Liver Detox',
+    shortName: 'Liver Detox',
+    tagline: 'Herbal formula with Milk Thistle to support healthy liver function and everyday wellness',
+    price: 585,
+    regularPrice: 1599,
+    images: [
+      'https://cms.amraj.in/wp-content/uploads/2025/07/IMG_6762-scaled.jpg',
+      'https://cms.amraj.in/wp-content/uploads/2025/07/Info-1-2-scaled.jpg',
+      'https://cms.amraj.in/wp-content/uploads/2025/07/Info-2-2-scaled.jpg',
+      'https://cms.amraj.in/wp-content/uploads/2025/07/Info-3-2-scaled.jpg',
+      'https://cms.amraj.in/wp-content/uploads/2025/07/Info-4-1-scaled.jpg',
+    ],
+    benefits: [
+      'Milk Thistle (Silymarin) supports healthy liver function',
+      'TUDCA helps support healthy bile flow',
+      'NAC supports the body’s natural antioxidant, glutathione',
+      'Formulated to support the liver’s natural cleansing process',
+      'No artificial fillers — 60 pure vegetarian capsules',
+    ],
+    ingredients: [
+      { name: 'Milk Thistle (Silymarin 80%)', dose: '400mg', benefit: 'Supports healthy liver function & cell protection', image: '/ingredients/milk-thistle.jpg' },
+      { name: 'TUDCA', dose: '200mg', benefit: 'Supports healthy bile flow & liver cell wellness', image: '/ingredients/tudca.png' },
+      { name: 'N-Acetyl L-Cysteine (NAC)', dose: '400mg', benefit: 'Supports glutathione, the body’s master antioxidant', image: '/ingredients/nac.png' },
+    ],
+    howToUse:
+      'Take 2 capsules daily with meals, or as directed by your healthcare provider. For best results, use consistently for at least 30 days as part of a balanced lifestyle.',
+    category: 'Liver Health',
+    seoTitle: 'Advanced Liver Detox — Milk Thistle, TUDCA & NAC Liver Supplement',
+    seoDescription:
+      'Amraj Advanced Liver Detox with Milk Thistle (Silymarin 80%), TUDCA 250mg & NAC supports healthy liver function and detox. FSSAI-certified, lab-tested, 60 veg capsules. COD & free shipping across India.',
+    badge: 'Trending',
+    rating: 4.7,
+    reviewCount: 218,
+    capsules: 60,
+  },
+  {
+    id: 60,
+    slug: 'weight-management-pro',
+    name: 'Weight Management Pro+',
+    shortName: 'Weight Pro+',
+    tagline: 'Herbal metabolism formula to support your healthy weight management journey',
+    price: 585,
+    regularPrice: 2499,
+    images: [
+      'https://cms.amraj.in/wp-content/uploads/2025/06/IMG_6768-1-scaled.jpg',
+      'https://cms.amraj.in/wp-content/uploads/2025/06/Info-1-scaled.jpg',
+      'https://cms.amraj.in/wp-content/uploads/2025/06/Info-2-scaled.jpg',
+      'https://cms.amraj.in/wp-content/uploads/2025/07/Info-3-scaled.jpg',
+      'https://cms.amraj.in/wp-content/uploads/2025/07/Info-4-scaled.jpg',
+    ],
+    benefits: [
+      'Garcinia Cambogia to help support a healthy appetite',
+      'Green Coffee extract to support metabolism',
+      'L-Carnitine to support everyday energy metabolism',
+      'Designed to complement a balanced diet & active lifestyle',
+      'No artificial fillers — 60 pure vegetarian capsules',
+    ],
+    ingredients: [
+      { name: 'Garcinia Cambogia (60% HCA)', dose: '500mg', benefit: 'Herbal extract that supports a healthy appetite', image: '/ingredients/garcinia.jpg' },
+      { name: 'Green Coffee Extract (50% CGA)', dose: '100mg', benefit: 'Antioxidant that supports metabolism', image: '/ingredients/green-coffee.png' },
+      { name: 'L-Carnitine Tartrate', dose: '150mg', benefit: 'Amino acid that supports energy metabolism', image: '/ingredients/l-carnitine.jpg' },
+    ],
+    howToUse:
+      'Take 2 capsules 30 minutes before meals with a glass of water. Best used alongside a balanced diet and regular exercise.',
+    category: 'Weight Management',
+    seoTitle: 'Weight Management Pro+ — Garcinia Cambogia & Green Coffee Capsules',
+    seoDescription:
+      'Amraj Weight Management Pro+ with Garcinia Cambogia (60% HCA), Green Coffee & L-Carnitine supports metabolism and healthy weight management. FSSAI-certified, 60 veg capsules. COD & free shipping across India.',
+    badge: 'Top Value',
+    rating: 4.6,
+    reviewCount: 189,
+    capsules: 60,
+  },
+];
+
+export function getProductBySlug(slug: string): StaticProduct | undefined {
+  return PRODUCTS.find((p) => p.slug === slug);
+}

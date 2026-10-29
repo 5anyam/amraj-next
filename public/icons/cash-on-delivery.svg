@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" role="img" aria-label="Cash on delivery">
+  <rect x="1.6" y="4.8" width="20.8" height="14.4" rx="3.2" fill="#0D9488"/>
+  <circle cx="12" cy="12" r="4.4" fill="#eef7f5"/>
+  <path d="M10.1 9.4h3.8M10.1 11.1h3.8M12.9 9.4c0 1.7-1 2.6-2.8 2.6l3 3" fill="none" stroke="#0a7a6e" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

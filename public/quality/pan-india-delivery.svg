@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" role="img" aria-label="Pan-India delivery">
+  <rect width="96" height="96" rx="24" fill="#eef7f5"/>
+  <rect x="10" y="28" width="42" height="34" rx="6" fill="#0D9488"/>
+  <path d="M52 38h11a4 4 0 0 1 2.9 1.2l10 10.5A4 4 0 0 1 77 52.5V62H52z" fill="#0a7a6e"/>
+  <path d="M56 42h7l7.5 8H56z" fill="#eef7f5"/>
+  <path d="M22 40h18M22 50h12" stroke="#eef7f5" stroke-width="4" stroke-linecap="round" opacity=".65"/>
+  <circle cx="26" cy="66" r="9" fill="#0a7a6e"/>
+  <circle cx="26" cy="66" r="3.5" fill="#eef7f5"/>
+  <circle cx="65" cy="66" r="9" fill="#0a7a6e"/>
+  <circle cx="65" cy="66" r="3.5" fill="#eef7f5"/>
+</svg>

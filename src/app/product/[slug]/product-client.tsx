@@ -1,0 +1,709 @@
+'use client';
+
+import React, { useState, useRef } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
+import {
+  Star, ShieldCheck, Check, Leaf, ChevronLeft, ChevronRight, Zap,
+  Sparkles, FlaskConical, BadgeCheck, HeartHandshake,
+} from 'lucide-react';
+import { StaticProduct, PRODUCTS, HEALTH_DISCLAIMER } from '../../../../lib/products-data';
+import Reveal from '../../../../components/Reveal';
+import { useCart } from '../../../../lib/cart';
+import { toast } from '../../../../hooks/use-toast';
+
+const ProductReviews = dynamic(() => import('../../../../components/ProductReviews'), { ssr: false });
+// FAQ stays statically imported: its Q&A copy is core SEO content and must be in the server HTML.
+import ProductFAQ from '../../../../components/ProductFaq';
+
+/* ────────────────────────────────────────────────
+   PREMIUM DESIGN TOKENS
+──────────────────────────────────────────────── */
+const INK = '#17191f';
+const INK_SOFT = '#5c6470';
+const LINE = '#e9eaee';
+const ACCENT = '#0D9488';
+const ACCENT_DK = '#0a7a6e';
+const ACCENT_SOFT = '#eef7f5';
+const BG_SOFT = '#f6f8f7';
+const CARD_SHADOW = '0 2px 16px rgba(16,24,40,0.05)';
+const RADIUS = 20;
+
+function StarRating({ rating, size = 15 }: { rating: number; size?: number }) {
+  return (
+    <div style={{ display: 'flex', gap: 2 }}>
+      {[1, 2, 3, 4, 5].map((i) => (
+        <Star key={i} style={{ width: size, height: size, fill: i <= Math.round(rating) ? '#f5a623' : '#e4e6eb', color: i <= Math.round(rating) ? '#f5a623' : '#e4e6eb' }} />
+      ))}
+    </div>
+  );
+}
+
+/* ── SECTION HEADING ── */
+function SectionHeading({ eyebrow, title, sub, align = 'center' }: { eyebrow?: string; title: string; sub?: string; align?: 'center' | 'left' }) {
+  return (
+    <Reveal variant="blur" style={{ textAlign: align, marginBottom: 40, maxWidth: 680, marginLeft: align === 'center' ? 'auto' : 0, marginRight: align === 'center' ? 'auto' : 0 }}>
+      {eyebrow && (
+        <span style={{ display: 'inline-block', fontSize: 12, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: ACCENT, marginBottom: 12 }}>{eyebrow}</span>
+      )}
+      <h2 style={{ fontSize: 'clamp(28px,3.4vw,40px)', fontWeight: 700, letterSpacing: '-0.02em', color: INK, lineHeight: 1.12 }}>{title}</h2>
+      {sub && <p style={{ fontSize: 15, color: INK_SOFT, lineHeight: 1.7, marginTop: 14 }}>{sub}</p>}
+    </Reveal>
+  );
+}
+
+interface Bundle {
+  packs: number; label: string; note: string; pricePerServe: number;
+  totalPrice: number; savings: number; discountPct: number; badge?: string;
+}
+
+/* Bundle discount ladder. Tuned so a ₹785 bottle lands at ₹1,249 (2-pack) and ₹1,799 (3-pack),
+   while keeping the per-bottle price falling as pack size grows — ₹785 → ₹624 → ₹600. */
+const BUNDLE_MULTIPLIER = { 2: 0.795, 3: 0.764 } as const;
+
+/** Snaps a computed total to a retail-friendly price ending in 9 (nearest ₹50 − ₹1). */
+const retailRound = (n: number) => Math.round(n / 50) * 50 - 1;
+
+function getBundles(price: number, regular: number, capsules: number): Bundle[] {
+  const servingsPerPack = Math.max(1, Math.floor(capsules / 2)); // 2 caps/day
+  const mk = (packs: number, mult: number, badge?: string): Bundle => {
+    // Single bottle always sells at the product's own price — never re-rounded.
+    const total = packs === 1 ? price : retailRound(price * packs * mult);
+    const regularTotal = regular * packs;
+    return {
+      packs,
+      label: `Pack of ${capsules * packs}`,
+      note: `${packs * (capsules)} capsules · ${packs} bottle${packs > 1 ? 's' : ''}`,
+      pricePerServe: Math.round(total / (servingsPerPack * packs)),
+      totalPrice: total,
+      savings: regularTotal - total,
+      discountPct: Math.round(((regularTotal - total) / regularTotal) * 100),
+      badge,
+    };
+  };
+  return [mk(1, 1), mk(2, BUNDLE_MULTIPLIER[2], 'Popular'), mk(3, BUNDLE_MULTIPLIER[3], 'Best Value')];
+}
+
+/* ── IMAGE GALLERY (vertical thumbs + swipeable main carousel) ── */
+function ImageGallery({ images, name }: { images: string[]; name: string }) {
+  const [main, setMain] = useState(0);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const multi = images.length > 1;
+
+  const goTo = (i: number) => {
+    const next = (i + images.length) % images.length;
+    setMain(next);
+    trackRef.current?.scrollTo({ left: trackRef.current.clientWidth * next, behavior: 'smooth' });
+  };
+
+  const onScroll = () => {
+    const el = trackRef.current;
+    if (!el || !el.clientWidth) return;
+    const i = Math.max(0, Math.min(images.length - 1, Math.round(el.scrollLeft / el.clientWidth)));
+    setMain((prev) => (prev === i ? prev : i));
+  };
+
+  return (
+    <div className="gallery-wrap" style={{ display: 'flex', gap: 14 }}>
+      {/* Thumbnails */}
+      {multi && (
+        <div className="gallery-thumbs" style={{ display: 'flex', flexDirection: 'column', gap: 10, width: 74, flexShrink: 0 }}>
+          {images.map((src, i) => (
+            <button
+              key={i}
+              type="button"
+              aria-label={`View image ${i + 1}`}
+              onClick={() => goTo(i)}
+              style={{
+                position: 'relative', width: 74, height: 74, borderRadius: 12, overflow: 'hidden',
+                border: `2px solid ${i === main ? ACCENT : LINE}`, cursor: 'pointer', background: BG_SOFT,
+                padding: 0, transition: 'border-color 0.2s', flexShrink: 0,
+              }}
+            >
+              <Image src={src} alt={`${name} ${i + 1}`} fill style={{ objectFit: 'cover' }} sizes="74px" />
+            </button>
+          ))}
+        </div>
+      )}
+      {/* Main — horizontal swipe / scroll carousel */}
+      <div className="gallery-main" style={{ position: 'relative', flex: 1, width: '100%', aspectRatio: '1', borderRadius: RADIUS, overflow: 'hidden', background: BG_SOFT, boxShadow: CARD_SHADOW }}>
+        <div
+          ref={trackRef}
+          className="gallery-track"
+          onScroll={onScroll}
+          style={{
+            display: 'flex', height: '100%', width: '100%', overflowX: 'auto', overflowY: 'hidden',
+            scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none',
+          }}
+        >
+          {images.map((src, i) => (
+            <div key={i} style={{ position: 'relative', flex: '0 0 100%', height: '100%', scrollSnapAlign: 'start', scrollSnapStop: 'always' }}>
+              <Image src={src} alt={`${name} ${i + 1}`} fill style={{ objectFit: 'cover' }} sizes="(max-width: 1024px) 100vw, 560px" priority={i === 0} />
+            </div>
+          ))}
+        </div>
+
+        {multi && (
+          <>
+            <button
+              type="button"
+              aria-label="Previous image"
+              className="gallery-arrow"
+              onClick={() => goTo(main - 1)}
+              style={{ left: 12 }}
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button
+              type="button"
+              aria-label="Next image"
+              className="gallery-arrow"
+              onClick={() => goTo(main + 1)}
+              style={{ right: 12 }}
+            >
+              <ChevronRight size={20} />
+            </button>
+            <div style={{ position: 'absolute', bottom: 12, left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: 6, pointerEvents: 'none' }}>
+              {images.map((_, i) => (
+                <span
+                  key={i}
+                  style={{
+                    width: i === main ? 18 : 6, height: 6, borderRadius: 999,
+                    background: i === main ? ACCENT : 'rgba(255,255,255,0.75)',
+                    boxShadow: '0 1px 3px rgba(16,24,40,0.25)', transition: 'width 0.25s, background 0.25s',
+                  }}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── FULL-WIDTH INFOGRAPHIC BANNER ──
+   Banners are wide (~2.7:1) and carry their own copy, so they're never cropped — a blurred
+   copy of the same art fills the letterbox instead. */
+function ProductBanner({ src, alt }: { src: string; alt: string }) {
+  return (
+    <section className="product-banner-section">
+      <Reveal className="product-banner">
+        <Image src={src} alt="" aria-hidden className="product-banner-bleed" fill sizes="100vw" />
+        <Image src={src} alt={alt} className="product-banner-img" fill sizes="(max-width: 1080px) 100vw, 1080px" />
+      </Reveal>
+    </section>
+  );
+}
+
+/* ── MINI SUPPLEMENT BOTTLE ICON (shows pack quantity: 1 / 2 / 3) ── */
+function BottleIcon({ color = ACCENT_DK }: { color?: string }) {
+  return (
+    <svg width="13" height="19" viewBox="0 0 13 19" fill="none" aria-hidden style={{ flexShrink: 0 }}>
+      <rect x="4" y="0.6" width="5" height="3" rx="1" fill={color} />
+      <rect x="1.4" y="3.4" width="10.2" height="15" rx="2.4" fill="#fff" stroke={color} strokeWidth="1.4" />
+      <rect x="1.4" y="8.6" width="10.2" height="4.4" fill={color} fillOpacity="0.16" />
+    </svg>
+  );
+}
+
+function BottleCount({ n, active }: { n: number; active: boolean }) {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'flex-end', gap: 2 }}>
+      {Array.from({ length: n }).map((_, i) => (
+        <BottleIcon key={i} color={active ? ACCENT_DK : '#8a93a0'} />
+      ))}
+    </span>
+  );
+}
+
+/* ── MINI PAYMENT LOGOS (inside the Buy Now button) ── */
+function MiniPayLogos() {
+  const pill: React.CSSProperties = {
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 17,
+    padding: '0 5px', background: '#fff', borderRadius: 4, fontSize: 9, fontWeight: 800, lineHeight: 1, letterSpacing: '-0.01em',
+  };
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+      <span style={pill}><span style={{ color: '#0B8A3D' }}>UP</span><span style={{ color: '#F26B21' }}>I</span></span>
+      <span style={{ ...pill, gap: 1 }}><span style={{ color: '#4285F4' }}>G</span><span style={{ color: '#5F6368', fontWeight: 700 }}>Pay</span></span>
+      <span style={pill}><span style={{ color: '#002970' }}>Pay</span><span style={{ color: '#00BAF2' }}>tm</span></span>
+    </span>
+  );
+}
+
+/* ── RELATED CARD ── */
+function RelatedCard({ product }: { product: StaticProduct }) {
+  const discount = Math.round(((product.regularPrice - product.price) / product.regularPrice) * 100);
+  return (
+    <Link
+      href={`/product/${product.slug}`}
+      style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', borderRadius: RADIUS, border: `1px solid ${LINE}`, background: '#fff', overflow: 'hidden', boxShadow: CARD_SHADOW, transition: 'transform 0.2s, box-shadow 0.2s' }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 12px 30px rgba(16,24,40,0.1)'; }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = CARD_SHADOW; }}
+    >
+      <div style={{ position: 'relative', aspectRatio: '1', background: BG_SOFT, overflow: 'hidden' }}>
+        <Image src={product.images[0]} alt={product.name} fill style={{ objectFit: 'cover' }} sizes="300px" />
+        {discount > 0 && (
+          <span style={{ position: 'absolute', top: 12, left: 12, background: ACCENT, color: '#fff', fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 999 }}>{discount}% OFF</span>
+        )}
+      </div>
+      <div style={{ padding: '16px 18px 18px' }}>
+        <p style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: ACCENT, fontWeight: 600, marginBottom: 6 }}>{product.category}</p>
+        <h4 style={{ fontSize: 17, fontWeight: 700, letterSpacing: '-0.01em', color: INK, marginBottom: 10, lineHeight: 1.25 }}>{product.name}</h4>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+          <span style={{ fontSize: 20, fontWeight: 700, color: INK }}>₹{product.price.toLocaleString()}</span>
+          <span style={{ fontSize: 13, color: '#9aa1ac', textDecoration: 'line-through' }}>₹{product.regularPrice.toLocaleString()}</span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+export default function ProductClient({ product }: { product: StaticProduct }) {
+  const router = useRouter();
+  const { addToCart } = useCart();
+  const reviewsRef = useRef<HTMLDivElement>(null);
+
+  const [selectedBundle, setSelectedBundle] = useState(1);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isBuyingNow, setIsBuyingNow] = useState(false);
+
+  const bundles = getBundles(product.price, product.regularPrice, product.capsules);
+  const bundle = bundles[selectedBundle];
+  const relatedProducts = PRODUCTS.filter((p) => p.slug !== product.slug);
+
+  const handleAddToCart = () => {
+    setIsAddingToCart(true);
+    for (let i = 0; i < bundle.packs; i++) {
+      addToCart({ id: product.id, name: product.name, price: product.price.toString(), regular_price: product.regularPrice.toString(), images: product.images.map((src) => ({ src })) });
+    }
+    toast({ title: 'Added to Cart', description: `${bundle.packs} × ${product.shortName} added to your cart.` });
+    setTimeout(() => setIsAddingToCart(false), 600);
+  };
+
+  const handleBuyNow = () => {
+    setIsBuyingNow(true);
+    for (let i = 0; i < bundle.packs; i++) {
+      addToCart({ id: product.id, name: product.name, price: product.price.toString(), regular_price: product.regularPrice.toString(), images: product.images.map((src) => ({ src })) });
+    }
+    router.push('/checkout');
+  };
+
+  const benefitIcons = [Sparkles, HeartHandshake, ShieldCheck, Leaf, Zap, BadgeCheck];
+
+  /* Swap any `image` path below to change a claim's artwork — files live in /public/quality. */
+  const qualityClaims = [
+    { image: '/quality/naturally-sourced.svg', title: 'Naturally Sourced', desc: 'Standardised herbal extracts & pure nutraceuticals.' },
+    { image: '/quality/lab-tested.svg', title: 'Lab Tested', desc: 'Every batch screened for purity & heavy metals.' },
+    { image: '/quality/vegetarian-capsules.svg', title: 'Vegetarian Capsules', desc: 'Clean plant-based capsules, no gelatin.' },
+    { image: '/quality/no-artificial-fillers.svg', title: 'No Artificial Fillers', desc: 'No added sugar, colours or preservatives.' },
+    { image: '/quality/fssai-gmp.svg', title: 'FSSAI & GMP', desc: 'Made in licensed, GMP-certified facilities.' },
+    { image: '/quality/pan-india-delivery.svg', title: 'Pan-India Delivery', desc: 'Delivered in 3–5 business days, securely packed.' },
+  ];
+
+  const trustRow = [
+    { image: '/icons/cash-on-delivery.svg', label: 'Cash on Delivery' },
+    { image: '/icons/shipping.svg', label: 'Free Delivery' },
+    { image: '/icons/fast-dispatch.svg', label: 'Fast Dispatch' },
+    { image: '/icons/secure-checkout.svg', label: 'Secure Checkout' },
+  ];
+
+  return (
+    <div className="product-page" style={{ minHeight: '100vh', background: '#fff', color: INK, paddingBottom: 100 }}>
+
+      {/* Breadcrumb */}
+      <div style={{ borderBottom: `1px solid ${LINE}`, background: '#fff' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '12px 24px' }}>
+          <nav style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: INK_SOFT }}>
+            <Link href="/" style={{ color: 'inherit', textDecoration: 'none' }}>Home</Link>
+            <ChevronRight style={{ width: 14, height: 14, opacity: 0.5 }} />
+            <Link href="/shop" style={{ color: 'inherit', textDecoration: 'none' }}>Shop</Link>
+            <ChevronRight style={{ width: 14, height: 14, opacity: 0.5 }} />
+            <span style={{ color: INK, fontWeight: 500 }}>{product.shortName}</span>
+          </nav>
+        </div>
+      </div>
+
+      {/* ── HERO / BUY ── */}
+      <div className="product-container" style={{ maxWidth: 1200, margin: '0 auto', padding: '36px 24px' }}>
+        <div className="product-grid" style={{ display: 'grid', gridTemplateColumns: '1.05fr 1fr', gap: 56 }}>
+
+          {/* LEFT: gallery */}
+          <div className="product-image-sticky" style={{ position: 'sticky', top: 20, alignSelf: 'start' }}>
+            <ImageGallery images={product.images} name={product.name} />
+          </div>
+
+          {/* RIGHT: buy box */}
+          <div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
+              <span style={{ background: ACCENT_SOFT, color: ACCENT_DK, fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '5px 12px', borderRadius: 999 }}>{product.category}</span>
+              {product.badge && (
+                <span style={{ background: '#fff4e6', color: '#c2791b', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '5px 12px', borderRadius: 999 }}>{product.badge}</span>
+              )}
+            </div>
+
+            <h1 style={{ fontSize: 'clamp(30px,3.6vw,44px)', fontWeight: 700, letterSpacing: '-0.025em', lineHeight: 1.08, marginBottom: 14 }}>{product.name}</h1>
+
+            <button onClick={() => reviewsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+              <StarRating rating={product.rating} />
+              <span style={{ fontSize: 13, color: INK_SOFT }}>{product.rating.toFixed(1)} · {product.reviewCount} reviews</span>
+            </button>
+
+            <p style={{ fontSize: 15.5, color: INK_SOFT, lineHeight: 1.7, marginBottom: 22 }}>{product.tagline}</p>
+
+            {/* Benefit bullets */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 11, marginBottom: 26 }}>
+              {product.benefits.slice(0, 4).map((b, i) => (
+                <div key={i} style={{ display: 'flex', gap: 11, alignItems: 'flex-start' }}>
+                  <span style={{ width: 22, height: 22, borderRadius: 999, background: ACCENT_SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                    <Check style={{ width: 13, height: 13, color: ACCENT_DK }} strokeWidth={3} />
+                  </span>
+                  <span style={{ fontSize: 14.5, color: INK, lineHeight: 1.55 }}>{b}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Price */}
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 6 }}>
+              <span style={{ fontSize: 38, fontWeight: 700, letterSpacing: '-0.02em' }}>₹{bundle.totalPrice.toLocaleString()}</span>
+              <span style={{ fontSize: 18, color: '#9aa1ac', textDecoration: 'line-through' }}>₹{(product.regularPrice * bundle.packs).toLocaleString()}</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#fff', background: ACCENT, padding: '4px 10px', borderRadius: 999 }}>{bundle.discountPct}% OFF</span>
+            </div>
+            <p style={{ fontSize: 13, color: INK_SOFT, marginBottom: 22 }}>MRP incl. of all taxes · Just ₹{bundle.pricePerServe}/serving</p>
+
+            {/* Pack selector */}
+            <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: INK_SOFT, marginBottom: 12 }}>Choose your pack</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
+              {bundles.map((b, i) => {
+                const sel = i === selectedBundle;
+                return (
+                  <button
+                    key={i}
+                    onClick={() => setSelectedBundle(i)}
+                    style={{
+                      position: 'relative', display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left', cursor: 'pointer',
+                      padding: '15px 18px', borderRadius: 16, background: sel ? ACCENT_SOFT : '#fff',
+                      border: `2px solid ${sel ? ACCENT : LINE}`, transition: 'all 0.15s', fontFamily: 'inherit',
+                    }}
+                  >
+                    <span style={{ width: 20, height: 20, borderRadius: 999, border: `2px solid ${sel ? ACCENT : '#c7ccd4'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      {sel && <span style={{ width: 10, height: 10, borderRadius: 999, background: ACCENT }} />}
+                    </span>
+                    <span style={{ width: 48, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', flexShrink: 0 }}>
+                      <BottleCount n={b.packs} active={sel} />
+                    </span>
+                    <span style={{ flex: 1 }}>
+                      <span style={{ display: 'block', fontSize: 15, fontWeight: 700, color: INK }}>{b.label}</span>
+                      <span style={{ display: 'block', fontSize: 12.5, color: INK_SOFT, marginTop: 2 }}>{b.note} · ₹{b.pricePerServe}/serving</span>
+                    </span>
+                    <span style={{ textAlign: 'right', flexShrink: 0 }}>
+                      <span style={{ display: 'block', fontSize: 17, fontWeight: 700, color: INK }}>₹{b.totalPrice.toLocaleString()}</span>
+                      <span style={{ display: 'block', fontSize: 12, color: ACCENT_DK, fontWeight: 600 }}>Save ₹{b.savings.toLocaleString()}</span>
+                    </span>
+                    {b.badge && (
+                      <span style={{ position: 'absolute', top: -10, right: 16, background: INK, color: '#fff', fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '3px 10px', borderRadius: 999 }}>{b.badge}</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* CTAs */}
+            <div className="cta-row" style={{ display: 'flex', gap: 12, marginBottom: 18 }}>
+              <button
+                onClick={handleAddToCart}
+                disabled={isAddingToCart}
+                style={{ flex: 1, padding: '15px 20px', background: '#fff', color: INK, border: `2px solid ${INK}`, borderRadius: 14, fontSize: 14, fontWeight: 700, cursor: isAddingToCart ? 'default' : 'pointer', fontFamily: 'inherit', transition: 'background 0.15s' }}
+                onMouseEnter={e => { if (!isAddingToCart) (e.currentTarget as HTMLElement).style.background = BG_SOFT; }}
+                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = '#fff')}
+              >
+                {isAddingToCart ? 'Added ✓' : 'Add to Cart'}
+              </button>
+              <button
+                onClick={handleBuyNow}
+                disabled={isBuyingNow}
+                style={{ flex: 1.4, padding: '15px 20px', background: ACCENT, color: '#fff', border: `2px solid ${ACCENT}`, borderRadius: 14, fontSize: 14, fontWeight: 700, cursor: isBuyingNow ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontFamily: 'inherit', boxShadow: '0 8px 20px rgba(13,148,136,0.28)', transition: 'background 0.15s' }}
+                onMouseEnter={e => { if (!isBuyingNow) (e.currentTarget as HTMLElement).style.background = ACCENT_DK; }}
+                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = ACCENT)}
+              >
+                <Zap style={{ width: 16, height: 16 }} />
+                {isBuyingNow ? 'Processing…' : 'Buy Now'}
+                {!isBuyingNow && <MiniPayLogos />}
+              </button>
+            </div>
+
+            {/* Trust row */}
+            <div className="trust-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 8 }}>
+              {trustRow.map((t, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: 13, color: INK, padding: '10px 14px', background: BG_SOFT, borderRadius: 12 }}>
+                  <Image src={t.image} alt="" aria-hidden width={18} height={18} style={{ width: 18, height: 18, flexShrink: 0 }} />
+                  <span style={{ fontWeight: 500 }}>{t.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── BENEFIT CARDS ── */}
+      <section style={{ background: BG_SOFT, borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, padding: '72px 24px', marginTop: 40 }}>
+        <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+          <SectionHeading eyebrow="Why it works" title={`What ${product.shortName} does for you`} sub="A focused, science-led formula designed to support your everyday wellness goals." />
+          <Reveal variant="stagger" className="benefit-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }}>
+            {product.benefits.map((b, i) => {
+              const Icon = benefitIcons[i % benefitIcons.length];
+              const photo = product.benefitImages?.[i];
+              return (
+                <div key={i} style={{ background: '#fff', borderRadius: RADIUS, border: `1px solid ${LINE}`, boxShadow: CARD_SHADOW, overflow: 'hidden' }}>
+                  {photo && (
+                    <div style={{ position: 'relative', aspectRatio: '16 / 9', background: BG_SOFT }}>
+                      <Image src={photo} alt="" aria-hidden fill style={{ objectFit: 'cover' }} sizes="(max-width: 900px) 100vw, 340px" />
+                    </div>
+                  )}
+                  <div style={{ padding: '26px 24px' }}>
+                    {!photo && (
+                      <div style={{ width: 46, height: 46, borderRadius: 14, background: ACCENT_SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                        <Icon style={{ width: 22, height: 22, color: ACCENT_DK }} />
+                      </div>
+                    )}
+                    <p style={{ fontSize: 15, color: INK, lineHeight: 1.6, fontWeight: 500 }}>{b}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </Reveal>
+        </div>
+      </section>
+
+      {product.banners?.[0] && <ProductBanner {...product.banners[0]} />}
+
+      {/* ── KEY INGREDIENTS (image slots) ── */}
+      <section style={{ padding: '80px 24px' }}>
+        <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+          <SectionHeading eyebrow="Inside every capsule" title="The active ingredients" sub="Each ingredient is included at a meaningful dose — no proprietary-blend guesswork." />
+          <Reveal variant="stagger" style={{ display: 'flex', flexDirection: 'column', gap: 14, maxWidth: 860, margin: '0 auto' }}>
+            {product.ingredients.map((ing, i) => (
+              <div key={i} className="ingredient-row" style={{ display: 'flex', alignItems: 'center', gap: 22, background: '#fff', borderRadius: RADIUS, border: `1px solid ${LINE}`, boxShadow: CARD_SHADOW, padding: 14 }}>
+                {/* Small side image — fill product.ingredients[].image */}
+                <div className="ingredient-img" style={{ position: 'relative', width: 108, height: 108, borderRadius: 14, overflow: 'hidden', flexShrink: 0, background: 'linear-gradient(150deg,#f0fdf9,#e6f3ef)' }}>
+                  {ing.image ? (
+                    <Image src={ing.image} alt={ing.name} fill style={{ objectFit: 'cover' }} sizes="108px" />
+                  ) : (
+                    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Leaf style={{ width: 30, height: 30, color: ACCENT }} />
+                    </div>
+                  )}
+                </div>
+                <div style={{ flex: 1, minWidth: 0, padding: '4px 0' }}>
+                  <div className="ingredient-head" style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6, flexWrap: 'wrap' }}>
+                    <h3 style={{ fontSize: 17.5, fontWeight: 700, letterSpacing: '-0.01em', color: INK, lineHeight: 1.25 }}>{ing.name}</h3>
+                    <span style={{ background: ACCENT_SOFT, color: ACCENT_DK, fontSize: 12.5, fontWeight: 700, padding: '3px 11px', borderRadius: 999, flexShrink: 0 }}>{ing.dose}</span>
+                  </div>
+                  <p style={{ fontSize: 14, color: INK_SOFT, lineHeight: 1.6 }}>{ing.benefit}</p>
+                </div>
+                <span className="ingredient-num" style={{ fontSize: 30, fontWeight: 700, letterSpacing: '-0.02em', color: '#eef0f3', paddingRight: 14, flexShrink: 0, userSelect: 'none' }}>
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+              </div>
+            ))}
+          </Reveal>
+        </div>
+      </section>
+
+      {product.banners?.[1] && <ProductBanner {...product.banners[1]} />}
+
+      {/* ── HOW TO USE ── */}
+      <section style={{ background: BG_SOFT, borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, padding: '72px 24px' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <SectionHeading eyebrow="Simple daily ritual" title="How to use it" />
+          <Reveal variant="stagger" className="usage-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }}>
+            {[
+              { image: '/icons/usage-dose.svg', title: 'How much', desc: 'Take 2 capsules daily with a glass of water.' },
+              { image: '/icons/usage-when.svg', title: 'When', desc: 'With your meals, morning & evening — one capsule with lunch, one with dinner.' },
+              { image: '/icons/usage-duration.svg', title: 'How long', desc: 'Real results take time — use consistently for at least 3 months as part of a balanced lifestyle.' },
+            ].map((s, i) => (
+              <div key={i} style={{ background: '#fff', borderRadius: RADIUS, border: `1px solid ${LINE}`, padding: '30px 26px', textAlign: 'center', boxShadow: CARD_SHADOW }}>
+                <div style={{ width: 54, height: 54, borderRadius: 16, background: ACCENT_SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
+                  <Image src={s.image} alt="" aria-hidden width={29} height={29} style={{ width: 29, height: 29 }} />
+                </div>
+                <h3 style={{ fontSize: 18, fontWeight: 700, color: INK, marginBottom: 10 }}>{s.title}</h3>
+                <p style={{ fontSize: 14, color: INK_SOFT, lineHeight: 1.65 }}>{s.desc}</p>
+              </div>
+            ))}
+          </Reveal>
+        </div>
+      </section>
+
+      {product.banners?.[2] && <ProductBanner {...product.banners[2]} />}
+
+      {/* ── QUALITY CLAIMS ── */}
+      <section style={{ padding: '80px 24px' }}>
+        <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+          <SectionHeading eyebrow="Made right" title="Quality you can trust" />
+          <Reveal variant="stagger" className="quality-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }}>
+            {qualityClaims.map((q, i) => (
+              <div key={i} style={{ display: 'flex', gap: 16, alignItems: 'flex-start', padding: '22px 22px', borderRadius: RADIUS, border: `1px solid ${LINE}`, background: '#fff', boxShadow: CARD_SHADOW }}>
+                <Image src={q.image} alt="" aria-hidden width={56} height={56} className="quality-icon" style={{ width: 56, height: 56, borderRadius: 14, flexShrink: 0 }} />
+                <div>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: INK, marginBottom: 5 }}>{q.title}</h3>
+                  <p style={{ fontSize: 13.5, color: INK_SOFT, lineHeight: 1.6 }}>{q.desc}</p>
+                </div>
+              </div>
+            ))}
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── CERTIFICATIONS ── */}
+      <section style={{ background: BG_SOFT, borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, padding: '56px 24px' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
+          <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: INK_SOFT, marginBottom: 28 }}>Certified & Compliant</p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: '24px 40px' }}>
+            {[1, 2, 3, 4, 5, 6].map((n) => (
+              <div key={n} style={{ position: 'relative', width: 76, height: 76, opacity: 0.85 }}>
+                <Image src={`/certificates/${n}.jpg`} alt="Certification" fill style={{ objectFit: 'contain' }} sizes="76px" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── REVIEWS ── */}
+      <section ref={reviewsRef} style={{ padding: '80px 24px', scrollMarginTop: 90 }}>
+        <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+          <SectionHeading eyebrow="Verified reviews" title="What customers are saying" />
+          <ProductReviews productId={product.id} productName={product.name} />
+        </div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section style={{ background: BG_SOFT, borderTop: `1px solid ${LINE}`, padding: '80px 24px' }}>
+        <div style={{ maxWidth: 760, margin: '0 auto' }}>
+          <SectionHeading eyebrow="Good to know" title="Frequently asked questions" />
+          <ProductFAQ productSlug={product.slug} productName={product.name} />
+        </div>
+      </section>
+
+      {/* ── RELATED ── */}
+      {relatedProducts.length > 0 && (
+        <section style={{ padding: '80px 24px' }}>
+          <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+            <SectionHeading eyebrow="You may also like" title="Complete your routine" />
+            <div className="related-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24, maxWidth: 680, margin: '0 auto' }}>
+              {relatedProducts.map((p) => <RelatedCard key={p.id} product={p} />)}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── DISCLAIMER ── */}
+      <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 24px 40px' }}>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '18px 20px', background: BG_SOFT, borderRadius: 14, border: `1px solid ${LINE}` }}>
+          <FlaskConical style={{ width: 16, height: 16, color: '#9aa1ac', flexShrink: 0, marginTop: 2 }} />
+          <p style={{ fontSize: 12, color: INK_SOFT, lineHeight: 1.7 }}>{HEALTH_DISCLAIMER}</p>
+        </div>
+      </div>
+
+      {/* ── MOBILE STICKY CTA ── */}
+      <div className="mobile-cta-outer" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#fff', borderTop: `1px solid ${LINE}`, padding: '10px 16px', zIndex: 500, boxShadow: '0 -6px 24px rgba(16,24,40,0.08)', display: 'none' }}>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <div style={{ flexShrink: 0 }}>
+            <p style={{ fontSize: 18, fontWeight: 700, color: INK, lineHeight: 1 }}>₹{bundle.totalPrice.toLocaleString()}</p>
+            <p style={{ fontSize: 11, color: INK_SOFT }}>{bundle.discountPct}% off</p>
+          </div>
+          <button
+            onClick={handleBuyNow}
+            disabled={isBuyingNow}
+            style={{ flex: 1, background: ACCENT, color: '#fff', padding: '14px 16px', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontFamily: 'inherit' }}
+          >
+            <Zap style={{ width: 15, height: 15 }} />
+            {isBuyingNow ? 'Processing…' : 'Buy Now'}
+          </button>
+        </div>
+      </div>
+
+      <style>{`
+        /* Full-width infographic banners */
+        .product-banner-section { padding: 56px 24px 8px; }
+        .product-banner {
+          position: relative;
+          max-width: 1080px;
+          margin: 0 auto;
+          aspect-ratio: 1600 / 592;
+          border-radius: 20px;
+          overflow: hidden;
+          border: 1px solid #e9eaee;
+          box-shadow: 0 2px 16px rgba(16,24,40,0.05);
+          background: #fff;
+        }
+        .product-banner-bleed { object-fit: cover; transform: scale(1.2); filter: blur(30px) saturate(1.1); }
+        .product-banner-img { object-fit: contain; }
+        @media (max-width: 768px) {
+          .product-banner-section { padding: 36px 16px 4px; }
+          .product-banner { border-radius: 14px; }
+        }
+
+        /* Gallery carousel */
+        .gallery-track::-webkit-scrollbar { display: none; }
+        .gallery-arrow {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 38px;
+          height: 38px;
+          border-radius: 999px;
+          border: 1px solid rgba(16,24,40,0.08);
+          background: rgba(255,255,255,0.92);
+          color: #1a1f27;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          padding: 0;
+          box-shadow: 0 4px 14px rgba(16,24,40,0.14);
+          transition: background 0.2s, transform 0.2s;
+          z-index: 2;
+        }
+        .gallery-arrow:hover { background: #fff; }
+        .gallery-arrow:active { transform: translateY(-50%) scale(0.94); }
+        @media (hover: none) {
+          .gallery-arrow { display: none; }
+        }
+        @media (max-width: 900px) {
+          .product-grid { grid-template-columns: 1fr !important; gap: 26px !important; }
+          .product-image-sticky { position: relative !important; top: auto !important; }
+          .benefit-grid, .usage-grid, .quality-grid { grid-template-columns: 1fr !important; }
+          .mobile-cta-outer { display: block !important; }
+        }
+        @media (min-width: 601px) and (max-width: 900px) {
+          .benefit-grid, .quality-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        /* Tablet & down: tighten section spacing */
+        @media (max-width: 768px) {
+          .product-page section { padding-top: 52px !important; padding-bottom: 52px !important; padding-left: 18px !important; padding-right: 18px !important; }
+          .product-container { padding: 20px 18px !important; }
+          .product-page { padding-bottom: 92px !important; }
+        }
+        /* Phones: stack gallery, shrink everything a touch */
+        @media (max-width: 600px) {
+          .ingredient-row { gap: 14px !important; }
+          .ingredient-img { width: 84px !important; height: 84px !important; }
+          .ingredient-num { display: none; }
+          .gallery-wrap { flex-direction: column !important; gap: 10px !important; }
+          .gallery-main { flex: none !important; width: 100% !important; }
+          .gallery-thumbs { flex-direction: row !important; width: 100% !important; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+          .gallery-thumbs > button { width: 62px !important; height: 62px !important; }
+          .product-page section { padding-top: 44px !important; padding-bottom: 44px !important; padding-left: 16px !important; padding-right: 16px !important; }
+          .product-container { padding: 16px !important; }
+          .related-grid { grid-template-columns: 1fr !important; }
+          .cta-row { flex-direction: column !important; }
+          .cta-row > button { width: 100% !important; flex: none !important; }
+          .trust-row { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+    </div>
+  );
+}

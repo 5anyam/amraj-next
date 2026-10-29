@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="Two capsules daily">
+  <g transform="rotate(-35 16 16)">
+    <rect x="1.5" y="5.5" width="22" height="9" rx="4.5" fill="#fff" stroke="#0a7a6e" stroke-width="2"/>
+    <path d="M12.5 5.5H6a4.5 4.5 0 0 0 0 9h6.5z" fill="#0D9488"/>
+    <rect x="8.5" y="17.5" width="22" height="9" rx="4.5" fill="#fff" stroke="#0a7a6e" stroke-width="2"/>
+    <path d="M19.5 17.5H13a4.5 4.5 0 0 0 0 9h6.5z" fill="#0D9488"/>
+  </g>
+</svg>
