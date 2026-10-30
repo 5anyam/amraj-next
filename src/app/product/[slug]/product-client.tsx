@@ -13,6 +13,8 @@ import { StaticProduct, PRODUCTS, HEALTH_DISCLAIMER } from '../../../../lib/prod
 import Reveal from '../../../../components/Reveal';
 import { useCart } from '../../../../lib/cart';
 import { toast } from '../../../../hooks/use-toast';
+import ReelsStrip from '../../../../components/video/ReelsStrip';
+import { videosForProduct } from '../../../../lib/videos';
 
 const ProductReviews = dynamic(() => import('../../../../components/ProductReviews'), { ssr: false });
 // FAQ stays statically imported: its Q&A copy is core SEO content and must be in the server HTML.
@@ -274,6 +276,7 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
   const bundles = getBundles(product.price, product.regularPrice, product.capsules);
   const bundle = bundles[selectedBundle];
   const relatedProducts = PRODUCTS.filter((p) => p.slug !== product.slug);
+  const productReels = videosForProduct(product.slug);
 
   const handleAddToCart = () => {
     setIsAddingToCart(true);
@@ -570,6 +573,16 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
           </div>
         </div>
       </section>
+
+      {/* ── REELS ── */}
+      {productReels.length > 0 && (
+        <section style={{ padding: '80px 24px 0' }}>
+          <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+            <SectionHeading eyebrow="Watch" title={`${product.shortName} in action`} />
+            <ReelsStrip videos={productReels} showProduct={false} />
+          </div>
+        </section>
+      )}
 
       {/* ── REVIEWS ── */}
       <section ref={reviewsRef} style={{ padding: '80px 24px', scrollMarginTop: 90 }}>

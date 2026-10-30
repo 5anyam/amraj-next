@@ -24,6 +24,37 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 
 This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Videos
+
+Product reels play in a horizontal strip on the homepage (after the bestsellers) and on each
+product page (above the reviews, showing only that product's reels).
+
+How they behave:
+- Only one video plays at a time; starting one pauses the others.
+- The most visible reel autoplays (muted) as you scroll to it and pauses when it scrolls away.
+- A reel the visitor paused stays paused until it leaves the screen.
+- The mute button is shared — unmuting carries over to the next reel.
+- No video bytes load until a reel is near the screen; visitors with reduced motion or
+  Data Saver on get tap-to-play only.
+
+### Add or replace a reel
+
+1. Put the MP4 in `public/videos/` (a name without spaces is easiest).
+2. Make a poster: one frame of the video, 540px wide, saved as WebP in `public/videos/posters/`.
+   Pick a frame without claim text on it.
+3. Add an entry to `VIDEOS` in `lib/videos.ts`: `src`, `poster`, the `productSlug` it belongs to,
+   a `title` (read out by screen readers), and `homepage: true` if it should appear on the homepage.
+4. To take a reel down without deleting it, set `hidden: true`.
+
+### File specs
+
+- Vertical 9:16, 720×1280 (576×1024 is fine), H.264 + AAC in `.mp4`, under ~15 MB.
+- Export with "fast start" / "web optimised" so playback starts before the file finishes downloading.
+- Burn in captions for any speech — reels start muted.
+- Keep on-screen wording within FSSAI / ASCI rules: no cure, disease or guaranteed-result claims,
+  no "clinically proven" without a study, and no doctor endorsements unless the doctor is real
+  and consented.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

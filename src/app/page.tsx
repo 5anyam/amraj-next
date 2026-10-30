@@ -8,6 +8,8 @@ import Testimonials from '../../components/TestimonialsSection';
 import HomeFAQ from '../../components/HomeFaq';
 import HeroCarousel from '../../components/HeroCarousel';
 import Reveal from '../../components/Reveal';
+import ReelsStrip from '../../components/video/ReelsStrip';
+import { homepageVideos } from '../../lib/videos';
 import {
   Star, ShieldCheck, Truck, Award, Check, Leaf,
   FlaskConical, BadgeCheck, HeartHandshake, ArrowRight,
@@ -101,6 +103,7 @@ const whyItems = [
 ];
 
 export default function Homepage() {
+  const homeReels = homepageVideos();
   return (
     <div style={{ minHeight: '100vh', background: '#fff', color: INK }}>
       <HeroCarousel />
@@ -139,6 +142,16 @@ export default function Homepage() {
           </Reveal>
         </div>
       </section>
+
+      {/* ── REELS ── */}
+      {homeReels.length > 0 && (
+        <section style={{ background: BG_SOFT, borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, padding: '72px 24px' }}>
+          <div style={{ maxWidth: 1120, margin: '0 auto' }}>
+            <SectionHeading eyebrow="Watch" title="See Amraj in action" />
+            <ReelsStrip videos={homeReels} />
+          </div>
+        </section>
+      )}
 
       {/* ── STATS ── */}
       <section style={{ background: BG_SOFT, borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, padding: '56px 24px' }}>
