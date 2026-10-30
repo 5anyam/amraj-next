@@ -37,6 +37,8 @@ export const VIDEOS: ProductVideo[] = [
     poster: '/videos/posters/prostate-ingredients.webp',
     productSlug: 'advanced-prostate-care',
     title: 'The ingredients in Advanced Prostate Care',
+    // Pulled: the clip names Shilajit, which isn't in the formula.
+    hidden: true,
     complianceNote: 'Mentions Shilajit (not in the listed ingredients) and "antibacterial properties".',
   },
   {
