@@ -451,6 +451,16 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
         </div>
       </div>
 
+      {/* ── REELS ── */}
+      {productReels.length > 0 && (
+        <section style={{ padding: '48px 24px 8px' }}>
+          <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+            <SectionHeading eyebrow="Watch" title={`${product.shortName} in action`} />
+            <ReelsStrip videos={productReels} showProduct={false} />
+          </div>
+        </section>
+      )}
+
       {/* ── BENEFIT CARDS ── */}
       <section style={{ background: BG_SOFT, borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, padding: '72px 24px', marginTop: 40 }}>
         <div style={{ maxWidth: 1080, margin: '0 auto' }}>
@@ -573,16 +583,6 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
           </div>
         </div>
       </section>
-
-      {/* ── REELS ── */}
-      {productReels.length > 0 && (
-        <section style={{ padding: '80px 24px 0' }}>
-          <div style={{ maxWidth: 1080, margin: '0 auto' }}>
-            <SectionHeading eyebrow="Watch" title={`${product.shortName} in action`} />
-            <ReelsStrip videos={productReels} showProduct={false} />
-          </div>
-        </section>
-      )}
 
       {/* ── REVIEWS ── */}
       <section ref={reviewsRef} style={{ padding: '80px 24px', scrollMarginTop: 90 }}>
