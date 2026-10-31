@@ -308,7 +308,6 @@ export default function ProductClient({ product, products }: { product: StaticPr
   ];
 
   const trustRow = [
-    { image: '/icons/cash-on-delivery.svg', label: 'Cash on Delivery' },
     { image: '/icons/shipping.svg', label: 'Free Delivery' },
     { image: '/icons/fast-dispatch.svg', label: 'Fast Dispatch' },
     { image: '/icons/secure-checkout.svg', label: 'Secure Checkout' },
@@ -439,7 +438,7 @@ export default function ProductClient({ product, products }: { product: StaticPr
             </div>
 
             {/* Trust row */}
-            <div className="trust-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 8 }}>
+            <div className="trust-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 8 }}>
               {trustRow.map((t, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: 13, color: INK, padding: '10px 14px', background: BG_SOFT, borderRadius: 12 }}>
                   <Image src={t.image} alt="" aria-hidden width={18} height={18} style={{ width: 18, height: 18, flexShrink: 0 }} />
