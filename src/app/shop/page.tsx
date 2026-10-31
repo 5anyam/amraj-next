@@ -1,6 +1,9 @@
 import ShopPageClient from './shopPageClient';
-import { PRODUCTS } from '../../../lib/products-data';
+import { getProducts } from '../../../lib/cms-images';
 
-export default function ShopPage() {
-  return <ShopPageClient products={PRODUCTS} />;
+// Matches CMS_IMAGES_REVALIDATE — product photos come from WordPress.
+export const revalidate = 3600;
+
+export default async function ShopPage() {
+  return <ShopPageClient products={await getProducts()} />;
 }

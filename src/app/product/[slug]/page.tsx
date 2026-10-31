@@ -1,8 +1,12 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import ProductClient from './product-client';
-import { PRODUCTS, getProductBySlug } from '../../../../lib/products-data';
+import { PRODUCTS } from '../../../../lib/products-data';
+import { getProducts } from '../../../../lib/cms-images';
 import { getFaqsForSlug } from '../../../../lib/faq-data';
+
+// Matches CMS_IMAGES_REVALIDATE — product photos come from WordPress.
+export const revalidate = 3600;
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -14,7 +18,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = (await getProducts()).find((p) => p.slug === slug);
 
   if (!product) {
     return {
@@ -62,7 +66,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const products = await getProducts();
+  const product = products.find((p) => p.slug === slug);
 
   if (!product) notFound();
 
@@ -142,7 +147,7 @@ export default async function Page({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <ProductClient product={product} />
+      <ProductClient product={product} products={products} />
     </>
   );
 }

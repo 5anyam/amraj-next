@@ -9,7 +9,7 @@ import {
   Star, ShieldCheck, Check, Leaf, ChevronLeft, ChevronRight, Zap,
   Sparkles, FlaskConical, BadgeCheck, HeartHandshake,
 } from 'lucide-react';
-import { StaticProduct, PRODUCTS, HEALTH_DISCLAIMER } from '../../../../lib/products-data';
+import { StaticProduct, HEALTH_DISCLAIMER } from '../../../../lib/products-data';
 import Reveal from '../../../../components/Reveal';
 import { useCart } from '../../../../lib/cart';
 import { toast } from '../../../../hooks/use-toast';
@@ -264,7 +264,7 @@ function RelatedCard({ product }: { product: StaticProduct }) {
   );
 }
 
-export default function ProductClient({ product }: { product: StaticProduct }) {
+export default function ProductClient({ product, products }: { product: StaticProduct; products: StaticProduct[] }) {
   const router = useRouter();
   const { addToCart } = useCart();
   const reviewsRef = useRef<HTMLDivElement>(null);
@@ -275,7 +275,7 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
 
   const bundles = getBundles(product.price, product.regularPrice, product.capsules);
   const bundle = bundles[selectedBundle];
-  const relatedProducts = PRODUCTS.filter((p) => p.slug !== product.slug);
+  const relatedProducts = products.filter((p) => p.slug !== product.slug);
   const productReels = videosForProduct(product.slug);
 
   const handleAddToCart = () => {

@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import Link from 'next/link';
 import { Play, Volume2, VolumeX, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ProductVideo } from '../../lib/videos';
-import { getProductBySlug } from '../../lib/products-data';
+import { getProductBySlug, StaticProduct } from '../../lib/products-data';
 import { useCart } from '../../lib/cart';
 import { toast } from '../../hooks/use-toast';
 import { registerVideo, refresh, toggleVideo, setMuted, getMuted, subscribeMuted } from './playback';
@@ -14,14 +14,14 @@ const ACCENT = '#0D9488';
 const ACCENT_DK = '#0a7a6e';
 
 /* ── ONE REEL ── */
-function ReelCard({ video, showProduct }: { video: ProductVideo; showProduct: boolean }) {
+function ReelCard({ video, showProduct, products }: { video: ProductVideo; showProduct: boolean; products?: StaticProduct[] }) {
   const ref = useRef<HTMLVideoElement>(null);
   const [near, setNear] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const muted = useSyncExternalStore(subscribeMuted, getMuted, () => true);
   const { addToCart } = useCart();
-  const product = getProductBySlug(video.productSlug);
+  const product = products?.find((p) => p.slug === video.productSlug) ?? getProductBySlug(video.productSlug);
 
   useEffect(() => {
     const el = ref.current;
@@ -128,7 +128,8 @@ function ReelCard({ video, showProduct }: { video: ProductVideo; showProduct: bo
 }
 
 /* ── HORIZONTAL STRIP ── */
-export default function ReelsStrip({ videos, showProduct = true }: { videos: ProductVideo[]; showProduct?: boolean }) {
+/** `products` (with WordPress photos) is used for the card's product details; falls back to the static catalogue. */
+export default function ReelsStrip({ videos, showProduct = true, products }: { videos: ProductVideo[]; showProduct?: boolean; products?: StaticProduct[] }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [overflows, setOverflows] = useState(false);
 
@@ -155,7 +156,7 @@ export default function ReelsStrip({ videos, showProduct = true }: { videos: Pro
       <div ref={trackRef} className="reels-track" role="list">
         {videos.map((v) => (
           <div key={v.id} role="listitem" className="reels-item">
-            <ReelCard video={v} showProduct={showProduct} />
+            <ReelCard video={v} showProduct={showProduct} products={products} />
           </div>
         ))}
       </div>
