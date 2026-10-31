@@ -534,8 +534,8 @@ export default function ProductClient({ product }: { product: StaticProduct }) {
           <SectionHeading eyebrow="Simple daily ritual" title="How to use it" />
           <Reveal variant="stagger" className="usage-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }}>
             {[
-              { image: '/icons/usage-dose.svg', title: 'How much', desc: 'Take 2 capsules daily with a glass of water.' },
-              { image: '/icons/usage-when.svg', title: 'When', desc: 'With your meals, morning & evening — one capsule with lunch, one with dinner.' },
+              { image: '/icons/usage-dose.svg', title: 'How much', desc: 'Take 1 capsule twice daily, after meal or as directed by the healthcare professional.' },
+              { image: '/icons/usage-when.svg', title: 'When', desc: 'After meals, morning & evening — one capsule after lunch, one after dinner.' },
               { image: '/icons/usage-duration.svg', title: 'How long', desc: 'Real results take time — use consistently for at least 3 months as part of a balanced lifestyle.' },
             ].map((s, i) => (
               <div key={i} style={{ background: '#fff', borderRadius: RADIUS, border: `1px solid ${LINE}`, padding: '30px 26px', textAlign: 'center', boxShadow: CARD_SHADOW }}>
