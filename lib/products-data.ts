@@ -36,6 +36,8 @@ export interface StaticProduct {
   rating: number;
   reviewCount: number;
   capsules: number;
+  /** Set from WordPress stock status (lib/cms-images.ts). Treated as in stock when absent. */
+  inStock?: boolean;
 }
 
 /** Compliance disclaimer shown on every product page. Keeps copy within

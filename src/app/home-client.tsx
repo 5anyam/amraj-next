@@ -60,7 +60,9 @@ function ProductCard({ product }: { product: StaticProduct }) {
       <div style={{ position: 'relative', aspectRatio: '1', background: BG_SOFT, overflow: 'hidden' }}>
         <Image src={product.images[0]} alt={product.name} fill style={{ objectFit: 'cover' }} sizes="(max-width: 900px) 50vw, 33vw" />
         {/* Only the discount pill here — the "Best Seller" badge collided with it on narrow cards. */}
-        {discount > 0 && (
+        {product.inStock === false ? (
+          <span style={{ position: 'absolute', top: 14, right: 14, background: '#b42318', color: '#fff', fontSize: 12, fontWeight: 700, padding: '5px 11px', borderRadius: 999 }}>Out of stock</span>
+        ) : discount > 0 && (
           <span style={{ position: 'absolute', top: 14, right: 14, background: ACCENT, color: '#fff', fontSize: 12, fontWeight: 700, padding: '5px 11px', borderRadius: 999 }}>{discount}% OFF</span>
         )}
       </div>

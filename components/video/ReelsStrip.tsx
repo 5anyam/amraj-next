@@ -67,7 +67,7 @@ function ReelCard({ video, showProduct, products }: { video: ProductVideo; showP
   };
 
   const onAdd = () => {
-    if (!product) return;
+    if (!product || product.inStock === false) return;
     addToCart({ id: product.id, name: product.name, price: product.price.toString(), regular_price: product.regularPrice.toString(), images: product.images.map((src) => ({ src })) });
     toast({ title: 'Added to Cart', description: `${product.shortName} added to your cart.` });
   };
@@ -117,10 +117,14 @@ function ReelCard({ video, showProduct, products }: { video: ProductVideo; showP
               <s>₹{product.regularPrice.toLocaleString()}</s>
             </span>
           </Link>
-          <button type="button" className="reel-add" onClick={onAdd} aria-label={`Add ${product.name} to cart`}>
-            <ShoppingCart size={16} />
-            <span>Add</span>
-          </button>
+          {product.inStock === false ? (
+            <span className="reel-add reel-soldout">Out of stock</span>
+          ) : (
+            <button type="button" className="reel-add" onClick={onAdd} aria-label={`Add ${product.name} to cart`}>
+              <ShoppingCart size={16} />
+              <span>Add</span>
+            </button>
+          )}
         </div>
       )}
     </div>
@@ -218,6 +222,7 @@ export default function ReelsStrip({ videos, showProduct = true, products }: { v
           display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
         }
         .reel-add:hover { background: ${ACCENT}; }
+        .reel-soldout, .reel-soldout:hover { background: rgba(255,255,255,0.9); color: #b42318; cursor: default; font-size: 12.5px; }
         .reels-nav {
           position: absolute; top: 45%; transform: translateY(-50%); width: 44px; height: 44px;
           border-radius: 999px; border: 1px solid rgba(16,24,40,0.08); background: #fff; color: ${INK};

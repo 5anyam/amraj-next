@@ -248,7 +248,9 @@ function RelatedCard({ product }: { product: StaticProduct }) {
     >
       <div style={{ position: 'relative', aspectRatio: '1', background: BG_SOFT, overflow: 'hidden' }}>
         <Image src={product.images[0]} alt={product.name} fill style={{ objectFit: 'cover' }} sizes="300px" />
-        {discount > 0 && (
+        {product.inStock === false ? (
+          <span style={{ position: 'absolute', top: 12, left: 12, background: '#b42318', color: '#fff', fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 999 }}>Out of stock</span>
+        ) : discount > 0 && (
           <span style={{ position: 'absolute', top: 12, left: 12, background: ACCENT, color: '#fff', fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 999 }}>{discount}% OFF</span>
         )}
       </div>
@@ -278,7 +280,10 @@ export default function ProductClient({ product, products }: { product: StaticPr
   const relatedProducts = products.filter((p) => p.slug !== product.slug);
   const productReels = videosForProduct(product.slug);
 
+  const outOfStock = product.inStock === false;
+
   const handleAddToCart = () => {
+    if (outOfStock) return;
     setIsAddingToCart(true);
     for (let i = 0; i < bundle.packs; i++) {
       addToCart({ id: product.id, name: product.name, price: product.price.toString(), regular_price: product.regularPrice.toString(), images: product.images.map((src) => ({ src })) });
@@ -288,6 +293,7 @@ export default function ProductClient({ product, products }: { product: StaticPr
   };
 
   const handleBuyNow = () => {
+    if (outOfStock) return;
     setIsBuyingNow(true);
     for (let i = 0; i < bundle.packs; i++) {
       addToCart({ id: product.id, name: product.name, price: product.price.toString(), regular_price: product.regularPrice.toString(), images: product.images.map((src) => ({ src })) });
@@ -376,6 +382,18 @@ export default function ProductClient({ product, products }: { product: StaticPr
             </div>
             <p style={{ fontSize: 13, color: INK_SOFT, marginBottom: 22 }}>MRP incl. of all taxes · Just ₹{bundle.pricePerServe}/serving</p>
 
+            {outOfStock ? (
+              <div role="status" style={{ marginBottom: 18, padding: '16px 18px', borderRadius: 16, background: '#fef3f2', border: '1px solid #fecdca' }}>
+                <p style={{ fontSize: 16, fontWeight: 700, color: '#b42318', marginBottom: 4 }}>Out of stock</p>
+                <p style={{ fontSize: 14, color: INK_SOFT, lineHeight: 1.6 }}>
+                  {product.shortName} is currently unavailable.{' '}
+                  <a href={`https://api.whatsapp.com/send?phone=919211619009&text=${encodeURIComponent(`Hi, please let me know when ${product.name} is back in stock.`)}`} target="_blank" rel="noopener noreferrer" style={{ color: ACCENT_DK, fontWeight: 600 }}>
+                    Ask on WhatsApp when it&apos;s back
+                  </a>
+                </p>
+              </div>
+            ) : (
+            <>
             {/* Pack selector */}
             <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: INK_SOFT, marginBottom: 12 }}>Choose your pack</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
@@ -436,6 +454,8 @@ export default function ProductClient({ product, products }: { product: StaticPr
                 {!isBuyingNow && <MiniPayLogos />}
               </button>
             </div>
+            </>
+            )}
 
             {/* Trust row */}
             <div className="trust-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 8 }}>
@@ -626,6 +646,14 @@ export default function ProductClient({ product, products }: { product: StaticPr
             <p style={{ fontSize: 18, fontWeight: 700, color: INK, lineHeight: 1 }}>₹{bundle.totalPrice.toLocaleString()}</p>
             <p style={{ fontSize: 11, color: INK_SOFT }}>{bundle.discountPct}% off</p>
           </div>
+          {outOfStock ? (
+            <button
+              disabled
+              style={{ flex: 1, background: LINE, color: INK_SOFT, padding: '14px 16px', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 700, cursor: 'not-allowed', fontFamily: 'inherit' }}
+            >
+              Out of stock
+            </button>
+          ) : (
           <button
             onClick={handleBuyNow}
             disabled={isBuyingNow}
@@ -634,6 +662,7 @@ export default function ProductClient({ product, products }: { product: StaticPr
             <Zap style={{ width: 15, height: 15 }} />
             {isBuyingNow ? 'Processing…' : 'Buy Now'}
           </button>
+          )}
         </div>
       </div>
 

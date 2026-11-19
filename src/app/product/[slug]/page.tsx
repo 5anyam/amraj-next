@@ -5,8 +5,8 @@ import { PRODUCTS } from '../../../../lib/products-data';
 import { getProducts } from '../../../../lib/cms-images';
 import { getFaqsForSlug } from '../../../../lib/faq-data';
 
-// Matches CMS_IMAGES_REVALIDATE — product photos come from WordPress.
-export const revalidate = 3600;
+// Matches CMS_REVALIDATE — product photos and stock come from WordPress.
+export const revalidate = 300;
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -92,7 +92,7 @@ export default async function Page({ params }: Props) {
       price: product.price.toString(),
       priceValidUntil: '2026-12-31',
       itemCondition: 'https://schema.org/NewCondition',
-      availability: 'https://schema.org/InStock',
+      availability: product.inStock === false ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
       shippingDetails: {
         '@type': 'OfferShippingDetails',
         shippingRate: { '@type': 'MonetaryAmount', value: '0', currency: 'INR' },

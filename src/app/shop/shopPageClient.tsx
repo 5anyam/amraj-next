@@ -35,7 +35,9 @@ function ProductCard({ product }: { product: StaticProduct }) {
         {product.badge && (
           <span style={{ position: 'absolute', top: 14, left: 14, background: '#fff', color: INK, fontSize: 11, fontWeight: 600, padding: '5px 12px', borderRadius: 999, boxShadow: '0 2px 8px rgba(16,24,40,0.1)' }}>{product.badge}</span>
         )}
-        {discount > 0 && (
+        {product.inStock === false ? (
+          <span style={{ position: 'absolute', top: 14, right: 14, background: '#b42318', color: '#fff', fontSize: 12, fontWeight: 700, padding: '5px 11px', borderRadius: 999 }}>Out of stock</span>
+        ) : discount > 0 && (
           <span style={{ position: 'absolute', top: 14, right: 14, background: ACCENT, color: '#fff', fontSize: 12, fontWeight: 700, padding: '5px 11px', borderRadius: 999 }}>{discount}% OFF</span>
         )}
       </div>
